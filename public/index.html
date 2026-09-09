@@ -6,8 +6,14 @@
   <title>Projet ART — Application</title>
 </head>
 <body>
-  <h1>Projet ART — Application</h1>
-  <p>Application en construction — voir README.md pour les fonctionnalités attendues.</p>
-  <script type="module" src="firebase-config.js"></script>
+  <p>Redirection…</p>
+  <script type="module">
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+    import { auth } from "./js/firebase-init.js";
+
+    onAuthStateChanged(auth, (user) => {
+      window.location.href = user ? "./users.html" : "./login.html";
+    });
+  </script>
 </body>
 </html>
