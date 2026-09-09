@@ -10,6 +10,23 @@ Marketplace de pratiques artistiques — M2CIM Gestion de Projet 2026/2027.
 - Le premier contact a lieu par messagerie entre intéressés
 - Des annonceurs font la publicité pour des événements, des équipements…
 
+![Illustration du concept](image.png)
+
+## Fonctionnalités attendues
+
+Application :
+- Inscription
+- Recherche d'une annonce
+- Création / Édition d'une annonce
+- Messagerie / Réservation
+- Accueil / État de disponibilité
+- Carte et géolocalisation
+- Profil d'utilisateur et préférences
+- Annonce / Réservation
+- Vérification / signature (Front)
+
+Site vitrine : voir [landing/README.md](landing/README.md)
+
 ## Équipe
 
 | Rôle | Nom | GitHub |
