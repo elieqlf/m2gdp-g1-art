@@ -1,0 +1,10 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Verrouillé par défaut — à ouvrir progressivement par collection
+    // au fur et à mesure des User Stories (voir /specs/user-stories).
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
