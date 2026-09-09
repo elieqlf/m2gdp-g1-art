@@ -1,0 +1,20 @@
+name = "projet-art-api"
+main = "src/index.js"
+compatibility_date = "2026-09-01"
+account_id = "c787d4666094708bb9e93531fda13ce4"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "art-sessions"
+database_id = "eff5ac51-9692-4c44-a096-ba63113772db"
+
+# À ajouter une fois R2 activé sur le dashboard Cloudflare :
+# [[r2_buckets]]
+# binding = "FILES"
+# bucket_name = "art-files"
+
+[vars]
+# Variables publiques (non sensibles) ici.
+# Les secrets (FIREBASE_PRIVATE_KEY, etc.) se déclarent avec :
+#   npx wrangler secret put FIREBASE_PRIVATE_KEY
+# et se lisent en local via workers/.dev.vars (jamais commité)
