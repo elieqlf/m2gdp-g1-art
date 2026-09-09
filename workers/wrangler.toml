@@ -8,10 +8,9 @@ binding = "DB"
 database_name = "art-sessions"
 database_id = "eff5ac51-9692-4c44-a096-ba63113772db"
 
-# À ajouter une fois R2 activé sur le dashboard Cloudflare :
-# [[r2_buckets]]
-# binding = "FILES"
-# bucket_name = "art-files"
+[[r2_buckets]]
+binding = "FILES"
+bucket_name = "art-files"
 
 [vars]
 # Variables publiques (non sensibles) ici.
