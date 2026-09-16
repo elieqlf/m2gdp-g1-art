@@ -22,3 +22,4 @@ firestore-debug.log
 # Front Vue
 frontend/dist/
 frontend/coverage/
+frontend/.vite/
