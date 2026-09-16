@@ -1,10 +1,12 @@
 # Stack technique — Architecture serverless
 
+Le schéma ci-dessous décrit l’architecture cible. Le POC actuel appelle directement Firebase Auth, Firestore et Google Places depuis le front Vue ; le Worker expose uniquement `/health`.
+
 ```mermaid
 flowchart LR
     subgraph Front
         Landing[Firebase Hosting\n/landing — Site vitrine]
-        App[Firebase Hosting\n/public — App PWA]
+        App[Firebase Hosting\n/frontend/dist — App Vue]
     end
 
     subgraph API
@@ -32,8 +34,8 @@ flowchart LR
 
 | Couche | Techno | Rôle |
 |--------|--------|------|
-| Front End | PWA (Shadcn / Shadcn-Vue / Spartan) | Interface mobile-first |
-| Carte | LeafletJS | Affichage géographique des annonces |
+| Front End | Vue 3, TypeScript, Vite, Tailwind CSS 4, Shadcn-Vue | Interface responsive ; PWA installable à venir |
+| Carte | LeafletJS (prévu) | Affichage géographique des annonces |
 | Géolocalisation | Google Places API | Autocomplete adresse + geocoding |
 | Interface REST API | Cloudflare Workers | Point d'entrée unique du backend |
 | Authentification | Firebase Auth | Connexion sans mot de passe (lien magique) |
@@ -51,5 +53,6 @@ flowchart LR
 
 ## Déploiement
 
-- Front (`/landing`, `/public`) : `firebase deploy` (ou GitHub Actions)
+- Front Vue : `npm run build` produit `frontend/dist`. Firebase Hosting cible ce dossier et reconstruit automatiquement avant publication.
+- Application : `firebase deploy --only hosting:app` ; site vitrine : `firebase deploy --only hosting:landing`.
 - Back (`/workers`) : `wrangler deploy`

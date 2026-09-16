@@ -40,7 +40,8 @@ Site vitrine : voir [landing/README.md](landing/README.md)
 | Répertoire | Contenu |
 |------------|---------|
 | `/landing` | Site vitrine statique (index.html, css, img) |
-| `/public`  | Application web (frontend) |
+| `/frontend` | Application Vue 3 + TypeScript + Shadcn-Vue |
+| `/public` | Ancien POC HTML et configurations publiques Firebase/Places |
 | `/workers` | Logique métier backend (Cloudflare Workers) |
 | `/docs`    | Documentation technique et guides |
 | `/design`  | Artefacts UX en HTML (wireframes, maquettes, charte graphique) |
@@ -50,7 +51,7 @@ Site vitrine : voir [landing/README.md](landing/README.md)
 
 ## Stack technique
 
-- **Front** : Progressive Web App (Shadcn / Shadcn-Vue / Spartan), LeafletJS (carte), Google Places API (géolocalisation)
+- **Front** : Vue 3 + TypeScript + Vite, Tailwind CSS 4 et Shadcn-Vue ; Google Places API (suggestions d’adresse). LeafletJS et PWA prévus ultérieurement.
 - **Back** : Architecture serverless — Firebase (Auth, Firestore, Realtime DB), Cloudflare Workers (API Gateway), Cloudflare D1 (sessions), Cloudflare R2 (fichiers)
 - **Hébergement** : Firebase Hosting (site vitrine + app)
 - **Tests** : Playwright (E2E)
@@ -61,6 +62,10 @@ Voir [Stack technique](docs/stack-technique.md) pour le détail.
 
 ```bash
 npm install
+npm ci --prefix frontend
+npm run dev
 ```
 
 Voir [agents.md](agents.md) pour les instructions destinées aux assistants IA travaillant sur ce dépôt.
+
+Le front Vue et ses tests sont décrits dans [frontend/README.md](frontend/README.md).

@@ -3,7 +3,7 @@
 **En tant que** visiteur, **je veux** me connecter sans mot de passe via un lien envoyé par e-mail,
 **afin de** créer un compte ou me reconnecter simplement.
 
-Statut : ✅ POC implémenté (`public/login.html`, `public/js/auth.js`, `public/users.html`)
+Statut : POC repris dans Vue + Shadcn-Vue (`frontend/src/App.vue`, `frontend/src/services/firebase.ts`). Ancien POC conservé dans `public/`. Tests de composants dans `frontend/tests/`, services externes simulés.
 
 ## Critères d'acceptation (Happy Path)
 
