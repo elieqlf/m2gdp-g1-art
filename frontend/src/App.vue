@@ -133,7 +133,7 @@ onBeforeUnmount(() => { unsubscribe?.(); clearInterval(countdown); accountRevisi
     </header>
 
     <UsersMap
-    v-if="!membersLoading && !membersError"
+    v-if="screen === 'users' && !membersLoading && !membersError"
     :users="members"
       />
     <main v-if="screen === 'users'" class="mx-auto max-w-5xl px-5 py-10 sm:px-8 sm:py-14">
