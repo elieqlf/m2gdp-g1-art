@@ -15,15 +15,18 @@ const PLACE_DETAILS_URL = "https://places.googleapis.com/v1/places";
  * @param {{ onSelect?: (place: {address: string, placeId: string, lat?: number, lng?: number}) => void }} options
  */
 export function attachAddressAutocomplete(inputEl, { onSelect } = {}) {
-  const wrapper = inputEl.parentElement;
-  if (getComputedStyle(wrapper).position === "static") {
-    wrapper.style.position = "relative";
-  }
+  // Enveloppe dédiée et ajustée à la taille du champ, pour que le dropdown
+  // (position: absolute; top: 100%) se positionne juste sous l'input et non
+  // sous tout le formulaire parent.
+  const wrapper = document.createElement("div");
+  wrapper.style.position = "relative";
+  inputEl.parentElement.insertBefore(wrapper, inputEl);
+  wrapper.appendChild(inputEl);
 
   const dropdown = document.createElement("ul");
   dropdown.className = "address-suggestions";
   dropdown.hidden = true;
-  inputEl.insertAdjacentElement("afterend", dropdown);
+  wrapper.appendChild(dropdown);
 
   let debounceTimer;
   let sessionToken = crypto.randomUUID();
