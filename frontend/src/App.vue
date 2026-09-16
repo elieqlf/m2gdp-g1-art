@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import UsersMap from '@/components/UsersMap.vue'
 import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -131,6 +132,10 @@ onBeforeUnmount(() => { unsubscribe?.(); clearInterval(countdown); accountRevisi
       </div>
     </header>
 
+    <UsersMap
+    v-if="!membersLoading && !membersError"
+    :users="members"
+      />
     <main v-if="screen === 'users'" class="mx-auto max-w-5xl px-5 py-10 sm:px-8 sm:py-14">
       <div class="mb-8 flex flex-wrap items-end justify-between gap-4">
         <div><p class="mb-2 text-sm font-medium text-muted-foreground">Notre communauté</p><h1 class="text-3xl font-semibold tracking-tight">Utilisateurs inscrits</h1><p class="mt-3 text-muted-foreground">Découvrez les participants et les organisateurs de Projet ART.</p></div>
