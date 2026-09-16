@@ -66,6 +66,8 @@ export async function saveProfile(uid, profile) {
       lastName: profile.lastName,
       userType: profile.userType,
       address: profile.address,
+      addressLat: profile.addressLat ?? null,
+      addressLng: profile.addressLng ?? null,
       photoUrl: profile.photoUrl || null,
       profileComplete: true,
     },

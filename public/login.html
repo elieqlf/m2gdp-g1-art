@@ -20,6 +20,9 @@
     .toast.info { background: #eff6ff; color: #1d4ed8; }
     .toast.warn { background: #fef3c7; color: #92400e; }
     [hidden] { display: none !important; }
+    .address-suggestions { position: absolute; left: 0; right: 0; top: 100%; z-index: 10; background: #fff; border: 1px solid #d4d4d8; border-top: none; border-radius: 0 0 8px 8px; max-height: 200px; overflow-y: auto; list-style: none; margin: 0; padding: 0; box-shadow: 0 4px 8px rgba(0,0,0,.08); }
+    .address-suggestions li { padding: 8px 12px; font-size: .9rem; cursor: pointer; }
+    .address-suggestions li:hover { background: #f4f4f5; }
   </style>
 </head>
 <body>
@@ -71,7 +74,7 @@
         <option value="participant">Participant — je rejoins des sessions</option>
       </select>
       <label for="address">Adresse postale</label>
-      <input id="address" type="text" placeholder="Ville, code postal" />
+      <input id="address" type="text" placeholder="Ville, code postal" autocomplete="off" />
       <label for="photoUrl">Photo (URL, facultatif)</label>
       <input id="photoUrl" type="url" placeholder="https://…" />
       <p class="error" id="profile-error"></p>
@@ -81,6 +84,12 @@
 
   <script type="module">
     import { isValidEmail, requestSignInLink, isCompletingSignIn, completeSignIn, saveProfile } from "./js/auth.js";
+    import { attachAddressAutocomplete } from "./js/address-autocomplete.js";
+
+    let selectedAddress = null; // { address, placeId, lat, lng } — rempli via l'autocomplete
+    attachAddressAutocomplete(document.getElementById("address"), {
+      onSelect: (place) => { selectedAddress = place; },
+    });
 
     const sections = {
       request: document.getElementById("step-request"),
@@ -175,7 +184,10 @@
         err.textContent = "Merci de compléter tous les champs obligatoires.";
         return;
       }
-      await saveProfile(pendingUid, { firstName, lastName, address, userType, photoUrl });
+      // Coordonnées géocodées uniquement si l'utilisateur a choisi une suggestion
+      // correspondant au texte final du champ (sinon adresse saisie librement, sans lat/lng).
+      const coords = selectedAddress?.address === address ? selectedAddress : {};
+      await saveProfile(pendingUid, { firstName, lastName, address, userType, photoUrl, ...coords });
       window.location.href = "./users.html";
     });
 
