@@ -1,0 +1,17 @@
+{
+  "name": "projet-art",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Marketplace de pratiques artistiques - M2CIM Gestion de Projet",
+  "scripts": {
+    "test": "playwright test",
+    "deploy:hosting": "firebase deploy --only hosting",
+    "deploy:worker": "wrangler deploy",
+    "worker:dev": "wrangler dev"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.48.0",
+    "firebase-tools": "^13.23.0",
+    "wrangler": "^3.90.0"
+  }
+}

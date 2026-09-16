@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Projet ART — Application</title>
+</head>
+<body>
+  <p>Redirection…</p>
+  <script type="module">
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+    import { auth } from "./js/firebase-init.js";
+
+    onAuthStateChanged(auth, (user) => {
+      window.location.href = user ? "./users.html" : "./login.html";
+    });
+  </script>
+</body>
+</html>

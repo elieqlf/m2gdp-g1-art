@@ -1,5 +1,18 @@
 {
   "projects": {
     "default": "novart-109bf"
-  }
+  },
+  "targets": {
+    "novart-109bf": {
+      "hosting": {
+        "landing": [
+          "novart-109bf"
+        ],
+        "app": [
+          "novart-app"
+        ]
+      }
+    }
+  },
+  "etags": {}
 }

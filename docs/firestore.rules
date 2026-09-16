@@ -1,0 +1,17 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // US Inscription/Connexion : un utilisateur connecté peut lire tous les
+    // profils (affichage des utilisateurs) mais ne peut créer/modifier que le sien.
+    match /users/{userId} {
+      allow read: if request.auth != null;
+      allow create, update: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Verrouillé par défaut — à ouvrir progressivement par collection
+    // au fur et à mesure des User Stories (voir /specs/user-stories).
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

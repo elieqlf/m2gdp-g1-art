@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Connexion — Projet ART</title>
+  <style>
+    * { box-sizing: border-box; font-family: system-ui, sans-serif; }
+    body { margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #f4f4f5; padding: 16px; }
+    .card { background: #fff; border-radius: 12px; padding: 32px 24px; max-width: 380px; width: 100%; box-shadow: 0 1px 3px rgba(0,0,0,.1); }
+    h1 { font-size: 1.25rem; margin: 0 0 8px; }
+    p.hint { color: #666; font-size: .9rem; margin: 0 0 20px; }
+    label { display: block; font-size: .85rem; font-weight: 600; margin: 12px 0 4px; }
+    input, select { width: 100%; padding: 10px 12px; border: 1px solid #d4d4d8; border-radius: 8px; font-size: 1rem; }
+    input:invalid { border-color: #d4d4d8; }
+    .error { color: #dc2626; font-size: .85rem; margin-top: 6px; min-height: 1.2em; }
+    button { width: 100%; margin-top: 20px; padding: 12px; border: none; border-radius: 8px; background: #18181b; color: #fff; font-size: 1rem; cursor: pointer; }
+    button:disabled { background: #a1a1aa; cursor: not-allowed; }
+    .toast { margin-top: 16px; padding: 10px 12px; border-radius: 8px; font-size: .85rem; }
+    .toast.info { background: #eff6ff; color: #1d4ed8; }
+    .toast.warn { background: #fef3c7; color: #92400e; }
+    [hidden] { display: none !important; }
+    .address-suggestions { position: absolute; left: 0; right: 0; top: 100%; z-index: 10; background: #fff; border: 1px solid #d4d4d8; border-top: none; border-radius: 0 0 8px 8px; max-height: 200px; overflow-y: auto; list-style: none; margin: 0; padding: 0; box-shadow: 0 4px 8px rgba(0,0,0,.08); }
+    .address-suggestions li { padding: 8px 12px; font-size: .9rem; cursor: pointer; }
+    .address-suggestions li:hover { background: #f4f4f5; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <!-- Étape 1 : demande du lien magique -->
+    <section id="step-request">
+      <h1>Se connecter avec votre e-mail</h1>
+      <p class="hint">Pas de mot de passe — nous vous envoyons un lien magique.</p>
+      <label for="email">E-mail</label>
+      <input id="email" type="email" placeholder="vous@exemple.com" autocomplete="email" />
+      <p class="error" id="email-error"></p>
+      <button id="send-link-btn" type="button">Envoyer le lien magique</button>
+      <p class="toast warn" id="request-toast" hidden></p>
+    </section>
+
+    <!-- Étape 2 : confirmation d'envoi -->
+    <section id="step-sent" hidden>
+      <h1>Vérifiez votre boîte mail 📬</h1>
+      <p class="hint">Un lien de connexion a été envoyé à <strong id="sent-email"></strong>. Cliquez-y pour continuer (valable 15 min).</p>
+    </section>
+
+    <!-- Étape 3 : confirmation d'email (ouverture cross-device) -->
+    <section id="step-confirm-email" hidden>
+      <h1>Confirmez votre e-mail</h1>
+      <p class="hint">Ce lien a été ouvert sur un autre appareil/navigateur. Merci de confirmer votre adresse pour continuer.</p>
+      <label for="confirm-email">E-mail</label>
+      <input id="confirm-email" type="email" placeholder="vous@exemple.com" />
+      <p class="error" id="confirm-email-error"></p>
+      <button id="confirm-email-btn" type="button">Confirmer</button>
+    </section>
+
+    <!-- Étape 4 : lien expiré / invalide -->
+    <section id="step-expired" hidden>
+      <h1>Lien expiré ou déjà utilisé</h1>
+      <p class="hint">Ce lien n'est plus valide. Vous pouvez en demander un nouveau.</p>
+      <button id="resend-btn" type="button">Renvoyer un lien</button>
+    </section>
+
+    <!-- Étape 5 : inscription pas à pas (nouveaux comptes / profil incomplet) -->
+    <section id="step-profile" hidden>
+      <h1>Complétez votre profil</h1>
+      <label for="firstName">Prénom</label>
+      <input id="firstName" type="text" />
+      <label for="lastName">Nom</label>
+      <input id="lastName" type="text" />
+      <label for="userType">Type d'utilisateur</label>
+      <select id="userType">
+        <option value="organisateur">Organisateur — je crée des sessions</option>
+        <option value="participant">Participant — je rejoins des sessions</option>
+      </select>
+      <label for="address">Adresse postale</label>
+      <input id="address" type="text" placeholder="Ville, code postal" autocomplete="off" />
+      <label for="photoUrl">Photo (URL, facultatif)</label>
+      <input id="photoUrl" type="url" placeholder="https://…" />
+      <p class="error" id="profile-error"></p>
+      <button id="save-profile-btn" type="button">Terminer l'inscription</button>
+    </section>
+  </div>
+
+  <script type="module">
+    import { isValidEmail, requestSignInLink, isCompletingSignIn, completeSignIn, saveProfile } from "./js/auth.js";
+    import { attachAddressAutocomplete } from "./js/address-autocomplete.js";
+
+    let selectedAddress = null; // { address, placeId, lat, lng } — rempli via l'autocomplete
+    attachAddressAutocomplete(document.getElementById("address"), {
+      onSelect: (place) => { selectedAddress = place; },
+    });
+
+    const sections = {
+      request: document.getElementById("step-request"),
+      sent: document.getElementById("step-sent"),
+      confirmEmail: document.getElementById("step-confirm-email"),
+      expired: document.getElementById("step-expired"),
+      profile: document.getElementById("step-profile"),
+    };
+
+    function showOnly(name) {
+      for (const [key, el] of Object.entries(sections)) el.hidden = key !== name;
+    }
+
+    let pendingUid = null;
+    let lastEmailTried = null;
+
+    // --- Étape 1 : envoi du lien ---
+    const emailInput = document.getElementById("email");
+    const emailError = document.getElementById("email-error");
+    const requestToast = document.getElementById("request-toast");
+
+    document.getElementById("send-link-btn").addEventListener("click", async () => {
+      const email = emailInput.value.trim();
+      emailError.textContent = "";
+      requestToast.hidden = true;
+
+      // CA1 / GERE1 : validation locale, aucune requête réseau si le format est invalide.
+      if (!isValidEmail(email)) {
+        emailError.textContent = "Adresse e-mail invalide.";
+        return;
+      }
+
+      try {
+        await requestSignInLink(email);
+        lastEmailTried = email;
+        document.getElementById("sent-email").textContent = email;
+        showOnly("sent"); // CA2 : confirmation immédiate
+      } catch (err) {
+        // GERE3 : rupture réseau / échec d'envoi -> toast non bloquant.
+        requestToast.hidden = false;
+        requestToast.textContent = "Envoi impossible pour le moment. Vérifiez votre connexion et réessayez.";
+      }
+    });
+
+    // --- Étape 3 : confirmation d'email cross-device ---
+    document.getElementById("confirm-email-btn").addEventListener("click", () => {
+      const email = document.getElementById("confirm-email").value.trim();
+      const err = document.getElementById("confirm-email-error");
+      if (!isValidEmail(email)) {
+        err.textContent = "Adresse e-mail invalide.";
+        return;
+      }
+      handleCompletion(email);
+    });
+
+    // --- Étape 4 : renvoi après expiration (cooldown 60s) ---
+    const resendBtn = document.getElementById("resend-btn");
+    function startResendCooldown() {
+      let remaining = 60;
+      resendBtn.disabled = true;
+      resendBtn.textContent = `Renvoyer un lien (${remaining}s)`;
+      const interval = setInterval(() => {
+        remaining -= 1;
+        if (remaining <= 0) {
+          clearInterval(interval);
+          resendBtn.disabled = false;
+          resendBtn.textContent = "Renvoyer un lien";
+        } else {
+          resendBtn.textContent = `Renvoyer un lien (${remaining}s)`;
+        }
+      }, 1000);
+    }
+    resendBtn.addEventListener("click", async () => {
+      const email = lastEmailTried || prompt("Votre e-mail :");
+      if (!email || !isValidEmail(email)) return;
+      await requestSignInLink(email);
+      lastEmailTried = email;
+      document.getElementById("sent-email").textContent = email;
+      showOnly("sent");
+    });
+
+    // --- Étape 5 : sauvegarde du profil ---
+    document.getElementById("save-profile-btn").addEventListener("click", async () => {
+      const firstName = document.getElementById("firstName").value.trim();
+      const lastName = document.getElementById("lastName").value.trim();
+      const address = document.getElementById("address").value.trim();
+      const userType = document.getElementById("userType").value;
+      const photoUrl = document.getElementById("photoUrl").value.trim();
+      const err = document.getElementById("profile-error");
+
+      if (!firstName || !lastName || !address) {
+        err.textContent = "Merci de compléter tous les champs obligatoires.";
+        return;
+      }
+      // Coordonnées géocodées uniquement si l'utilisateur a choisi une suggestion
+      // correspondant au texte final du champ (sinon adresse saisie librement, sans lat/lng).
+      const coords = selectedAddress?.address === address ? selectedAddress : {};
+      await saveProfile(pendingUid, { firstName, lastName, address, userType, photoUrl, ...coords });
+      window.location.href = "./users.html";
+    });
+
+    // --- Point d'entrée : gestion du clic sur le lien magique ---
+    async function handleCompletion(emailOverride) {
+      try {
+        const result = await completeSignIn(emailOverride);
+        if (result.needsEmailConfirmation) {
+          showOnly("confirmEmail"); // EXCLU1
+          return;
+        }
+        pendingUid = result.user.uid;
+        if (result.isNewUser) {
+          showOnly("profile");
+        } else {
+          window.location.href = "./users.html"; // CA4 : reconnexion fluide
+        }
+      } catch (err) {
+        if (err.code === "auth/invalid-action-code") {
+          showOnly("expired"); // GERE2
+          startResendCooldown(); // CA5
+        } else {
+          requestToast.hidden = false;
+          requestToast.textContent = "Une erreur est survenue. Réessayez.";
+          showOnly("request");
+        }
+      }
+    }
+
+    if (isCompletingSignIn()) {
+      handleCompletion();
+    } else {
+      showOnly("request");
+    }
+  </script>
+</body>
+</html>
