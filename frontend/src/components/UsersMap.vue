@@ -105,6 +105,9 @@ function updateMarkers(){
 } 
 
 
+onMounted(() => {
+  if (!mapContainer.value) return
+
   map = L.map(mapContainer.value, {
     scrollWheelZoom: false,
   }).setView([46.6, 2.5], 5)
