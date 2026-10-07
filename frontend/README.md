@@ -2,6 +2,9 @@
 
 Interface Vue 3 + TypeScript + Vite, Tailwind CSS 4 et composants officiels Shadcn-Vue.
 Les composants sont intégrés dans `src/components/ui` et configurés dans `components.json`.
+Les styles complémentaires de Shadcn-Vue 2.8.2 sont conservés dans
+`src/styles/shadcn.css`, avec leur licence MIT. Le CLI de génération n'est pas une
+dépendance permanente de l'application.
 
 ## Démarrer
 
@@ -46,12 +49,33 @@ Depuis la racine :
 npm run test:frontend
 npm run build
 npm run preview
+npm audit --prefix frontend
 ```
 
 Les tests de composants utilisent des services Firebase/Places simulés : aucun e-mail envoyé,
 aucune donnée créée dans le cloud, aucun appel Places facturable. Ils couvrent les erreurs,
 la connexion, les profils, la déconnexion et les suggestions d’adresse.
 Le parcours réel de réception/clic du mail reste à vérifier avec un compte de test.
+
+Les versions corrigées de `@grpc/grpc-js` et `source-map-js` sont imposées dans
+`overrides` : le SDK Firebase fixe encore une ancienne version de gRPC, et les
+outils Vue/Tailwind utilisent source-map-js. Ces corrections ne changent pas
+le parcours utilisateur.
+
+Avec npm 12, les scripts d'installation nécessaires sont autorisés par version
+dans `allowScripts`. Une mise à jour qui change ces versions demande une nouvelle
+vérification des scripts (`npm install-scripts ls` depuis `frontend/`).
+
+Dans WSL Debian, utiliser Node et npm Linux, puis lancer les commandes habituelles :
+
+```bash
+source ~/.nvm/nvm.sh
+nvm use 24
+npm ci --prefix frontend
+npm run dev
+```
+
+Ne pas utiliser `npm.cmd` dans Bash : c'est la commande Windows.
 
 La configuration `firebase.json` construit automatiquement le front avant un déploiement
 de la cible `app`. Pour publier uniquement l’application (avec la CLI Firebase installée) :
@@ -67,7 +91,7 @@ Le site vitrine reste dans `landing/`. Aucun déploiement n’est effectué lors
 Depuis `frontend/` :
 
 ```bash
-npx shadcn-vue add nom-du-composant
+npx shadcn-vue@2.8.2 add nom-du-composant
 ```
 
 Documentation : https://www.shadcn-vue.com/docs/installation/vite
