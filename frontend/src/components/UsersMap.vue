@@ -85,7 +85,7 @@ function updateMarkers(){
       radius: 8,
       color: '#ffffff',
       weight: 2,
-      fillColor: '#2563eb',
+      fillColor: '#df002b',
       fillOpacity: 1,
     })
       .bindPopup(popup)
@@ -141,7 +141,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <Card class="mt-8">
+  <Card class="users-map-card">
     <CardHeader>
       <CardTitle>Carte des utilisateurs</CardTitle>
       <CardDescription>
@@ -173,9 +173,9 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .users-map {
-  height: 400px;
+  height: clamp(250px, 45svh, 400px);
   width: 100%;
-  border-radius: 8px;
+  border-radius: 16px;
   z-index: 0;
 }
 </style>
