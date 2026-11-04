@@ -122,7 +122,7 @@ onBeforeUnmount(() => { unsubscribe?.(); clearInterval(countdown); accountRevisi
 <template>
   <div class="novart-app">
     <header v-if="account" class="site-header">
-      <a href="/" class="wordmark wordmark--compact" aria-label="Novart, accueil">NOVART</a>
+      <a href="/" class="wordmark wordmark--compact" aria-label="Novart, accueil"><img src="/images/novart-logo-secondary.png" alt="" class="brand-logo" width="924" height="886" /></a>
       <Button v-if="screen !== 'loading'" variant="outline" size="sm" :disabled="busy" @click="disconnect">Se déconnecter</Button>
     </header>
 
@@ -165,9 +165,9 @@ onBeforeUnmount(() => { unsubscribe?.(); clearInterval(countdown); accountRevisi
 
     <main v-else class="auth-layout" :class="{ 'auth-layout--profile': screen === 'profile' }">
       <section v-if="screen !== 'profile'" class="auth-story">
-        <a href="/" class="wordmark wordmark--stacked" aria-label="Novart, accueil"><span>NOV</span><span>ART</span></a>
+        <a href="/" class="wordmark wordmark--stacked" aria-label="Novart, accueil"><img src="/images/novart-logo-secondary.png" alt="" class="brand-logo" width="924" height="886" fetchpriority="high" /></a>
         <h1 class="brand-slogan">L’art se crée ensemble.</h1>
-        <img src="/images/novart-mascot.png" alt="" class="auth-mascot" width="1280" height="1280" fetchpriority="high" />
+        <img src="/images/novart-mascot-welcome.png" alt="" class="auth-mascot" width="558" height="380" />
       </section>
       <Card class="auth-panel">
         <CardHeader class="auth-panel-heading">
@@ -177,7 +177,7 @@ onBeforeUnmount(() => { unsubscribe?.(); clearInterval(countdown); accountRevisi
             <CardDescription v-if="screen === 'request'">Reçois un lien pour créer ton compte ou te reconnecter.</CardDescription>
             <CardDescription v-else-if="screen === 'profile'">Quelques informations pour compléter ton inscription.</CardDescription>
           </div>
-          <img v-if="screen === 'profile'" src="/images/novart-mascot.png" alt="" class="profile-mascot" width="1280" height="1280" />
+          <img v-if="screen === 'profile'" src="/images/novart-mascot-joy.png" alt="" class="profile-mascot" width="159" height="133" />
         </CardHeader>
         <CardContent class="space-y-5">
           <p v-if="screen === 'loading'" role="status" class="text-sm text-muted-foreground">Nous préparons votre espace…</p>

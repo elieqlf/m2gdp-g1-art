@@ -17,7 +17,22 @@ async function openScreen(page: Page, mode: 'request' | 'profile' | 'community')
 }
 
 async function capture(page: Page, testInfo: TestInfo, name: string) {
-  await page.evaluate(() => document.fonts.ready)
+  // Official assets and bundled typefaces must load, not merely fall back silently.
+  const assets = await page.evaluate(async () => {
+    await document.fonts.ready
+    const images = Array.from(document.querySelectorAll<HTMLImageElement>('.brand-logo, .auth-mascot, .profile-mascot'))
+    await Promise.all(images.map(image => image.decode()))
+    return {
+      imagesLoaded: images.length > 0 && images.every(image => image.naturalWidth > 0),
+      poppinsLoaded: Array.from(document.fonts).some(font => font.family.replaceAll('"', '') === 'Poppins' && font.status === 'loaded'),
+      sigmarLoaded: Array.from(document.fonts).some(font => font.family.replaceAll('"', '') === 'Sigmar One' && font.status === 'loaded'),
+      montserratLoaded: Array.from(document.fonts).some(font => font.family.replaceAll('"', '') === 'Montserrat' && font.status === 'loaded'),
+    }
+  })
+  expect(assets.imagesLoaded).toBe(true)
+  expect(assets.poppinsLoaded).toBe(true)
+  expect(assets.sigmarLoaded).toBe(true)
+  expect(assets.montserratLoaded).toBe(true)
   await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
   await page.screenshot({ path: testInfo.outputPath(name + '.png'), fullPage: true })
 }

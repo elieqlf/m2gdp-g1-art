@@ -83,9 +83,9 @@ function updateMarkers(){
 
              L.circleMarker(position, {
       radius: 8,
-      color: '#ffffff',
+      color: 'var(--card)',
       weight: 2,
-      fillColor: '#df002b',
+      fillColor: 'var(--primary)',
       fillOpacity: 1,
     })
       .bindPopup(popup)
@@ -175,7 +175,7 @@ onBeforeUnmount(() => {
 .users-map {
   height: clamp(250px, 45svh, 400px);
   width: 100%;
-  border-radius: 16px;
+  border-radius: var(--radius);
   z-index: 0;
 }
 </style>

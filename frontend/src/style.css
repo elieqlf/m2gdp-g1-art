@@ -1,15 +1,54 @@
 
-@import url('https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito+Sans:wght@400;500;600;700;800;900&display=swap');
-
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "./styles/shadcn.css";
 
+@font-face {
+  font-family: 'Poppins';
+  src: url('/fonts/poppins-regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  src: url('/fonts/poppins-medium.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  src: url('/fonts/poppins-semibold.otf') format('opentype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Sigmar One';
+  src: url('/fonts/sigmar-one-regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Montserrat';
+  src: url('/fonts/montserrat-extra-light.ttf') format('truetype');
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-    --font-sans: 'Nunito Sans', sans-serif;
-    --font-heading: 'Lilita One', 'Nunito Sans', sans-serif;
+    --font-sans: 'Poppins', Arial, sans-serif;
+    --font-heading: 'Sigmar One', 'Poppins', Arial, sans-serif;
+    --font-secondary: 'Montserrat', 'Poppins', Arial, sans-serif;
     --color-sidebar-ring: var(--sidebar-ring);
     --color-sidebar-border: var(--sidebar-border);
     --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -49,38 +88,38 @@
 
 :root {
     color-scheme: light;
-    --background: #fffbf7;
-    --foreground: #263f4b;
-    --card: #fffdfb;
-    --card-foreground: #263f4b;
-    --popover: #fffdfb;
-    --popover-foreground: #263f4b;
-    --primary: #df002b;
-    --primary-foreground: #ffffff;
-    --secondary: #ffe9e7;
-    --secondary-foreground: #c70029;
-    --muted: #fff1ed;
-    --muted-foreground: #64717b;
-    --accent: #ffe9e7;
-    --accent-foreground: #c70029;
-    --destructive: #b91c36;
-    --border: #eadcda;
-    --input: #decdca;
-    --ring: #c70029;
-    --chart-1: #df002b;
-    --chart-2: #f48791;
-    --chart-3: #263f4b;
-    --chart-4: #c70029;
-    --chart-5: #f5b8b6;
+    --background: #FFFEF1;
+    --foreground: #545454;
+    --card: #FFFBFB;
+    --card-foreground: #545454;
+    --popover: #FFFBFB;
+    --popover-foreground: #545454;
+    --primary: #C03C3A;
+    --primary-foreground: #FFFBFB;
+    --secondary: #FFFBFB;
+    --secondary-foreground: #545454;
+    --muted: #FFFBFB;
+    --muted-foreground: #545454;
+    --accent: #781C27;
+    --accent-foreground: #FFFBFB;
+    --destructive: #781C27;
+    --border: #D9D9D9;
+    --input: #545454;
+    --ring: #781C27;
+    --chart-1: #C03C3A;
+    --chart-2: #781C27;
+    --chart-3: #545454;
+    --chart-4: #D9D9D9;
+    --chart-5: #FFFBFB;
     --radius: 1rem;
-    --sidebar: #fffdfb;
-    --sidebar-foreground: #263f4b;
-    --sidebar-primary: #df002b;
-    --sidebar-primary-foreground: #ffffff;
-    --sidebar-accent: #ffe9e7;
-    --sidebar-accent-foreground: #c70029;
-    --sidebar-border: #eadcda;
-    --sidebar-ring: #c70029;
+    --sidebar: #FFFBFB;
+    --sidebar-foreground: #545454;
+    --sidebar-primary: #C03C3A;
+    --sidebar-primary-foreground: #FFFBFB;
+    --sidebar-accent: #781C27;
+    --sidebar-accent-foreground: #FFFBFB;
+    --sidebar-border: #D9D9D9;
+    --sidebar-ring: #781C27;
 }
 
 .dark {
@@ -137,12 +176,18 @@
 }
 
 .novart-app h1,
-.novart-app .form-title,
-.novart-app .users-map-card [data-slot="card-title"] {
+.novart-app .form-title {
   color: var(--primary);
   font-family: var(--font-heading);
   font-weight: 400;
   line-height: 1.08;
+}
+
+/* Functional messages remain in the interface typeface, even when Shadcn
+   applies its generic heading class. */
+.novart-app [data-slot="alert-title"] {
+  font-family: var(--font-sans);
+  font-weight: 500;
 }
 
 .site-header {
@@ -156,20 +201,24 @@
 }
 
 .wordmark {
-  color: var(--primary);
-  font-family: var(--font-heading);
+  display: inline-block;
   text-decoration: none;
-  letter-spacing: .025em;
-  line-height: .88;
+  line-height: 1;
+  flex-shrink: 0;
 }
 
-.wordmark--compact { font-size: 1.8rem; }
+.wordmark--compact { width: 4rem; }
 
 .wordmark--stacked {
-  display: inline-flex;
-  flex-direction: column;
-  font-size: clamp(4rem, 12vw, 6.5rem);
-  letter-spacing: .055em;
+  width: min(12rem, 55vw);
+  max-width: 100%;
+}
+
+.brand-logo {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
 }
 
 .auth-layout {
@@ -188,8 +237,7 @@
   margin-top: 1rem;
   font-family: var(--font-sans);
   font-size: clamp(1.25rem, 3vw, 1.6rem);
-  font-weight: 900;
-  font-style: italic;
+  font-weight: 600;
   line-height: 1.3;
 }
 
@@ -255,7 +303,7 @@
 
 .novart-app [data-slot="label"] {
   font-size: .95rem;
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .novart-app [data-slot="button"] {
@@ -265,7 +313,7 @@
   border-radius: .9rem;
   white-space: normal;
   line-height: 1.35;
-  font-weight: 800;
+  font-weight: 600;
 }
 
 .novart-app [data-slot="button"][type="submit"] {
@@ -273,8 +321,35 @@
   font-size: 1.05rem;
 }
 
-.novart-app [data-slot="button"]:not([data-variant]):hover:not(:disabled) {
-  background: var(--secondary-foreground);
+.novart-app [data-slot="button"]:not([data-variant]):hover:not(:disabled),
+.novart-app [data-slot="button"][data-variant="default"]:hover:not(:disabled),
+.novart-app [data-slot="button"]:not([data-variant]):active:not(:disabled),
+.novart-app [data-slot="button"][data-variant="default"]:active:not(:disabled) {
+  background: var(--accent);
+  color: var(--accent-foreground);
+}
+
+.novart-app [data-slot="button"][data-variant="outline"] {
+  border-color: var(--primary);
+}
+
+.novart-app :is([data-slot="input"], [data-slot="select-trigger"], [data-slot="button"], a):focus-visible,
+[data-slot="select-item"]:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 3px;
+}
+
+/* Reka portals the role menu outside .novart-app. */
+[data-slot="select-content"] {
+  font-family: var(--font-sans);
+  color: var(--popover-foreground);
+  background: var(--popover);
+}
+
+[data-slot="select-item"][data-state="checked"],
+[data-slot="select-item"][data-highlighted] {
+  background: var(--accent);
+  color: var(--accent-foreground);
 }
 
 .site-header [data-slot="button"] {
@@ -316,10 +391,10 @@
   margin-bottom: 1.75rem;
 }
 
-.eyebrow { margin-bottom: .5rem; font-weight: 700; }
+.eyebrow { margin-bottom: .5rem; font-weight: 500; }
 .community-heading h1 { font-size: clamp(2rem, 5vw, 3rem); }
 .page-description { margin-top: .75rem; color: var(--muted-foreground); }
-.novart-app .member-count { padding: .5rem 1rem; font-size: .95rem; font-weight: 800; }
+.novart-app .member-count { padding: .5rem 1rem; font-size: .95rem; font-weight: 600; }
 
 .novart-app .users-map-card {
   margin-block: 0 1.5rem;
@@ -328,7 +403,13 @@
   --tw-ring-color: transparent;
 }
 
-.novart-app .users-map-card [data-slot="card-title"] { font-size: 1.75rem; }
+.novart-app .users-map-card [data-slot="card-title"] {
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  font-size: 1.35rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
 
 .member-grid {
   display: grid;
@@ -362,11 +443,11 @@
   background: var(--secondary);
   color: var(--secondary-foreground);
   font-size: 1.5rem;
-  font-weight: 900;
+  font-weight: 600;
 }
 
 .member-details { min-width: 0; }
-.member-details h2 { font-size: 1.1rem; font-weight: 900; overflow-wrap: anywhere; margin-bottom: .4rem; }
+.member-details h2 { font-size: 1.1rem; font-weight: 600; overflow-wrap: anywhere; margin-bottom: .4rem; }
 .member-address { display: flex; align-items: flex-start; gap: .35rem; margin-top: .75rem; font-size: .9rem; overflow-wrap: anywhere; }
 .member-address svg { width: 1.1rem; height: 1.1rem; flex-shrink: 0; margin-top: .1rem; }
 .empty-members { margin-bottom: 1rem; }
@@ -375,9 +456,11 @@
   margin-top: auto;
   padding: 1rem 1.5rem 1.5rem;
   text-align: center;
-  color: var(--secondary-foreground);
-  font-size: .9rem;
-  font-weight: 700;
+  color: var(--muted-foreground);
+  font-family: var(--font-secondary);
+  font-size: 1rem;
+  font-weight: 200;
+  line-height: 1.6;
 }
 
 @media (max-width: 60rem) {
@@ -392,10 +475,19 @@
   .novart-app .auth-layout--profile .auth-panel [data-slot="card-header"],
   .novart-app .auth-layout--profile .auth-panel [data-slot="card-content"] { padding-inline: 0; }
   .novart-app .auth-panel-heading { align-items: flex-start; }
+  /* Give the identity title the full mobile width instead of splitting a word
+     around the illustration. Keep the mascot beside the description. */
+  .novart-app .auth-layout--profile .auth-panel-heading {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 4.5rem;
+    align-items: center;
+  }
+  .auth-layout--profile .auth-panel-heading > div { display: contents; }
+  .auth-layout--profile .form-title { grid-column: 1 / -1; }
+  .auth-layout--profile [data-slot="card-description"] { grid-column: 1; }
+  .auth-layout--profile .profile-mascot { grid-column: 2; grid-row: 2; width: 4.5rem; }
   .site-header { padding: 1rem 1.1rem; }
-  .wordmark--compact { font-size: 1.6rem; }
   .site-header [data-slot="button"] { font-size: .8rem; padding-inline: .75rem; }
   .community-layout { padding: 1.5rem 1.1rem; }
   .member-grid { grid-template-columns: minmax(0, 1fr); }
-  .site-footer { font-size: .8rem; }
 }
