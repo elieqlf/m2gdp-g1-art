@@ -18,7 +18,7 @@ const LANDING = 'https://novart-109bf.web.app'
 const groups = [
   [{ label: 'Mes informations', href: '#/profil/modifier', icon: User }, { label: 'Mes centres d’intérêt', href: '#/profil/modifier?section=interets', icon: Sparkles }, { label: 'Mes favoris', href: '#/favoris', icon: Heart }],
   [{ label: 'Mes activités', href: '#/mes-activites', icon: CalendarDays }, { label: 'Mes conversations', href: '#/conversations', icon: MessageCircleMore }, { label: 'Communauté', href: '#/communaute', icon: Users }],
-  [{ label: 'Confidentialité', href: `${LANDING}/#confidentialite`, icon: Shield, external: true }, { label: 'Conditions d’utilisation', href: `${LANDING}/#cgu`, icon: FileText, external: true }],
+  [{ label: 'Confidentialité', href: `${LANDING}/legal.html#confidentialite`, icon: Shield, external: true }, { label: 'Conditions d’utilisation', href: `${LANDING}/legal.html#cgu`, icon: FileText, external: true }],
 ]
 function logout() { busy.value = true; emit('logout') }
 </script>

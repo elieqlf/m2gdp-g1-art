@@ -19,7 +19,9 @@
 | US-13 | Consulter son profil | Livré | Profil |
 | US-14 | Modifier ses informations | Livré | Mes informations |
 
-En plus : favoris, communauté, rappel agenda `.ics`, partage.
+En plus : favoris, communauté, rappel agenda `.ics`, partage. Application mobile-first (colonne de téléphone sur grand écran).
+
+Site vitrine : `landing/` (accueil, fonctionnement, FAQ, contact, pages légales), voir `landing/README.md`. Reste la vidéo d'animation.
 
 Non développé (maquettes existantes) : notifications (13), assistance IA à la création (22), étapes « centres d'intérêt » et « personnalisation » de l'inscription (02-03, les centres d'intérêt sont dans le profil), envoi de photos personnelles, liste d'attente, avis, connexion Apple/Google, PWA installable.
 
