@@ -14,6 +14,14 @@ les écrans principaux et les états de chargement, d'erreur et de confirmation.
   05 à 26 (voir la section dédiée ci-dessous).
 - Les connexions Apple/Google restent hors périmètre.
 
+## Mobile-first
+
+Les feuilles de styles partent du téléphone (règles de base), puis s'enrichissent
+avec `min-width` (26 rem pour les grands téléphones). Sur un écran plus large,
+l'application garde une colonne de la largeur d'un téléphone (30 rem), centrée sur
+un fond rosé : connexion, profil et écrans de l'app ont la même présentation que
+sur mobile, conformément aux maquettes.
+
 ## Écrans de l'application (novembre 2026)
 
 | Maquette | Écran | Écarts assumés |

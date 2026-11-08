@@ -168,11 +168,17 @@
 }
 
 
-/* Novart presentation, shared by the existing account and community screens. */
+/* NOVART — mise en page mobile-first.
+   Les règles de base visent le téléphone. Sur un écran plus large, l'application
+   garde sa largeur de téléphone, centrée, comme une application mobile. */
 .novart-app {
+  --app-width: 30rem;
+  width: min(100%, var(--app-width));
   min-height: 100svh;
+  margin-inline: auto;
   display: flex;
   flex-direction: column;
+  background: var(--background);
   -webkit-font-smoothing: antialiased;
 }
 
@@ -192,9 +198,7 @@
 }
 
 .site-header {
-  width: min(100%, 72rem);
-  margin-inline: auto;
-  padding: 1.25rem 1.5rem;
+  padding: 1rem 1.1rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -209,11 +213,7 @@
 }
 
 .wordmark--compact { width: 4rem; }
-
-.wordmark--stacked {
-  width: min(12rem, 55vw);
-  max-width: 100%;
-}
+.wordmark--stacked { width: min(10rem, 50vw); max-width: 100%; }
 
 .brand-logo {
   display: block;
@@ -223,34 +223,33 @@
 }
 
 .auth-layout {
-  width: min(100%, 65rem);
-  margin: auto;
-  padding: 2.5rem 1.5rem;
+  width: 100%;
+  margin-block: auto;
+  padding: 1.75rem 1.1rem;
   display: grid;
-  grid-template-columns: .95fr 1fr;
-  align-items: center;
-  gap: 4rem;
+  grid-template-columns: minmax(0, 1fr);
+  gap: .75rem;
 }
 
 .auth-story { text-align: center; }
 
 .novart-app .brand-slogan {
-  margin-top: 1rem;
+  margin-top: .75rem;
   font-family: var(--font-sans);
-  font-size: clamp(1.25rem, 3vw, 1.6rem);
+  font-size: 1.3rem;
   font-weight: 600;
   line-height: 1.3;
 }
 
 .auth-mascot {
-  width: min(100%, 21rem);
+  width: 12rem;
   height: auto;
-  margin: .5rem auto 0;
+  margin: 0 auto;
   object-fit: contain;
 }
 
 .novart-app .auth-panel {
-  padding-block: 1.75rem;
+  padding-block: 1.25rem;
   background: var(--muted);
   box-shadow: none;
   --tw-ring-color: transparent;
@@ -258,14 +257,14 @@
 
 .novart-app .auth-panel-heading {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: .75rem;
   margin-bottom: .5rem;
 }
 
 .novart-app .form-title {
-  font-size: clamp(2rem, 5vw, 2.75rem);
+  font-size: clamp(2rem, 9vw, 2.6rem);
   margin-bottom: .6rem;
   overflow-wrap: anywhere;
 }
@@ -275,23 +274,22 @@
   line-height: 1.5;
 }
 
-.auth-layout--profile {
-  display: block;
-  max-width: 42rem;
-  margin-block: 0 auto;
-  padding-top: 1.5rem;
+/* Création du profil : le titre prend toute la largeur, la mascotte reste
+   à côté de la description. */
+.auth-layout--profile { display: block; margin-block: 0 auto; padding-top: 1rem; }
+.novart-app .auth-layout--profile .auth-panel { background: transparent; padding-block: 0; }
+.novart-app .auth-layout--profile .auth-panel [data-slot="card-header"],
+.novart-app .auth-layout--profile .auth-panel [data-slot="card-content"] { padding-inline: 0; }
+.novart-app .auth-layout--profile .auth-panel-heading {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 4.5rem;
+  align-items: center;
 }
-
-.novart-app .auth-layout--profile .auth-panel {
-  background: transparent;
-  padding-block: 0;
-}
-
-.profile-mascot {
-  width: clamp(5rem, 20vw, 8rem);
-  height: auto;
-  flex-shrink: 0;
-}
+.auth-layout--profile .auth-panel-heading > div { display: contents; }
+.auth-layout--profile .form-title { grid-column: 1 / -1; }
+.auth-layout--profile [data-slot="card-description"] { grid-column: 1; }
+.auth-layout--profile .profile-mascot { grid-column: 2; grid-row: 2; width: 4.5rem; }
+.profile-mascot { width: 4.5rem; height: auto; flex-shrink: 0; }
 
 .novart-app [data-slot="input"],
 .novart-app [data-slot="select-trigger"] {
@@ -356,6 +354,8 @@
 .site-header [data-slot="button"] {
   border-color: var(--primary);
   color: var(--primary);
+  font-size: .85rem;
+  padding-inline: .8rem;
 }
 
 .field-control { position: relative; }
@@ -377,26 +377,7 @@
   color: var(--muted-foreground);
 }
 
-.community-layout {
-  width: min(100%, 72rem);
-  padding: 2rem 1.5rem;
-  margin: 0 auto auto;
-}
-
-.community-heading {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 1rem;
-  margin-bottom: 1.75rem;
-}
-
-.eyebrow { margin-bottom: .5rem; font-weight: 500; }
-.community-heading h1 { font-size: clamp(2rem, 5vw, 3rem); }
-.page-description { margin-top: .75rem; color: var(--muted-foreground); }
-.novart-app .member-count { padding: .5rem 1rem; font-size: .95rem; font-weight: 600; }
-
+/* Carte de la communauté (UsersMap.vue). */
 .novart-app .users-map-card {
   margin-block: 0 1.5rem;
   background: var(--muted);
@@ -407,55 +388,14 @@
 .novart-app .users-map-card [data-slot="card-title"] {
   color: var(--foreground);
   font-family: var(--font-sans);
-  font-size: 1.35rem;
+  font-size: 1.2rem;
   font-weight: 600;
   line-height: 1.4;
 }
 
-.member-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1rem;
-}
-
-.novart-app .member-card {
-  background: var(--muted);
-  box-shadow: none;
-  --tw-ring-color: transparent;
-}
-
-.novart-app .member-content {
-  display: flex;
-  align-items: flex-start;
-  gap: 1rem;
-}
-
-.member-avatar {
-  width: 3.5rem;
-  height: 3.5rem;
-  border-radius: 50%;
-  object-fit: cover;
-  flex-shrink: 0;
-}
-
-.member-initial {
-  display: grid;
-  place-items: center;
-  background: var(--secondary);
-  color: var(--secondary-foreground);
-  font-size: 1.5rem;
-  font-weight: 600;
-}
-
-.member-details { min-width: 0; }
-.member-details h2 { font-size: 1.1rem; font-weight: 600; overflow-wrap: anywhere; margin-bottom: .4rem; }
-.member-address { display: flex; align-items: flex-start; gap: .35rem; margin-top: .75rem; font-size: .9rem; overflow-wrap: anywhere; }
-.member-address svg { width: 1.1rem; height: 1.1rem; flex-shrink: 0; margin-top: .1rem; }
-.empty-members { margin-bottom: 1rem; }
-
 .site-footer {
   margin-top: auto;
-  padding: 1rem 1.5rem 1.5rem;
+  padding: 1rem 1.1rem 1.5rem;
   text-align: center;
   color: var(--muted-foreground);
   font-family: var(--font-secondary);
@@ -464,31 +404,10 @@
   line-height: 1.6;
 }
 
-@media (max-width: 60rem) {
-  .member-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-}
-
-@media (max-width: 42rem) {
-  .auth-layout { grid-template-columns: minmax(0, 1fr); gap: .75rem; max-width: 30rem; padding: 1.75rem 1.1rem; }
-  .auth-mascot { width: 12rem; margin-top: 0; }
-  .auth-layout--profile { padding-top: 1rem; max-width: 36rem; }
-  .novart-app .auth-panel { padding-block: 1.25rem; }
-  .novart-app .auth-layout--profile .auth-panel [data-slot="card-header"],
-  .novart-app .auth-layout--profile .auth-panel [data-slot="card-content"] { padding-inline: 0; }
-  .novart-app .auth-panel-heading { align-items: flex-start; }
-  /* Give the identity title the full mobile width instead of splitting a word
-     around the illustration. Keep the mascot beside the description. */
-  .novart-app .auth-layout--profile .auth-panel-heading {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 4.5rem;
-    align-items: center;
-  }
-  .auth-layout--profile .auth-panel-heading > div { display: contents; }
-  .auth-layout--profile .form-title { grid-column: 1 / -1; }
-  .auth-layout--profile [data-slot="card-description"] { grid-column: 1; }
-  .auth-layout--profile .profile-mascot { grid-column: 2; grid-row: 2; width: 4.5rem; }
-  .site-header { padding: 1rem 1.1rem; }
-  .site-header [data-slot="button"] { font-size: .8rem; padding-inline: .75rem; }
-  .community-layout { padding: 1.5rem 1.1rem; }
-  .member-grid { grid-template-columns: minmax(0, 1fr); }
+/* Écran plus large que le téléphone : la colonne de l'application est posée
+   sur un fond rosé, avec une ombre légère. */
+@media (min-width: 40rem) {
+  body { background: color-mix(in srgb, var(--primary) 7%, var(--card)); }
+  .novart-app { box-shadow: 0 0 0 1px color-mix(in srgb, var(--foreground) 10%, transparent), 0 10px 40px rgb(120 28 39 / .08); }
+  .auth-layout { padding-inline: 1.5rem; }
 }
