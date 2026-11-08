@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app'
 import { getAuth, sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink, onAuthStateChanged, signOut, type User } from 'firebase/auth'
-import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, getDocs, serverTimestamp, arrayUnion, arrayRemove } from 'firebase/firestore'
+import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, getDocs, serverTimestamp, arrayUnion, arrayRemove, deleteField } from 'firebase/firestore'
 import { firebaseConfig } from '../../../public/firebase-config.js'
 
 const app = initializeApp(firebaseConfig)
@@ -17,7 +17,6 @@ export interface Profile {
   addressLng: number | null
   photoUrl: string
   profileComplete?: boolean
-  email?: string
   bio?: string
   interests?: string[]
   favoriteIds?: string[]
@@ -36,20 +35,30 @@ export async function completeSignIn(email: string) {
   return result.user
 }
 export const observeAccount = (callback: (user: Account | null) => void, onError: (error: Error) => void) => onAuthStateChanged(auth, callback, onError)
+// RGPD : l'e-mail n'est jamais enregistré dans le profil, lisible par les autres
+// membres. Il reste uniquement dans Firebase Authentication (visible de l'équipe).
 export async function getProfile(user: Account): Promise<Partial<Profile>> {
   const ref = doc(db, 'users', user.uid)
   const snapshot = await getDoc(ref)
-  if (snapshot.exists()) return snapshot.data() as Partial<Profile>
-  const profile = { email: user.email, createdAt: serverTimestamp(), profileComplete: false }
-  await setDoc(ref, profile)
-  return { email: user.email || '', profileComplete: false }
+  if (snapshot.exists()) {
+    const { email, ...profile } = (snapshot.data() ?? {}) as Partial<Profile> & { email?: string }
+    // Profils créés avant ce changement : l'e-mail est retiré à la connexion suivante.
+    if (email !== undefined) await updateDoc(ref, { email: deleteField() }).catch(() => undefined)
+    return profile
+  }
+  await setDoc(ref, { createdAt: serverTimestamp(), profileComplete: false })
+  return { profileComplete: false }
 }
 export async function saveProfile(uid: string, profile: Profile) {
   await setDoc(doc(db, 'users', uid), { ...profile, profileComplete: true }, { merge: true })
 }
 export async function listMembers(): Promise<Member[]> {
   const snapshot = await getDocs(collection(db, 'users'))
-  return snapshot.docs.map(item => ({ ...item.data(), uid: item.id }))
+  // Par précaution, un ancien e-mail encore présent n'est jamais transmis à l'interface.
+  return snapshot.docs.map(item => {
+    const { email: _email, ...profile } = item.data() as Partial<Profile> & { email?: string }
+    return { ...profile, uid: item.id }
+  })
 }
 // US-14 : modification des informations de base (photo, nom, description, centres d'intérêt).
 export async function updateProfile(uid: string, changes: Partial<Profile>) {

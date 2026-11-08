@@ -18,6 +18,17 @@ Photo ou initiales, prénom, description, centres d'intérêt, statistiques (act
 
 Cœur sur toutes les cartes et fiches, enregistrement immédiat dans `users/{uid}.favoriteIds` (retour en arrière en cas d'échec), écran « Mes favoris ».
 
-## Point à arbitrer
+## Données personnelles (RGPD)
 
-Les règles Firestore donnent accès au document de profil entier à tout membre connecté (adresse et coordonnées comprises). Avant une ouverture plus large, décider quels champs sont publics (par exemple un document `publicProfiles/{uid}` sans adresse).
+Décision d'équipe : l'adresse e-mail n'est pas visible des autres membres.
+Firestore ne masque pas un champ isolé (un profil lisible l'est en entier), donc :
+
+- l'e-mail n'est plus enregistré dans `users/{uid}` ; il reste dans Firebase Authentication ;
+- les règles refusent tout profil contenant un champ `email` (`docs/firestore.rules`) ;
+- les anciens profils sont nettoyés à la connexion suivante, ou en une fois avec
+  `npm run purge-emails` dans `scripts/seed` ;
+- l'interface n'affiche jamais d'e-mail d'un autre membre (test `App.test.ts`).
+
+Reste à arbitrer : l'adresse postale et ses coordonnées restent lisibles par les membres
+connectés (distances, carte de la communauté). Pour les masquer, il faudrait un document
+public séparé (par exemple `publicProfiles/{uid}` avec le quartier seulement).

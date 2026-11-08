@@ -105,11 +105,13 @@ describe('Parcours inscription Shadcn-Vue', () => {
   })
   it('affiche un utilisateur existant et permet la déconnexion', async () => {
     vi.mocked(api.getProfile).mockResolvedValue({ profileComplete: true })
-    vi.mocked(api.listMembers).mockResolvedValue([{ uid: 'other', firstName: 'Alex', lastName: 'Durand', userType: 'organisateur' }])
+    vi.mocked(api.listMembers).mockResolvedValue([{ uid: 'other', firstName: 'Alex', lastName: 'Durand', userType: 'organisateur' }, { uid: 'ancien', email: 'secret@example.com' } as never])
     vi.mocked(api.logout).mockImplementation(async () => { observer(null) })
     await render(); observer(user); await flushPromises()
     navigate('communaute'); await flushPromises()
     expect(wrapper.text()).toContain('Alex Durand')
+    // RGPD : l'e-mail d'un autre membre n'est jamais affiché.
+    expect(wrapper.text()).not.toContain('secret@example.com')
     navigate('profil'); await flushPromises()
     const button = wrapper.findAll('button').find(item => item.text() === 'Se déconnecter')!
     await button.trigger('click'); await flushPromises()

@@ -47,6 +47,10 @@ Les listes métier sont dans `frontend/src/data/` : `catalog.json` (12 disciplin
 Un instantané est versionné dans `specs/data/` (`node scripts/seed/generate-data.mjs` pour le régénérer).
 Tous les documents créés portent `demo: true` ; leurs identifiants commencent par `demo-`. Les membres de démonstration n'ont pas de compte d'authentification.
 
+**RGPD** : les profils ne contiennent jamais l'adresse e-mail (règles Firestore). Pour retirer
+les e-mails des profils créés avant ce changement : `npm run purge-emails` dans `scripts/seed`
+(même clé que pour le chargement).
+
 Les avis (notation) ne sont pas générés : la fonctionnalité n'est pas dans le scénario minimal.
 
 ## Mise en ligne (à faire par l'équipe)

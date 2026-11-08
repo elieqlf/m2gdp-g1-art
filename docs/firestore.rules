@@ -6,9 +6,11 @@ service cloud.firestore {
 
     // US-01/02/13/14 : un membre connecté lit les profils (communauté, participants)
     // et ne crée ou ne modifie que le sien (y compris ses favoris).
+    // RGPD : un profil étant lisible en entier, il ne doit jamais contenir l'e-mail
+    // (conservé uniquement dans Firebase Authentication).
     match /users/{userId} {
       allow read: if signedIn();
-      allow create, update: if signedIn() && request.auth.uid == userId;
+      allow create, update: if signedIn() && request.auth.uid == userId && !('email' in request.resource.data);
     }
 
     // US-03 à US-10 : activités.
