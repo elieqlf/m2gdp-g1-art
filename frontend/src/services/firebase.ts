@@ -1,11 +1,11 @@
 import { initializeApp } from 'firebase/app'
 import { getAuth, sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink, onAuthStateChanged, signOut, type User } from 'firebase/auth'
-import { getFirestore, doc, getDoc, setDoc, collection, getDocs, serverTimestamp } from 'firebase/firestore'
+import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, getDocs, serverTimestamp, arrayUnion, arrayRemove } from 'firebase/firestore'
 import { firebaseConfig } from '../../../public/firebase-config.js'
 
 const app = initializeApp(firebaseConfig)
 const auth = getAuth(app)
-const db = getFirestore(app)
+export const db = getFirestore(app)
 const EMAIL_KEY = 'art_pending_signin_email'
 export type Account = Pick<User, 'uid' | 'email'>
 export interface Profile {
@@ -18,6 +18,9 @@ export interface Profile {
   photoUrl: string
   profileComplete?: boolean
   email?: string
+  bio?: string
+  interests?: string[]
+  favoriteIds?: string[]
 }
 export type Member = Partial<Profile> & { uid: string }
 export const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())
@@ -47,5 +50,13 @@ export async function saveProfile(uid: string, profile: Profile) {
 export async function listMembers(): Promise<Member[]> {
   const snapshot = await getDocs(collection(db, 'users'))
   return snapshot.docs.map(item => ({ ...item.data(), uid: item.id }))
+}
+// US-14 : modification des informations de base (photo, nom, description, centres d'intérêt).
+export async function updateProfile(uid: string, changes: Partial<Profile>) {
+  await setDoc(doc(db, 'users', uid), changes, { merge: true })
+}
+// Favoris : liste d'identifiants d'activités conservée dans le profil.
+export async function setFavorite(uid: string, activityId: string, favorite: boolean) {
+  await updateDoc(doc(db, 'users', uid), { favoriteIds: favorite ? arrayUnion(activityId) : arrayRemove(activityId) })
 }
 export const logout = () => signOut(auth)

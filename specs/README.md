@@ -5,7 +5,7 @@ spécifications OpenAPI, diagrammes Mermaid, jeux de données JSON fictifs.
 
 | Fichier | Contenu |
 |---------|---------|
-| `roadmap.md` | Liste priorisée des fonctionnalités (MUST/SHOULD/COULD) |
+| `avancement-backlog.md` | État de développement des US du backlog original et parcours de démonstration |
 | `openapi.yaml` | Spécification de l'API REST exposée par `/workers` |
 | `user-stories/` | Une US par fichier : contexte, critères d'acceptation, specs techniques, exclusions |
-| `data/` | Données fictives (annonces, profils, conversations, réservations) |
+| `data/` | Instantané du jeu de démonstration (`scripts/seed/generate-data.mjs`) : membres, activités, messages, lieux |

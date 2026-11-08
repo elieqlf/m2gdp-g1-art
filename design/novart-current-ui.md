@@ -10,10 +10,32 @@ les écrans principaux et les états de chargement, d'erreur et de confirmation.
 - Profil : prénom, nom, rôle, adresse avec suggestions et URL de photo facultative.
 - Communauté : membres Firestore, avatars, rôles, adresses et carte Leaflet existante.
 - La carte est dans le même conteneur que le titre et la liste ; ses points sont rouges.
-- Les profils de la planche servent uniquement d'exemples visuels. Aucun jeu de données
-  fictif n'a été ajouté à l'application.
-- Les écrans activités, favoris, réservations, messagerie et les connexions Apple/Google
-  restent hors de cette modification.
+- Les écrans de l'application connectée suivent les maquettes « Parcours utilisateur »
+  05 à 26 (voir la section dédiée ci-dessous).
+- Les connexions Apple/Google restent hors périmètre.
+
+## Écrans de l'application (novembre 2026)
+
+| Maquette | Écran | Écarts assumés |
+| --- | --- | --- |
+| 05, 06 | Découvrir | Section « Selon tes envies » ajoutée (centres d'intérêt) |
+| 07 à 10 | Rechercher, filtres, carte, aucun résultat | Épingles de carte aux couleurs de la charte (pas de couleur par discipline) |
+| 11 | Tu participes ! | « Ajouter un rappel » télécharge un fichier agenda `.ics` |
+| 12 | Mes favoris | — |
+| 14, 15 | Conversations, groupe | Sans pièces jointes ni réactions |
+| 16 | Fiche activité | Enrichie : description, niveau, matériel, météo, carte |
+| 17 | Mes activités | Sans onglet « Mes brouillons » (un brouillon unique est repris automatiquement) |
+| 18 à 21 | Créer une activité | Illustrations NOVART ou lien au lieu de l'envoi de photos ; modèles d'activités et lieux suggérés |
+| 23 | Modifier l'activité | — |
+| 24 | Profil | « Mes amis » remplacé par « Communauté » ; pas de paramètres de notifications |
+| 25, 26 | Chargement, pas de connexion | Repris dans chaque écran avec la mascotte officielle |
+| 13, 22 | Notifications, assistance IA | Non développés |
+
+Les photos des maquettes sont des illustrations générées que nous n'avons pas :
+24 couvertures originales par discipline sont produites par
+`scripts/design/generate-covers.mjs` (pictogrammes Lucide, licence ISC, et couleurs
+de la charte). Les avatars sans photo affichent les initiales sur une teinte de la charte.
+Les titres utilisent Sigmar One comme les écrans précédents, les textes Poppins.
 
 ## Références artistiques
 
@@ -77,7 +99,7 @@ npx playwright install chromium
 npm test
 ```
 
-La configuration Playwright couvre les trois écrans en 1280 px, 390 px et 320 px,
+La configuration Playwright couvre les écrans en 1280 px, 390 px et 320 px,
 contrôle l'absence de débordement horizontal et vérifie l'envoi du lien, le formulaire
 de profil et la déconnexion. Les services Firebase/Places sont remplacés uniquement
 dans le navigateur de test. Aucun e-mail réel ni écriture cloud n'est effectué.

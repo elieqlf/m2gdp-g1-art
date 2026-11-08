@@ -1,27 +1,44 @@
 <script setup lang="ts">
-import UsersMap from '@/components/UsersMap.vue'
 import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { Badge } from '@/components/ui/badge'
+import { Alert, AlertDescription } from '@/components/ui/alert'
 import AddressInput from '@/components/AddressInput.vue'
-import { isValidEmail, hasSignInLink, pendingEmail, requestSignInLink, completeSignIn, observeAccount, getProfile, saveProfile, listMembers, logout, type Account, type Profile, type Member } from '@/services/firebase'
+import BottomNav from '@/components/BottomNav.vue'
+import DiscoverView from '@/views/DiscoverView.vue'
+import SearchView from '@/views/SearchView.vue'
+import ActivityView from '@/views/ActivityView.vue'
+import ParticipationView from '@/views/ParticipationView.vue'
+import CreateActivityView from '@/views/CreateActivityView.vue'
+import EditActivityView from '@/views/EditActivityView.vue'
+import ConversationsView from '@/views/ConversationsView.vue'
+import ConversationView from '@/views/ConversationView.vue'
+import MyActivitiesView from '@/views/MyActivitiesView.vue'
+import ProfileView from '@/views/ProfileView.vue'
+import ProfileEditView from '@/views/ProfileEditView.vue'
+import FavoritesView from '@/views/FavoritesView.vue'
+import CommunityView from '@/views/CommunityView.vue'
+import { isValidEmail, hasSignInLink, pendingEmail, requestSignInLink, completeSignIn, observeAccount, getProfile, saveProfile, logout, type Account, type Profile } from '@/services/firebase'
 import type { AddressSelection } from '@/services/places'
+import { loadActivities, loadMembers, resetStore, store } from '@/lib/store'
+import { tabOf, useRoute } from '@/lib/router'
 
-type Screen = 'loading' | 'request' | 'sent' | 'confirm' | 'expired' | 'profile' | 'users' | 'account-error'
+type Screen = 'loading' | 'request' | 'sent' | 'confirm' | 'expired' | 'profile' | 'app' | 'account-error'
 const screen = ref<Screen>('loading')
 const email = ref('')
 const error = ref('')
 const busy = ref(false)
 const account = ref<Account | null>(null)
-const members = ref<Member[]>([])
-const membersLoading = ref(false)
-const membersError = ref('')
 const cooldown = ref(0)
+const route = useRoute()
+// Écrans de l'application connectée, choisis selon l'ancre (#/…).
+const views = { decouvrir: DiscoverView, rechercher: SearchView, activite: ActivityView, participation: ParticipationView, creer: CreateActivityView, modifier: EditActivityView, conversations: ConversationsView, conversation: ConversationView, 'mes-activites': MyActivitiesView, profil: ProfileView, 'profil-modifier': ProfileEditView, favoris: FavoritesView, communaute: CommunityView }
+const currentView = computed(() => views[route.value.name])
+const viewKey = computed(() => `${route.value.name}:${route.value.id ?? ''}`)
+const showNav = computed(() => !['participation', 'conversation'].includes(route.value.name))
 const selection = ref<AddressSelection | null>(null)
 const blankProfile = (): Profile => ({ firstName: '', lastName: '', userType: 'participant', address: '', addressLat: null, addressLng: null, photoUrl: '' })
 const profile = reactive<Profile>(blankProfile())
@@ -44,28 +61,26 @@ async function sendLink() {
   catch { error.value = 'Envoi impossible pour le moment. Vérifiez votre connexion et réessayez.' }
   finally { busy.value = false }
 }
-async function refreshMembers() {
-  membersLoading.value = true
-  membersError.value = ''
-  const uid = account.value?.uid
-  try {
-    const data = await listMembers()
-    if (account.value?.uid === uid) members.value = data
-  } catch { membersError.value = 'Impossible de charger les utilisateurs. Réessayez.' }
-  finally { membersLoading.value = false }
+function enterApp() {
+  screen.value = 'app'
+  Object.assign(store.profile, { ...profile })
+  void loadActivities(true)
+  void loadMembers(true)
 }
 async function loadAccount(user: Account | null) {
   const revision = ++accountRevision
   account.value = user
   error.value = ''
-  if (!user) { members.value = []; Object.assign(profile, blankProfile()); selection.value = null; screen.value = 'request'; return }
+  if (!user) { resetStore(); Object.assign(profile, blankProfile()); selection.value = null; screen.value = 'request'; return }
+  store.account = user
   screen.value = 'loading'
   try {
     const saved = await getProfile(user)
     if (revision !== accountRevision) return
     Object.assign(profile, blankProfile(), saved)
+    store.profile = { ...saved }
     if (!saved.profileComplete) screen.value = 'profile'
-    else { screen.value = 'users'; await refreshMembers() }
+    else enterApp()
   } catch {
     if (revision === accountRevision) { screen.value = 'account-error'; error.value = 'Impossible de charger votre profil. Vérifiez votre connexion puis réessayez.' }
   }
@@ -96,9 +111,10 @@ async function submitProfile() {
   busy.value = true
   try {
     const selected = selection.value?.address === profile.address.trim() ? selection.value : null
-    await saveProfile(account.value.uid, { firstName: profile.firstName.trim(), lastName: profile.lastName.trim(), userType: profile.userType, address: profile.address.trim(), photoUrl: profile.photoUrl.trim(), addressLat: selected?.lat ?? null, addressLng: selected?.lng ?? null })
-    screen.value = 'users'
-    await refreshMembers()
+    const saved: Profile = { firstName: profile.firstName.trim(), lastName: profile.lastName.trim(), userType: profile.userType, address: profile.address.trim(), photoUrl: profile.photoUrl.trim(), addressLat: selected?.lat ?? null, addressLng: selected?.lng ?? null }
+    await saveProfile(account.value.uid, saved)
+    Object.assign(profile, saved, { profileComplete: true })
+    enterApp()
   } catch { error.value = 'Le profil n’a pas pu être enregistré. Vos informations sont conservées, réessayez.' }
   finally { busy.value = false }
 }
@@ -120,50 +136,22 @@ onBeforeUnmount(() => { unsubscribe?.(); clearInterval(countdown); accountRevisi
 </script>
 
 <template>
-  <div class="novart-app">
+  <div v-if="screen === 'app'" class="novart-app app-frame">
+    <a href="#app-main" class="skip-link">Aller au contenu</a>
+    <main id="app-main" class="app-main" :class="{ 'app-main--no-nav': !showNav }">
+      <component :is="currentView" :id="route.id" :key="viewKey" @logout="disconnect" />
+    </main>
+    <BottomNav v-if="showNav" :active="tabOf(route.name)" />
+    <p v-if="store.notice" class="toast" role="status">{{ store.notice }}</p>
+    <p v-if="error" class="toast toast--error" role="alert">{{ error }}</p>
+  </div>
+  <div v-else class="novart-app">
     <header v-if="account" class="site-header">
       <a href="/" class="wordmark wordmark--compact" aria-label="Novart, accueil"><img src="/images/novart-logo-secondary.png" alt="" class="brand-logo" width="924" height="886" /></a>
       <Button v-if="screen !== 'loading'" variant="outline" size="sm" :disabled="busy" @click="disconnect">Se déconnecter</Button>
     </header>
 
-    <main v-if="screen === 'users'" class="community-layout">
-      <div class="community-heading">
-        <div>
-          <p class="eyebrow">Notre communauté</p>
-          <h1>Utilisateurs inscrits</h1>
-          <p class="page-description">Découvre les participants et les organisateurs de Novart.</p>
-        </div>
-        <Badge variant="secondary" class="member-count">{{ members.length }} membre{{ members.length > 1 ? 's' : '' }}</Badge>
-      </div>
-      <Alert v-if="error" variant="destructive" class="mb-5"><AlertDescription>{{ error }}</AlertDescription></Alert>
-      <p v-if="membersLoading" role="status" class="py-8 text-muted-foreground">Chargement des utilisateurs…</p>
-      <Alert v-else-if="membersError" variant="destructive">
-        <AlertTitle>Chargement impossible</AlertTitle>
-        <AlertDescription>{{ membersError }}<Button variant="outline" class="mt-3" @click="refreshMembers">Réessayer</Button></AlertDescription>
-      </Alert>
-      <template v-else>
-        <UsersMap :users="members" />
-        <Card v-if="!members.length" class="empty-members"><CardContent class="py-10 text-center text-muted-foreground">Aucun utilisateur pour le moment.</CardContent></Card>
-        <div v-else class="member-grid">
-          <Card v-for="member in members" :key="member.uid" class="member-card">
-            <CardContent class="member-content">
-              <img v-if="member.photoUrl && /^https?:\/\//i.test(member.photoUrl)" :src="member.photoUrl" alt="" class="member-avatar" referrerpolicy="no-referrer" />
-              <div v-else class="member-avatar member-initial" aria-hidden="true">{{ (member.firstName || member.email || '?').slice(0, 1).toUpperCase() }}</div>
-              <div class="member-details">
-                <h2>{{ member.firstName ? `${member.firstName} ${member.lastName || ''}` : member.email || 'Membre' }}</h2>
-                <Badge variant="secondary">{{ member.userType === 'organisateur' ? 'Organisateur' : member.userType === 'participant' ? 'Participant' : 'Profil à compléter' }}</Badge>
-                <p v-if="member.address" class="member-address">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M20 10c0 6-8 11-8 11S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg>
-                  {{ member.address }}
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </template>
-    </main>
-
-    <main v-else class="auth-layout" :class="{ 'auth-layout--profile': screen === 'profile' }">
+    <main class="auth-layout" :class="{ 'auth-layout--profile': screen === 'profile' }">
       <section v-if="screen !== 'profile'" class="auth-story">
         <a href="/" class="wordmark wordmark--stacked" aria-label="Novart, accueil"><img src="/images/novart-logo-secondary.png" alt="" class="brand-logo" width="924" height="886" fetchpriority="high" /></a>
         <h1 class="brand-slogan">L’art se crée ensemble.</h1>

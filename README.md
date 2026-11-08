@@ -47,12 +47,13 @@ Site vitrine : voir [landing/README.md](landing/README.md)
 | `/design`  | Artefacts UX en HTML (wireframes, maquettes, charte graphique) |
 | `/specs`   | Artefacts PO en markdown (spécifications OpenAPI, diagrammes Mermaid, données JSON) |
 | `/tests`   | Tests automatisés Playwright (scripts, résultats) |
+| `/scripts` | Génération du jeu de démonstration, chargement Firestore, illustrations |
 | `agents.md`| Instructions générales pour l'IA |
 
 ## Stack technique
 
-- **Front** : Vue 3 + TypeScript + Vite, Tailwind CSS 4 et Shadcn-Vue ; Google Places API (suggestions d’adresse). LeafletJS et PWA prévus ultérieurement.
-- **Back** : Architecture serverless — Firebase (Auth, Firestore, Realtime DB), Cloudflare Workers (API Gateway), Cloudflare D1 (sessions), Cloudflare R2 (fichiers)
+- **Front** : Vue 3 + TypeScript + Vite, Tailwind CSS 4 et Shadcn-Vue ; Google Places API (suggestions d’adresse), LeafletJS + OpenStreetMap (cartes), Open-Meteo (météo). PWA prévue ultérieurement.
+- **Back** : Firebase Auth (lien e-mail) et Cloud Firestore (profils, activités, messages). Cloudflare Workers, D1, R2 et Realtime Database restent des briques de l’architecture cible, non utilisées par le front actuel.
 - **Hébergement** : Firebase Hosting (site vitrine + app)
 - **Tests** : Playwright (E2E)
 

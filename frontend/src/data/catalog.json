@@ -1,0 +1,50 @@
+{
+  "disciplines": [
+    { "id": "peinture", "label": "Peinture", "subs": ["Aquarelle", "Acrylique", "Peinture à l’huile", "Gouache", "Peinture murale"] },
+    { "id": "dessin", "label": "Dessin", "subs": ["Croquis urbain", "Modèle vivant", "BD et manga", "Portrait", "Dessin d’observation"] },
+    { "id": "musique", "label": "Musique", "subs": ["Guitare", "Jam session", "Percussions", "Piano", "Musique électronique"] },
+    { "id": "chant", "label": "Chant", "subs": ["Chorale", "Chant lyrique", "Gospel", "Beatbox", "Chant improvisé"] },
+    { "id": "danse", "label": "Danse", "subs": ["Contemporaine", "Hip-hop", "Salsa", "Danses africaines", "Tango"] },
+    { "id": "theatre", "label": "Théâtre", "subs": ["Improvisation", "Lecture à voix haute", "Clown", "Mime", "Théâtre forum"] },
+    { "id": "photo", "label": "Photo", "subs": ["Photo de rue", "Portrait", "Argentique", "Photo nature", "Photo de nuit"] },
+    { "id": "street-art", "label": "Street art", "subs": ["Graffiti", "Pochoir", "Collage urbain", "Fresque collective", "Lettrage"] },
+    { "id": "artisanat", "label": "Artisanat", "subs": ["Poterie", "Céramique", "Couture", "Tricot", "Création de bijoux"] },
+    { "id": "ecriture", "label": "Écriture", "subs": ["Poésie", "Slam", "Nouvelle", "Écriture de chansons", "Carnet de voyage"] },
+    { "id": "arts-plastiques", "label": "Arts plastiques", "subs": ["Collage", "Sculpture", "Linogravure", "Modelage", "Art textile"] },
+    { "id": "autre", "label": "Autre", "subs": ["Cinéma", "Vidéo", "Origami", "Calligraphie", "Art numérique"] }
+  ],
+  "levels": [
+    { "id": "tous", "label": "Tous niveaux" },
+    { "id": "debutant", "label": "Débutant" },
+    { "id": "intermediaire", "label": "Intermédiaire" },
+    { "id": "avance", "label": "Avancé" }
+  ],
+  "venueTypes": [
+    { "id": "parc", "label": "Parc et jardin" },
+    { "id": "berges", "label": "Berges et quais" },
+    { "id": "place", "label": "Place publique" },
+    { "id": "cafe", "label": "Café associatif" },
+    { "id": "atelier", "label": "Atelier partagé" },
+    { "id": "mjc", "label": "MJC et centre social" },
+    { "id": "mediatheque", "label": "Médiathèque" },
+    { "id": "studio", "label": "Studio de danse" },
+    { "id": "salle", "label": "Salle de répétition" },
+    { "id": "galerie", "label": "Galerie" },
+    { "id": "tiers-lieu", "label": "Tiers-lieu" },
+    { "id": "musee", "label": "Musée et lieu culturel" }
+  ],
+  "templates": [
+    { "id": "aquarelle-parc", "discipline": "peinture", "sub": "Aquarelle", "title": "Aquarelle en plein air", "description": "On s’installe ensemble pour peindre le paysage à l’aquarelle. Chacun avance à son rythme, on partage nos astuces et on termine par un petit tour des réalisations.", "level": "tous", "equipment": "Carnet ou papier aquarelle, pinceaux. Quelques palettes sont prêtées sur place.", "capacity": 10, "duration": 2, "venueTypes": ["parc", "berges"] },
+    { "id": "croquis-urbain", "discipline": "dessin", "sub": "Croquis urbain", "title": "Balade croquis en ville", "description": "Une balade ponctuée de pauses dessin : façades, passants, détails du quartier. Aucun niveau requis, l’important est d’observer et de garder une trace.", "level": "debutant", "equipment": "Un carnet, un crayon ou un feutre fin.", "capacity": 12, "duration": 2, "venueTypes": ["place", "berges", "parc"] },
+    { "id": "jam-acoustique", "discipline": "musique", "sub": "Jam session", "title": "Jam session acoustique", "description": "Guitares, voix, percussions : on joue des standards et on improvise ensemble dans une ambiance bienveillante. Les auditeurs curieux sont aussi les bienvenus.", "level": "intermediaire", "equipment": "Ton instrument acoustique.", "capacity": 15, "duration": 3, "venueTypes": ["cafe", "salle", "tiers-lieu"] },
+    { "id": "chorale-ouverte", "discipline": "chant", "sub": "Chorale", "title": "Chorale ouverte du dimanche", "description": "Échauffement vocal puis apprentissage d’un chant à plusieurs voix, à l’oreille. Pas besoin de lire la musique.", "level": "tous", "equipment": "Une bouteille d’eau.", "capacity": 20, "duration": 2, "venueTypes": ["mjc", "salle"] },
+    { "id": "danse-contemporaine", "discipline": "danse", "sub": "Contemporaine", "title": "Atelier danse contemporaine", "description": "Exploration du mouvement à partir d’exercices simples d’improvisation, puis courte création collective. Ouvert à tous les corps et à toutes les expériences.", "level": "tous", "equipment": "Tenue souple, chaussettes antidérapantes.", "capacity": 12, "duration": 2, "venueTypes": ["studio", "mjc"] },
+    { "id": "impro-theatre", "discipline": "theatre", "sub": "Improvisation", "title": "Initiation à l’improvisation", "description": "Jeux d’écoute, de confiance et petites scènes improvisées. On rit beaucoup et on apprend à rebondir sur les propositions des autres.", "level": "debutant", "equipment": "Rien de particulier, juste une tenue confortable.", "capacity": 14, "duration": 2, "venueTypes": ["mjc", "salle", "tiers-lieu"] },
+    { "id": "photo-de-rue", "discipline": "photo", "sub": "Photo de rue", "title": "Sortie photo de rue", "description": "Une sortie pour travailler le cadrage et la lumière dans les rues du quartier, suivie d’un échange autour de nos meilleures images.", "level": "intermediaire", "equipment": "Appareil photo ou smartphone chargé.", "capacity": 10, "duration": 2, "venueTypes": ["place", "berges"] },
+    { "id": "fresque-collective", "discipline": "street-art", "sub": "Fresque collective", "title": "Fresque collective", "description": "Conception d’une fresque sur un support autorisé : esquisse commune, répartition des zones et mise en couleur à plusieurs mains.", "level": "tous", "equipment": "Vêtements qui ne craignent rien. Bombes et pinceaux fournis.", "capacity": 15, "duration": 4, "venueTypes": ["tiers-lieu", "place"] },
+    { "id": "poterie-initiation", "discipline": "artisanat", "sub": "Poterie", "title": "Initiation à la poterie", "description": "Découverte du modelage et du tour : centrage de la terre, premières formes et finitions. Les pièces pourront être cuites ultérieurement.", "level": "debutant", "equipment": "Tablier conseillé. Terre et outils fournis.", "capacity": 8, "duration": 2, "venueTypes": ["atelier"] },
+    { "id": "atelier-slam", "discipline": "ecriture", "sub": "Slam", "title": "Atelier écriture et slam", "description": "Courts exercices d’écriture à partir de mots imposés, puis lecture à voix haute pour ceux qui le souhaitent. Ambiance douce et sans jugement.", "level": "tous", "equipment": "Un carnet et un stylo.", "capacity": 12, "duration": 2, "venueTypes": ["cafe", "mediatheque"] },
+    { "id": "collage-creatif", "discipline": "arts-plastiques", "sub": "Collage", "title": "Atelier collage créatif", "description": "Magazines, papiers colorés et ciseaux : on compose des images surprenantes et on les assemble en une grande œuvre collective.", "level": "tous", "equipment": "Ciseaux et colle si tu en as. Papiers fournis.", "capacity": 10, "duration": 2, "venueTypes": ["atelier", "mediatheque", "tiers-lieu"] },
+    { "id": "court-metrage", "discipline": "autre", "sub": "Vidéo", "title": "Tourner un court métrage en un après-midi", "description": "Écriture express d’un scénario, répartition des rôles et tournage au smartphone. Projection du résultat en fin de séance.", "level": "intermediaire", "equipment": "Smartphone chargé, écouteurs.", "capacity": 10, "duration": 4, "venueTypes": ["tiers-lieu", "mjc"] }
+  ]
+}

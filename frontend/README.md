@@ -27,11 +27,22 @@ Firebase détermine l’écran à afficher selon l’état de connexion et le pr
 - Création du profil Firestore ; reprise d’un profil incomplet après reconnexion.
 - Adresse avec Google Places (New), choix au clavier et saisie manuelle possible.
 - Enregistrement de l’adresse et de ses coordonnées, supprimées si la saisie change.
-- Liste des utilisateurs, états vide/chargement/erreur et déconnexion.
+- Application connectée avec navigation basse (maquettes 05 à 26) :
+  Découvrir, Rechercher (liste, carte, filtres, aucun résultat), fiche activité,
+  inscription et confirmation, création en 4 étapes, modification et suppression,
+  conversations de groupe en temps réel, Mes activités, Profil, Mes favoris, Communauté.
+- Navigation par ancre (`#/rechercher`, `#/activite/<id>`…), voir `src/lib/router.ts`.
+- Données : Firestore `activities` et `activities/{id}/messages` (`src/services/activities.ts`),
+  listes métier dans `src/data/`, météo Open-Meteo (`src/services/weather.ts`).
 
-Shadcn-Vue est utilisé pour Button, Input, Label, Card, Select, Alert et Badge.
-Leaflet et les fonctionnalités annonces/réservations/messagerie seront ajoutés ensuite.
+Shadcn-Vue est utilisé pour les écrans de connexion et de profil. Les écrans de
+l’application utilisent les styles de `src/styles/app.css` et les icônes Lucide.
 La PWA installable n’est pas encore configurée.
+
+## Données de démonstration
+
+Voir [docs/donnees-firestore.md](../docs/donnees-firestore.md) : règles Firestore à publier
+et chargement du jeu de démonstration (120 membres, 220 activités).
 
 ## Configuration existante
 

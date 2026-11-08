@@ -1,0 +1,139 @@
+import { expect, test } from '@playwright/test'
+import { ME, capture, demoData, openApp } from './fixtures'
+
+// Scénario de lancement (J5) : « Créer une activité » puis « Rechercher, s'inscrire et prendre contact ».
+const today = () => new Date().toISOString().slice(0, 10)
+function pickActivity(predicate: (a: ReturnType<typeof demoData>['activities'][number] & { capacity?: number }) => boolean) {
+  const { activities } = demoData()
+  const titles = activities.map(a => a.title)
+  return activities.find(a => a.date > today() && titles.filter(t => t === a.title).length === 1 && predicate(a))!
+}
+
+test('US-03 : Découvrir affiche les sections et la navigation basse', async ({ page }, testInfo) => {
+  await openApp(page, 'app', '#/decouvrir')
+  await expect(page.getByRole('heading', { name: 'Autour de toi' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Activités populaires' })).toBeVisible()
+  await expect(page.getByRole('link', { name: 'Découvrir' })).toHaveAttribute('aria-current', 'page')
+  await capture(page, testInfo, 'decouvrir', '.activity-card__media img')
+})
+
+test('US-07 : créer une activité en quatre étapes puis la retrouver', async ({ page }, testInfo) => {
+  await openApp(page, 'app', '#/creer')
+  await expect(page.getByRole('heading', { name: 'Créer une activité' })).toBeVisible()
+  // Cas d'erreur : rien n'est rempli.
+  await page.getByRole('button', { name: 'Continuer' }).click()
+  await expect(page.getByText('Donne un titre à ton activité.')).toBeVisible()
+  await expect(page.getByText('Choisis une discipline.')).toBeVisible()
+  await page.getByLabel('Titre de l’activité').fill('Aquarelle sur les quais du Rhône')
+  await page.getByRole('button', { name: 'Peinture', exact: true }).click()
+  await page.getByLabel('Description').fill('Peinture en plein air, matériel prêté, tous niveaux bienvenus.')
+  await page.getByRole('button', { name: 'Débutant' }).click()
+  await capture(page, testInfo, 'creation-etape-1')
+  await page.getByRole('button', { name: 'Continuer' }).click()
+  await expect(page.getByRole('heading', { name: 'Ajouter des médias' })).toBeVisible()
+  await expect(page.getByRole('radio', { name: /Illustration Peinture, variante 1/ })).toHaveAttribute('aria-checked', 'true')
+  await page.getByRole('button', { name: 'Continuer' }).click()
+  await expect(page.getByRole('heading', { name: 'Lieu, date et places' })).toBeVisible()
+  await page.locator('.venue-option').first().click()
+  await page.getByRole('button', { name: 'Ajouter une place' }).click()
+  await expect(page.locator('#capacity')).toHaveValue('9')
+  await page.getByRole('button', { name: 'Continuer' }).click()
+  await expect(page.getByRole('heading', { name: 'Aperçu de ton activité' })).toBeVisible()
+  await expect(page.getByText('9 places')).toBeVisible()
+  await capture(page, testInfo, 'creation-apercu', '.preview-card img')
+  await page.getByRole('button', { name: 'Publier l’activité' }).click()
+  await expect(page.getByRole('heading', { name: 'Aquarelle sur les quais du Rhône' })).toBeVisible()
+  await expect(page.getByText('Ton activité est publiée !')).toBeVisible()
+  await expect(page.getByRole('link', { name: 'Modifier' })).toBeVisible()
+  // Visible dans la recherche et dans « Mes activités ».
+  await page.getByRole('link', { name: 'Rechercher' }).click()
+  await page.getByRole('searchbox').fill('quais du Rhône')
+  await expect(page.getByRole('link', { name: 'Aquarelle sur les quais du Rhône' })).toBeVisible()
+  await page.goto('/#/mes-activites')
+  await expect(page.getByRole('heading', { name: /J’organise/ })).toBeVisible()
+})
+
+test('US-04/05/09/11/12 : rechercher, filtrer, s’inscrire et écrire au groupe', async ({ page }, testInfo) => {
+  const target = pickActivity(a => a.participantIds.length < (a as { capacity: number }).capacity && !a.participantIds.includes(ME.uid) && a.organizerId !== ME.uid)
+  await openApp(page, 'app', '#/rechercher')
+  await page.getByRole('searchbox').fill(target.title)
+  await page.getByRole('button', { name: /Ouvrir les filtres/ }).click()
+  const sheet = page.getByRole('dialog', { name: 'Filtres' })
+  await expect(sheet).toBeVisible()
+  await sheet.getByRole('button', { name: 'Toutes', exact: true }).click()
+  await capture(page, testInfo, 'filtres')
+  await sheet.getByRole('button', { name: /^Afficher \d+ résultat/ }).click()
+  await expect(sheet).toBeHidden()
+  await page.getByRole('link', { name: target.title }).first().click()
+  await expect(page.getByRole('heading', { name: target.title, level: 1 })).toBeVisible()
+  await expect(page.getByText('Météo prévue : Éclaircies')).toBeVisible()
+  await capture(page, testInfo, 'fiche-activite', '.detail__cover')
+  await page.getByRole('button', { name: 'Participer' }).click()
+  await expect(page.getByRole('heading', { name: 'Tu participes !' })).toBeVisible()
+  await capture(page, testInfo, 'participation', '.confirm-card img')
+  await page.getByRole('link', { name: 'Rejoindre le groupe de discussion' }).click()
+  await expect(page.getByRole('list', { name: 'Messages du groupe' })).toBeVisible()
+  await page.getByLabel('Écrire un message').fill('Bonjour à tous, j’ai hâte !')
+  await page.getByRole('button', { name: 'Envoyer le message' }).click()
+  await expect(page.locator('.message--mine').getByText('Bonjour à tous, j’ai hâte !')).toBeVisible()
+  await capture(page, testInfo, 'conversation', '.chat-activity img')
+  await page.goto('/#/conversations')
+  await expect(page.getByText('Camille : Bonjour à tous, j’ai hâte !')).toBeVisible()
+})
+
+test('US-05 : aucun résultat, carte et réinitialisation', async ({ page }, testInfo) => {
+  await openApp(page, 'app', '#/rechercher?q=zzzz')
+  await expect(page.getByRole('heading', { name: 'Aucune activité trouvée par ici' })).toBeVisible()
+  await capture(page, testInfo, 'aucun-resultat', '.mascot-state__image')
+  await page.getByRole('button', { name: 'Voir toutes les activités' }).click()
+  await expect(page.getByRole('heading', { name: 'Activités autour de moi' })).toBeVisible()
+  await page.getByRole('button', { name: 'Carte' }).click()
+  await expect(page.getByRole('region', { name: 'Carte des activités' })).toBeVisible()
+  await expect(page.locator('.map-view__sheet .activity-card')).toBeVisible()
+})
+
+test('US-09/10 : activité complète, désinscription et favoris', async ({ page }) => {
+  const full = pickActivity(a => a.participantIds.length >= (a as { capacity: number }).capacity && a.organizerId !== ME.uid && !a.participantIds.includes(ME.uid))
+  await openApp(page, 'app', `#/activite/${full.id}`)
+  await expect(page.getByRole('button', { name: 'Complet' })).toBeDisabled()
+  await page.getByRole('button', { name: /Ajouter « .* » aux favoris/ }).first().click()
+  await page.goto('/#/favoris')
+  await expect(page.getByRole('link', { name: full.title })).toBeVisible()
+  // Désinscription d'une activité à laquelle l'utilisateur participe déjà.
+  const joined = demoData().activities.find(a => a.participantIds.includes(ME.uid))!
+  await page.goto(`/#/activite/${joined.id}`)
+  await page.getByRole('button', { name: 'Quitter l’activité' }).click()
+  await page.getByRole('alertdialog').getByRole('button', { name: 'Quitter l’activité' }).click()
+  await expect(page.getByText('Tu ne participes plus à cette activité.')).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Participer' })).toBeVisible()
+})
+
+test('US-08 : modifier son activité sans descendre sous le nombre d’inscrits, puis la supprimer', async ({ page }, testInfo) => {
+  const mine = demoData().activities.find(a => a.organizerId === ME.uid)!
+  await openApp(page, 'app', `#/activite/${mine.id}/modifier`)
+  await expect(page.getByRole('heading', { name: 'Modifier l’activité' })).toBeVisible()
+  const registered = mine.participantIds.length
+  await expect(page.getByText(`(minimum ${Math.max(2, registered)} places)`)).toBeVisible()
+  await page.getByLabel('Titre de l’activité').fill('Atelier modifié')
+  await capture(page, testInfo, 'modification', '.edit-cover img')
+  await page.getByRole('button', { name: 'Enregistrer les modifications' }).click()
+  await expect(page.getByRole('heading', { name: 'Atelier modifié', level: 1 })).toBeVisible()
+  await page.getByRole('link', { name: 'Modifier' }).click()
+  await page.getByRole('button', { name: 'Supprimer l’activité' }).click()
+  await page.getByRole('alertdialog').getByRole('button', { name: 'Supprimer' }).click()
+  await expect(page.getByRole('heading', { name: 'Mes activités' })).toBeVisible()
+  await expect(page.getByText('Activité supprimée.')).toBeVisible()
+})
+
+test('US-13/14 : profil, statistiques et modification des informations', async ({ page }, testInfo) => {
+  await openApp(page, 'app', '#/profil')
+  await expect(page.getByRole('heading', { name: 'Camille' })).toBeVisible()
+  await expect(page.getByText('Activités à venir')).toBeVisible()
+  await capture(page, testInfo, 'profil-app')
+  await page.getByRole('link', { name: 'Mes informations' }).click()
+  await page.getByLabel('Description').fill('Aquarelliste du dimanche.')
+  await page.getByRole('button', { name: 'Théâtre' }).click()
+  await page.getByRole('button', { name: 'Enregistrer' }).click()
+  await expect(page.getByText('Aquarelliste du dimanche.')).toBeVisible()
+  await expect(page.getByText('Peinture · Dessin · Musique · Théâtre')).toBeVisible()
+})

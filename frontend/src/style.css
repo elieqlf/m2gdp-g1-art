@@ -2,6 +2,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "./styles/shadcn.css";
+@import "./styles/app.css";
 
 @font-face {
   font-family: 'Poppins';

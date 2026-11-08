@@ -2,7 +2,7 @@ name: Frontend
 
 on:
   push:
-    branches: [dev, codex/novart-mockup-implementation]
+    branches: [dev, codex/novart-mockup-implementation, feat/activites-participation-conversations]
   pull_request:
     branches: [dev]
 

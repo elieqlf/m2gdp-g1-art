@@ -1,0 +1,14 @@
+{
+  "name": "novart-seed",
+  "private": true,
+  "type": "module",
+  "description": "Génération et chargement du jeu de démonstration NOVART dans Firestore",
+  "scripts": {
+    "generate": "node generate-data.mjs",
+    "seed": "node seed-firestore.mjs",
+    "reseed": "node seed-firestore.mjs --reset"
+  },
+  "dependencies": {
+    "firebase-admin": "^13.0.0"
+  }
+}

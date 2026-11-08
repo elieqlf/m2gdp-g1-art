@@ -1,11 +1,56 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // US Inscription/Connexion : un utilisateur connecté peut lire tous les
-    // profils (affichage des utilisateurs) mais ne peut créer/modifier que le sien.
+    function signedIn() { return request.auth != null; }
+    function changed() { return request.resource.data.diff(resource.data).affectedKeys(); }
+
+    // US-01/02/13/14 : un membre connecté lit les profils (communauté, participants)
+    // et ne crée ou ne modifie que le sien (y compris ses favoris).
     match /users/{userId} {
-      allow read: if request.auth != null;
-      allow create, update: if request.auth != null && request.auth.uid == userId;
+      allow read: if signedIn();
+      allow create, update: if signedIn() && request.auth.uid == userId;
+    }
+
+    // US-03 à US-10 : activités.
+    match /activities/{activityId} {
+      function isOrganizer() { return resource.data.organizerId == request.auth.uid; }
+      function isMember() { return isOrganizer() || request.auth.uid in resource.data.participantIds; }
+      function validActivity(data) {
+        return data.title is string && data.title.size() > 0 && data.title.size() <= 60
+          && data.description is string && data.description.size() <= 500
+          && data.capacity is int && data.capacity >= 2 && data.capacity <= 100
+          && data.participantIds is list && data.participantIds.size() <= data.capacity;
+      }
+      // Inscription ou désinscription : un membre n'ajoute ou ne retire que lui-même,
+      // sans dépasser la capacité.
+      function joinsOrLeaves() {
+        let before = resource.data.participantIds;
+        let after = request.resource.data.participantIds;
+        return changed().hasOnly(['participantIds', 'updatedAtMs'])
+          && after.size() <= resource.data.capacity
+          && ((after.size() == before.size() + 1 && after.hasAll(before) && request.auth.uid in after && !(request.auth.uid in before))
+            || (after.size() == before.size() - 1 && before.hasAll(after) && request.auth.uid in before && !(request.auth.uid in after)));
+      }
+
+      allow read: if signedIn();
+      allow create: if signedIn() && request.resource.data.organizerId == request.auth.uid && validActivity(request.resource.data);
+      allow update: if signedIn() && (
+        (isOrganizer() && request.resource.data.organizerId == resource.data.organizerId && validActivity(request.resource.data))
+        || joinsOrLeaves()
+        || (isMember() && changed().hasOnly(['lastMessage']))
+      );
+      allow delete: if signedIn() && isOrganizer();
+
+      // US-11/12 : groupe de discussion de l'activité, réservé à ses membres.
+      match /messages/{messageId} {
+        function activity() { return get(/databases/$(database)/documents/activities/$(activityId)).data; }
+        function inGroup() { return activity().organizerId == request.auth.uid || request.auth.uid in activity().participantIds; }
+        allow read: if signedIn() && inGroup();
+        allow create: if signedIn() && inGroup()
+          && request.resource.data.authorId == request.auth.uid
+          && request.resource.data.text is string
+          && request.resource.data.text.size() > 0 && request.resource.data.text.size() <= 1000;
+      }
     }
 
     // Verrouillé par défaut — à ouvrir progressivement par collection
