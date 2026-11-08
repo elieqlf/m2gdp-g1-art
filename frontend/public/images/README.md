@@ -11,13 +11,16 @@ l'utilisateur. Les usages sont ceux du Brand Board NOVART et des PDF de règles.
 | `novart-mascot-welcome.png` | `Assets/Mascotte NOVART.pdf`, personnage principal, 558 × 380 |
 | `novart-mascot-joy.png` | Même PDF, expression Joie, 159 × 133 |
 
-Les logos sont copiés à l'identique. Le PDF de la mascotte est une planche raster,
-pas un ensemble de personnages isolés. Les deux extraits conservent donc le fond
-et, pour le personnage principal, l'accroche originale du DA. Aucun décor ni trait
-n'a été réinventé. La précédente mascotte générée est supprimée.
+Les logos primaire et submark sont copiés à l'identique. Le fond blanc rosé uni du logo
+secondaire (utilisé dans l'application) a été rendu transparent, sans toucher aux lettres. Le PDF de la mascotte est une planche raster,
+pas un ensemble de personnages isolés. Le fond rosé uni des deux extraits a été rendu
+transparent (remplissage depuis les bords, tolérance 30, bord adouci) avec
+`scripts/design/detourer-fond.py`, pour que la mascotte se fonde dans le fond des
+écrans. Le personnage principal conserve l'accroche originale du DA. Aucun trait
+n'a été redessiné. La précédente mascotte générée est supprimée.
 
 Pour reproduire les extraits : rendre l'unique page du PDF à 4/3 pixels par point
-(1536 × 840), puis recadrer les rectangles suivants, sans redimensionnement :
+(1536 × 840), recadrer les rectangles suivants sans redimensionnement, puis détourer :
 
 - personnage principal : `(24, 175, 582, 555)` ;
 - expression Joie : `(617, 183, 776, 316)`.
