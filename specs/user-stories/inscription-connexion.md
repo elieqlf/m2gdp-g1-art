@@ -48,6 +48,18 @@ En plus de la connexion sans mot de passe par e-mail exigée par le cours. Case 
 
 Technique : `signInWithPopup` et non `signInWithRedirect`. Constaté sur téléphone (09/11) : avec la redirection, on revenait sur l'écran de connexion sans session, car l'appli est servie sur `novart-app.web.app` et l'authentification sur `novart-109bf.firebaseapp.com` (stockage tiers bloqué par Safari et Chrome). La fenêtre s'ouvre dans le geste de l'utilisateur ; la persistance choisie est appliquée juste après la connexion.
 
+## E-mail de connexion NOVART (Cloudflare Worker + Brevo)
+
+Firebase ne permet pas de modifier le texte de l'e-mail de connexion par lien. Le Worker (`workers/`) génère le même lien avec le compte de service et l'envoie via Brevo avec le texte du DA (objet « Ton lien sécurisé pour accéder à NOVART », bouton « Accéder à NOVART »).
+
+| # | Critère d'acceptation | Test |
+|---|---|---|
+| E1 | E-mail expédié par « NOVART », texte du DA, lien Firebase valide ramenant sur `/login.html` | `workers/test/worker.test.mjs` |
+| E2 | Appels refusés hors de l'appli ; lien de retour limité aux origines de l'appli | idem |
+| E3 | 3 liens max en 10 min par adresse, 20 par heure par appareil ; message « Tu as demandé plusieurs liens d'affilée… » | idem, `App.test.ts` |
+| E4 | Worker non configuré, en panne ou trop lent (8 s) : e-mail standard Firebase, sans erreur visible | `emailLink.test.ts` |
+| E5 | D1 ne contient que des empreintes salées, effacées après 24 h ; aucune adresse dans les journaux | `worker.test.mjs` |
+
 ## Inscription pas à pas (nouveaux comptes)
 
 Après le premier lien validé, formulaire de complément de profil (`profileComplete: false` → `true`) :

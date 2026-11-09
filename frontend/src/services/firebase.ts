@@ -2,6 +2,7 @@ import { initializeApp } from 'firebase/app'
 import { browserLocalPersistence, browserSessionPersistence, getAuth, getRedirectResult, GoogleAuthProvider, sendSignInLinkToEmail, isSignInWithEmailLink, OAuthProvider, onAuthStateChanged, setPersistence, signInWithEmailLink, signInWithPopup, signOut, type User } from 'firebase/auth'
 import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, getDocs, serverTimestamp, arrayUnion, arrayRemove, deleteField } from 'firebase/firestore'
 import { firebaseConfig } from '../../../public/firebase-config.js'
+import { sendLinkWithApi } from './emailLink'
 
 const app = initializeApp(firebaseConfig)
 const auth = getAuth(app)
@@ -64,7 +65,9 @@ export async function consumeSocialRedirect() {
 export async function requestSignInLink(email: string) {
   const continueUrl = new URL('/login.html', window.location.origin)
   continueUrl.searchParams.set('remember', localStorage.getItem(REMEMBER_KEY) === '1' ? '1' : '0')
-  await sendSignInLinkToEmail(auth, email, { url: continueUrl.toString(), handleCodeInApp: true })
+  // E-mail NOVART via l'API (Worker + Brevo) ; sinon e-mail standard de Firebase.
+  const sentByApi = await sendLinkWithApi(email, continueUrl.toString())
+  if (!sentByApi) await sendSignInLinkToEmail(auth, email, { url: continueUrl.toString(), handleCodeInApp: true })
   localStorage.setItem(EMAIL_KEY, email)
 }
 export async function completeSignIn(email: string) {

@@ -25,6 +25,7 @@ import NotificationsView from '@/views/NotificationsView.vue'
 import PrivateChatView from '@/views/PrivateChatView.vue'
 import { isValidEmail, hasSignInLink, pendingEmail, pendingSocialProvider, clearPendingSocialProvider, rememberedSessionChoice, setAuthPersistence, requestSignInLink, completeSignIn, signInWithSocialProvider, consumeSocialRedirect, observeAccount, getProfile, saveProfile, logout, type Account, type Profile, type SocialIdentity } from '@/services/firebase'
 import type { AddressSelection } from '@/services/places'
+import { InvalidEmailError, TooManyRequestsError } from '@/services/emailLink'
 import { loadActivities, loadMembers, notifyPositionFallback, requestPosition, resetStore, startWatchers, store } from '@/lib/store'
 import { tabOf, useRoute } from '@/lib/router'
 
@@ -71,7 +72,13 @@ async function sendLink() {
   if (!isValidEmail(email.value)) { error.value = 'Saisis une adresse e-mail valide.'; return }
   busy.value = true
   try { await setAuthPersistence(rememberMe.value); await requestSignInLink(email.value); screen.value = 'sent'; startCooldown() }
-  catch { error.value = 'Envoi impossible pour le moment. Vérifie ta connexion et réessaie.' }
+  catch (cause) {
+    if (cause instanceof TooManyRequestsError) {
+      const minutes = Math.max(1, Math.ceil(cause.retryAfter / 60))
+      error.value = `Tu as demandé plusieurs liens d’affilée. Utilise le dernier reçu, ou réessaie dans ${minutes} minute${minutes > 1 ? 's' : ''}.`
+    } else if (cause instanceof InvalidEmailError) error.value = 'Saisis une adresse e-mail valide.'
+    else error.value = 'Envoi impossible pour le moment. Vérifie ta connexion et réessaie.'
+  }
   finally { busy.value = false }
 }
 function socialErrorMessage(cause: unknown, provider?: 'Apple' | 'Google') {

@@ -7,13 +7,25 @@ account_id = "c787d4666094708bb9e93531fda13ce4"
 binding = "DB"
 database_name = "art-sessions"
 database_id = "eff5ac51-9692-4c44-a096-ba63113772db"
+# Anti-abus de l'envoi des liens de connexion (empreintes uniquement) :
+#   npx wrangler d1 migrations apply art-sessions --remote
+migrations_dir = "migrations"
 
-[[r2_buckets]]
-binding = "FILES"
-bucket_name = "art-files"
+# Stockage R2 (photos des membres) : pas encore utilisé par le code. Désactivé pour que
+# le déploiement n'échoue pas si le bucket n'existe pas ou si R2 n'est pas activé sur le
+# compte. À réactiver avec l'envoi de photos (npx wrangler r2 bucket create art-files).
+# [[r2_buckets]]
+# binding = "FILES"
+# bucket_name = "art-files"
 
 [vars]
 # Variables publiques (non sensibles) ici.
-# Les secrets (FIREBASE_PRIVATE_KEY, etc.) se déclarent avec :
-#   npx wrangler secret put FIREBASE_PRIVATE_KEY
+# Origines autorisées à appeler l'API, et vers lesquelles un lien de connexion peut ramener.
+ALLOWED_ORIGINS = "https://novart-app.web.app,https://novart-app.firebaseapp.com,http://localhost:5173"
+APP_URL = "https://novart-app.web.app"
+SENDER_NAME = "NOVART"
+# Les secrets se déclarent avec (voir workers/README.md) :
+#   npx wrangler secret put FIREBASE_SERVICE_ACCOUNT < /chemin/hors-depot/cle.json
+#   npx wrangler secret put BREVO_API_KEY
+#   npx wrangler secret put SENDER_EMAIL
 # et se lisent en local via workers/.dev.vars (jamais commité)

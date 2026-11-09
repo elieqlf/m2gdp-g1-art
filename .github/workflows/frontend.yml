@@ -28,6 +28,9 @@ jobs:
       - run: npm ci --prefix frontend
       - name: Component tests
         run: npm run test:frontend
+      - name: Worker tests (e-mail de connexion)
+        if: ${{ !cancelled() }}
+        run: npm run test:worker
       - name: Type check and production build
         if: ${{ !cancelled() }}
         run: npm run build

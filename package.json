@@ -6,8 +6,10 @@
   "scripts": {
     "test": "playwright test",
     "deploy:hosting": "firebase deploy --only hosting",
-    "deploy:worker": "wrangler deploy",
-    "worker:dev": "wrangler dev",
+    "deploy:worker": "wrangler deploy --config workers/wrangler.toml",
+    "worker:dev": "wrangler dev --config workers/wrangler.toml",
+    "worker:migrate": "wrangler d1 migrations apply art-sessions --remote --config workers/wrangler.toml",
+    "test:worker": "node --test workers/test/*.test.mjs",
     "dev": "npm --prefix frontend run dev",
     "build": "npm --prefix frontend run build",
     "test:frontend": "npm --prefix frontend test",

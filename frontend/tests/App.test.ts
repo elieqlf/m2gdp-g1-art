@@ -4,6 +4,7 @@ import App from '../src/App.vue'
 import AddressInput from '../src/components/AddressInput.vue'
 import * as api from '../src/services/firebase'
 import { navigate } from '../src/lib/router'
+import { TooManyRequestsError } from '../src/services/emailLink'
 
 vi.mock('../src/services/firebase', () => ({
   isValidEmail: (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim()),
@@ -76,6 +77,14 @@ describe('Parcours inscription Shadcn-Vue', () => {
     await wrapper.get('form').trigger('submit')
     expect(api.requestSignInLink).not.toHaveBeenCalled()
     expect(wrapper.get('[role="alert"]').text()).toContain('e-mail valide')
+  })
+  it('explique quoi faire après trop de demandes de lien', async () => {
+    vi.mocked(api.requestSignInLink).mockRejectedValueOnce(new TooManyRequestsError(420))
+    await render()
+    await wrapper.get('#email').setValue('camille@example.com')
+    await wrapper.get('form').trigger('submit')
+    await flushPromises()
+    expect(wrapper.get('[role="alert"]').text()).toContain('réessaie dans 7 minutes')
   })
   it('confirme l’envoi et empêche les renvois immédiats', async () => {
     await render()
