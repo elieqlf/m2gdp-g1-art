@@ -37,6 +37,17 @@ Statut : POC repris dans Vue + Shadcn-Vue (`frontend/src/App.vue`, `frontend/src
 - **EXCLU2** — Pas de canal de secours (SMS, code vocal) si le mail atterrit en spam
 - **EXCLU3** — Quotas Firebase standards uniquement ; pas de captcha maison ni gestion de sessions distantes
 
+## Variante : « Continuer avec Google » (maquette 01, branche hadi-app-ux)
+
+En plus de la connexion sans mot de passe par e-mail exigée par le cours. Case « Rester connecté·e sur cet appareil » : session conservée (`browserLocalPersistence`) ou limitée à l'onglet (`browserSessionPersistence`).
+
+| # | Critère d'acceptation | Test |
+|---|---|---|
+| G1 | Nouveau compte : profil pré-rempli avec le prénom, le nom et la photo Google, modifiables | `App.test.ts`, `current-ui.spec.ts` |
+| G2 | Fenêtre fermée par la personne : aucun message ; fenêtre bloquée : « Autorise les fenêtres pop-up… » | `App.test.ts` |
+
+Technique : `signInWithPopup` et non `signInWithRedirect`. Constaté sur téléphone (09/11) : avec la redirection, on revenait sur l'écran de connexion sans session, car l'appli est servie sur `novart-app.web.app` et l'authentification sur `novart-109bf.firebaseapp.com` (stockage tiers bloqué par Safari et Chrome). La fenêtre s'ouvre dans le geste de l'utilisateur ; la persistance choisie est appliquée juste après la connexion.
+
 ## Inscription pas à pas (nouveaux comptes)
 
 Après le premier lien validé, formulaire de complément de profil (`profileComplete: false` → `true`) :

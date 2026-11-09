@@ -40,6 +40,35 @@ async function fillProfile() {
   await wrapper.get('#lastName').setValue('Martin')
   await wrapper.get('#address').setValue('Paris')
 }
+describe('Continuer avec Google (fenêtre)', () => {
+  const identity = { firstName: 'Camille', lastName: 'Martin Dupont', photoUrl: 'https://lh3.googleusercontent.com/a/photo' }
+  const googleButton = () => wrapper.findAll('button').find(b => b.text().includes('Continuer avec Google'))!
+  it('pré-remplit le profil d’un nouveau compte, même si la session s’ouvre avant la fin de la fenêtre', async () => {
+    vi.mocked(api.signInWithSocialProvider).mockImplementation(async () => { observer(user); await flushPromises(); return identity })
+    await render()
+    await googleButton().trigger('click')
+    await flushPromises()
+    expect(api.signInWithSocialProvider).toHaveBeenCalledWith('google', false)
+    expect((wrapper.get('#firstName').element as HTMLInputElement).value).toBe('Camille')
+    expect((wrapper.get('#lastName').element as HTMLInputElement).value).toBe('Martin Dupont')
+    expect((wrapper.get('#photoUrl').element as HTMLInputElement).value).toBe(identity.photoUrl)
+  })
+  it('ne montre pas d’erreur si la fenêtre Google est fermée', async () => {
+    vi.mocked(api.signInWithSocialProvider).mockRejectedValueOnce({ code: 'auth/popup-closed-by-user' })
+    await render()
+    await googleButton().trigger('click')
+    await flushPromises()
+    expect(wrapper.find('[role="alert"]').exists()).toBe(false)
+  })
+  it('explique quoi faire si la fenêtre est bloquée', async () => {
+    vi.mocked(api.signInWithSocialProvider).mockRejectedValueOnce({ code: 'auth/popup-blocked' })
+    await render()
+    await googleButton().trigger('click')
+    await flushPromises()
+    expect(wrapper.get('[role="alert"]').text()).toContain('Autorise les fenêtres pop-up')
+  })
+})
+
 describe('Parcours inscription Shadcn-Vue', () => {
   it('bloque un e-mail invalide sans appeler Firebase', async () => {
     await render()

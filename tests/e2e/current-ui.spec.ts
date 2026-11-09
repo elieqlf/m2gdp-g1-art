@@ -19,6 +19,8 @@ test('connexion : continuer avec Google ouvre l’inscription', async ({ page })
   await openApp(page, 'request')
   await page.getByRole('button', { name: 'Continuer avec Google' }).click()
   await expect(page.getByRole('heading', { name: 'Faisons connaissance' })).toBeVisible()
+  await expect(page.getByLabel('Prénom', { exact: true })).toHaveValue('Camille')
+  await expect(page.getByLabel('Nom', { exact: true })).toHaveValue('Martin')
 })
 
 test('profil : champs existants puis arrivée sur Découvrir', async ({ page }, testInfo) => {

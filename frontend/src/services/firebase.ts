@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app'
-import { browserLocalPersistence, browserSessionPersistence, getAuth, getRedirectResult, GoogleAuthProvider, sendSignInLinkToEmail, isSignInWithEmailLink, OAuthProvider, onAuthStateChanged, setPersistence, signInWithEmailLink, signInWithRedirect, signOut, type User } from 'firebase/auth'
+import { browserLocalPersistence, browserSessionPersistence, getAuth, getRedirectResult, GoogleAuthProvider, sendSignInLinkToEmail, isSignInWithEmailLink, OAuthProvider, onAuthStateChanged, setPersistence, signInWithEmailLink, signInWithPopup, signOut, type User } from 'firebase/auth'
 import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, getDocs, serverTimestamp, arrayUnion, arrayRemove, deleteField } from 'firebase/firestore'
 import { firebaseConfig } from '../../../public/firebase-config.js'
 
@@ -34,19 +34,24 @@ export async function setAuthPersistence(remember: boolean) {
   localStorage.setItem(REMEMBER_KEY, remember ? '1' : '0')
   await setPersistence(auth, remember ? browserLocalPersistence : browserSessionPersistence)
 }
-export async function signInWithSocialProvider(providerName: 'apple' | 'google', remember: boolean) {
+/** Prénom, nom et photo du compte social, pour pré-remplir le profil d'un nouveau compte. */
+export interface SocialIdentity { firstName: string; lastName: string; photoUrl: string }
+/**
+ * Connexion Google (ou Apple) dans une fenêtre, et non par redirection : l'appli est servie
+ * sur novart-app.web.app alors que l'authentification passe par novart-109bf.firebaseapp.com ;
+ * Safari et Chrome bloquent alors le stockage tiers et le retour de redirection perd la session
+ * (constaté sur téléphone). La fenêtre est ouverte tout de suite, dans le geste de l'utilisateur,
+ * sinon le navigateur la bloque ; le choix « Rester connecté·e » s'applique juste après
+ * (setPersistence déplace la session déjà ouverte).
+ */
+export async function signInWithSocialProvider(providerName: 'apple' | 'google', remember: boolean): Promise<SocialIdentity> {
+  const provider = providerName === 'google'
+    ? new GoogleAuthProvider().setCustomParameters({ prompt: 'select_account' })
+    : new OAuthProvider('apple.com').addScope('email').addScope('name')
+  const { user } = await signInWithPopup(auth, provider)
   await setAuthPersistence(remember)
-  localStorage.setItem(SOCIAL_PROVIDER_KEY, providerName)
-  if (providerName === 'google') {
-    const provider = new GoogleAuthProvider()
-    provider.setCustomParameters({ prompt: 'select_account' })
-    await signInWithRedirect(auth, provider)
-    return
-  }
-  const provider = new OAuthProvider('apple.com')
-  provider.addScope('email')
-  provider.addScope('name')
-  await signInWithRedirect(auth, provider)
+  const [firstName = '', ...rest] = (user.displayName ?? '').trim().split(/\s+/)
+  return { firstName, lastName: rest.join(' '), photoUrl: user.photoURL ?? '' }
 }
 export async function consumeSocialRedirect() {
   const result = await getRedirectResult(auth)

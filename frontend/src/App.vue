@@ -23,7 +23,7 @@ import FavoritesView from '@/views/FavoritesView.vue'
 import CommunityView from '@/views/CommunityView.vue'
 import NotificationsView from '@/views/NotificationsView.vue'
 import PrivateChatView from '@/views/PrivateChatView.vue'
-import { isValidEmail, hasSignInLink, pendingEmail, pendingSocialProvider, clearPendingSocialProvider, rememberedSessionChoice, setAuthPersistence, requestSignInLink, completeSignIn, signInWithSocialProvider, consumeSocialRedirect, observeAccount, getProfile, saveProfile, logout, type Account, type Profile } from '@/services/firebase'
+import { isValidEmail, hasSignInLink, pendingEmail, pendingSocialProvider, clearPendingSocialProvider, rememberedSessionChoice, setAuthPersistence, requestSignInLink, completeSignIn, signInWithSocialProvider, consumeSocialRedirect, observeAccount, getProfile, saveProfile, logout, type Account, type Profile, type SocialIdentity } from '@/services/firebase'
 import type { AddressSelection } from '@/services/places'
 import { loadActivities, loadMembers, notifyPositionFallback, requestPosition, resetStore, startWatchers, store } from '@/lib/store'
 import { tabOf, useRoute } from '@/lib/router'
@@ -52,6 +52,8 @@ let countdown: ReturnType<typeof setInterval> | undefined
 let splashTimer: ReturnType<typeof setTimeout> | undefined
 let accountRevision = 0
 let pendingSocialError = ''
+// Prénom, nom et photo Google : ils pré-remplissent le profil d'un nouveau compte.
+let socialIdentity: SocialIdentity | null = null
 const titles: Record<string, string> = { request: 'Bienvenue', sent: 'Consulte ta boîte mail', confirm: 'Confirme ton e-mail', expired: 'Ce lien n’est plus valide', profile: 'Faisons connaissance', 'account-error': 'Chargement interrompu' }
 const title = computed(() => titles[screen.value] || 'Connexion en cours…')
 function startCooldown() {
@@ -79,15 +81,22 @@ function socialErrorMessage(cause: unknown, provider?: 'Apple' | 'Google') {
   if (code === 'auth/invalid-oauth-provider' || code === 'auth/invalid-client-id') return `La configuration OAuth ${provider ?? ''} est incomplète dans Firebase.`
   if (code === 'auth/account-exists-with-different-credential') return 'Cet e-mail utilise déjà une autre méthode. Connecte-toi avec celle-ci.'
   if (code === 'auth/network-request-failed') return 'Connexion réseau interrompue. Réessaie.'
+  if (code === 'auth/popup-blocked') return `La fenêtre ${provider ?? ''} a été bloquée. Autorise les fenêtres pop-up pour ce site, puis réessaie.`
   return `Connexion ${provider ?? 'sociale'} impossible${code ? ` (${code})` : ''}. Vérifie le fournisseur dans Firebase.`
 }
 async function startSocialSignIn(provider: 'apple' | 'google') {
   error.value = ''
   busy.value = true
-  try { await signInWithSocialProvider(provider, rememberMe.value) }
-  catch (cause) {
+  try {
+    socialIdentity = await signInWithSocialProvider(provider, rememberMe.value)
+    // Le profil a pu être chargé avant le retour de la fenêtre : on complète les champs vides.
+    for (const [key, value] of Object.entries(socialIdentity) as [keyof SocialIdentity, string][]) if (value && !profile[key]) profile[key] = value
+  } catch (cause) {
     clearPendingSocialProvider()
-    error.value = socialErrorMessage(cause, provider === 'apple' ? 'Apple' : 'Google')
+    const code = (cause as { code?: string })?.code
+    // Fenêtre fermée par la personne : ce n'est pas une erreur.
+    if (code !== 'auth/popup-closed-by-user' && code !== 'auth/cancelled-popup-request')
+      error.value = socialErrorMessage(cause, provider === 'apple' ? 'Apple' : 'Google')
   }
   finally { busy.value = false }
 }
@@ -116,6 +125,7 @@ async function loadAccount(user: Account | null) {
   const revision = ++accountRevision
   account.value = user
   if (!user) {
+    socialIdentity = null
     resetStore(); Object.assign(profile, blankProfile()); selection.value = null; screen.value = 'request'
     error.value = pendingSocialError
     pendingSocialError = ''
@@ -127,7 +137,8 @@ async function loadAccount(user: Account | null) {
   try {
     const saved = await getProfile(user)
     if (revision !== accountRevision) return
-    Object.assign(profile, blankProfile(), saved)
+    const fromSocial = !saved.profileComplete && socialIdentity ? Object.fromEntries(Object.entries(socialIdentity).filter(([, value]) => value)) : {}
+    Object.assign(profile, blankProfile(), fromSocial, saved)
     store.profile = { ...saved }
     if (!saved.profileComplete) screen.value = 'profile'
     else enterApp()

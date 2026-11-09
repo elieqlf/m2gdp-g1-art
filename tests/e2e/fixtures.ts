@@ -56,8 +56,8 @@ export const pendingSocialProvider = () => null;
 export const clearPendingSocialProvider = () => {};
 export const rememberedSessionChoice = () => false;
 export const setAuthPersistence = async () => {};
-// Redirection Google simulée : au retour, la session s'ouvre.
-export const signInWithSocialProvider = async () => { observer?.(me); };
+// Fenêtre Google simulée : la session s'ouvre et l'identité Google est renvoyée.
+export const signInWithSocialProvider = async () => { observer?.(me); return { firstName: 'Camille', lastName: 'Martin', photoUrl: 'https://lh3.googleusercontent.com/a/photo-camille' }; };
 export const consumeSocialRedirect = async () => null;
 export const observeAccount = callback => { observer = callback; queueMicrotask(() => callback(mode === 'request' ? null : me)); return () => {}; };
 export const getProfile = async () => ({ ...profile });

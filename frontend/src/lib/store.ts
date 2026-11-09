@@ -2,7 +2,7 @@ import { computed, reactive } from 'vue'
 import { listMembers, setFavorite, type Account, type Member, type Profile } from '@/services/firebase'
 import { getActivity, listActivities, watchMyOffers } from '@/services/activities'
 import { isUnread, otherMember, watchMyChats, type PrivateChat } from '@/services/messages'
-import { LYON_CENTER, activeOffer, isMember, isPast, startsAt, waitlistOf, type Activity, type Point } from '@/lib/activity'
+import { LYON_CENTER, activeOffer, distanceKm, isMember, isPast, startsAt, waitlistOf, type Activity, type Point } from '@/lib/activity'
 
 // État partagé entre les écrans de l'application connectée.
 export const store = reactive({
@@ -111,17 +111,42 @@ export async function toggleFavorite(activityId: string) {
  * Position de l'appareil : demandée à l'ouverture de l'application (le navigateur
  * demande l'autorisation la première fois). En cas de refus ou d'échec, les distances
  * se calculent depuis l'adresse du profil, sinon depuis le centre de Lyon.
+ *
+ * Deux temps, car un GPS haute précision met souvent plus de 10 s à répondre sur
+ * téléphone (en intérieur surtout) : d'abord une position rapide (Wi-Fi, antennes),
+ * acceptée si elle date de moins de 5 min ; puis, en arrière-plan, une position GPS
+ * plus précise qui remplace la première sans message en cas d'échec.
  */
-export function requestPosition(): Promise<boolean> {
-  return new Promise(resolve => {
-    if (!('geolocation' in navigator)) { store.gpsStatus = 'unavailable'; return resolve(false) }
-    store.gpsStatus = 'pending'
-    navigator.geolocation.getCurrentPosition(
-      position => { store.gps = { lat: position.coords.latitude, lng: position.coords.longitude }; store.gpsStatus = 'granted'; resolve(true) },
-      error => { store.gpsStatus = error.code === error.PERMISSION_DENIED ? 'denied' : 'unavailable'; resolve(false) },
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 },
-    )
-  })
+const locate = (options: PositionOptions) => new Promise<GeolocationPosition>((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject, options))
+const QUICK: PositionOptions = { enableHighAccuracy: false, timeout: 12000, maximumAge: 5 * 60000 }
+const PRECISE: PositionOptions = { enableHighAccuracy: true, timeout: 25000, maximumAge: 0 }
+const keep = (position: GeolocationPosition) => {
+  store.gps = { lat: position.coords.latitude, lng: position.coords.longitude }
+  store.gpsStatus = 'granted'
+}
+let refining = false
+function refinePosition() {
+  if (refining) return
+  refining = true
+  // Remplacée seulement si elle change vraiment (> 30 m) : la carte ne saute pas pour rien.
+  locate(PRECISE).then(position => {
+    const next = { lat: position.coords.latitude, lng: position.coords.longitude }
+    if (!store.gps || distanceKm(store.gps, next) > 0.03) keep(position)
+  }, () => { /* la position rapide reste valable */ }).finally(() => { refining = false })
+}
+export async function requestPosition(): Promise<boolean> {
+  if (!('geolocation' in navigator)) { store.gpsStatus = 'unavailable'; return false }
+  store.gpsStatus = 'pending'
+  try {
+    keep(await locate(QUICK))
+    refinePosition()
+    return true
+  } catch (error) {
+    if ((error as GeolocationPositionError).code === 1 /* PERMISSION_DENIED */) { store.gpsStatus = 'denied'; return false }
+  }
+  // Position rapide indisponible (pas de Wi-Fi ni de réseau) : dernier essai avec le GPS.
+  try { keep(await locate(PRECISE)); return true }
+  catch (error) { store.gpsStatus = (error as GeolocationPositionError).code === 1 ? 'denied' : 'unavailable'; return false }
 }
 
 // ——— Liste d'attente et notifications ———
