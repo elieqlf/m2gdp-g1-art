@@ -6,7 +6,7 @@ account_id = "3d01e59c36f8d072357c98cf331780f6"
 [[d1_databases]]
 binding = "DB"
 database_name = "art-sessions"
-database_id = "eff5ac51-9692-4c44-a096-ba63113772db"
+database_id = "81a1ecbc-d289-41f8-96a4-e403b60a1a39"
 # Anti-abus de l'envoi des liens de connexion (empreintes uniquement) :
 #   npx wrangler d1 migrations apply art-sessions --remote
 migrations_dir = "migrations"
