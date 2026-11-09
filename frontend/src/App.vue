@@ -72,7 +72,7 @@ let countdown: ReturnType<typeof setInterval> | undefined
 let splashTimer: ReturnType<typeof setTimeout> | undefined
 let accountRevision = 0
 let pendingSocialError = ''
-const titles: Record<string, string> = { request: 'Bienvenue', sent: 'Consulte ta boîte mail', confirm: 'Confirme ton e-mail', expired: 'Ce lien n’est plus valide', profile: 'Crée ton compte', preferences: 'Personnalise ton expérience', complete: 'Presque terminé !', 'account-error': 'Chargement interrompu' }
+const titles: Record<string, string> = { request: 'Bienvenue', sent: 'Consulte ta boîte mail', confirm: 'Confirme ton e-mail', expired: 'Ce lien n’est plus valide', profile: 'Crée ton profil', preferences: 'Personnalise ton expérience', complete: 'Presque terminé !', 'account-error': 'Chargement interrompu' }
 const title = computed(() => titles[screen.value] || 'Connexion en cours…')
 function startCooldown() {
   clearInterval(countdown)
@@ -88,7 +88,14 @@ async function sendLink() {
   email.value = email.value.trim()
   if (!isValidEmail(email.value)) { error.value = 'Saisis une adresse e-mail valide.'; return }
   busy.value = true
-  try { await setAuthPersistence(rememberMe.value); await requestSignInLink(email.value); screen.value = 'sent'; startCooldown() }
+  try {
+    // Connexion et inscription suivent volontairement le même chemin e-mail :
+    // Firebase ne révèle pas si l'adresse possède déjà un compte.
+    await setAuthPersistence(rememberMe.value)
+    await requestSignInLink(email.value)
+    screen.value = 'sent'
+    startCooldown()
+  }
   catch { error.value = 'Envoi impossible pour le moment. Vérifie ta connexion et réessaie.' }
   finally { busy.value = false }
 }
@@ -150,6 +157,8 @@ async function loadAccount(user: Account | null) {
     if (!profile.photoUrl && user.photoURL) profile.photoUrl = user.photoURL
     store.profile = { ...saved }
     if (profile.useCurrentLocation) void requestPosition()
+    // Une fois l'adresse authentifiée, le profil décide de la destination :
+    // les comptes incomplets reprennent l'étape sauvegardée, les autres entrent dans l'app.
     if (!saved.profileComplete) {
       const step = Number(saved.onboardingStep) || 1
       screen.value = step >= 3 ? 'complete' : step === 2 ? 'preferences' : 'profile'
@@ -519,13 +528,13 @@ onBeforeUnmount(() => { unsubscribe?.(); clearInterval(countdown); clearTimeout(
             </p>
           </form>
           <div v-else-if="screen === 'sent'" class="space-y-5">
-            <p class="text-sm leading-relaxed">Un lien de connexion a été envoyé à <strong class="break-all">{{ email }}</strong>. Clique sur ce lien pour continuer.</p>
-            <p class="text-sm text-muted-foreground">Pense à vérifier tes courriers indésirables.</p>
+            <p class="text-sm leading-relaxed">Un lien a été envoyé à <strong class="break-all">{{ email }}</strong>. Ouvre-le pour continuer. Si tu l’ouvres sur un autre appareil, confirme la même adresse e-mail.</p>
+            <p class="text-sm text-muted-foreground">Si tu découvres NOVART, tu créeras ton profil en trois étapes après cette connexion. Si ton profil existe déjà, tu arriveras directement dans l’application. Pense aussi à vérifier tes courriers indésirables.</p>
             <Button variant="outline" class="w-full" :disabled="busy || cooldown > 0" @click="sendLink">{{ cooldown > 0 ? `Renvoyer dans ${cooldown} s` : 'Renvoyer le lien' }}</Button>
             <Button variant="link" class="w-full" @click="screen = 'request'; error = ''">Utiliser une autre adresse</Button>
           </div>
           <form v-else-if="screen === 'confirm'" class="space-y-5" novalidate @submit.prevent="finishLink">
-            <p class="text-sm text-muted-foreground">Pour utiliser ce lien sur cet appareil, indique l’adresse e-mail utilisée lors de la demande.</p>
+            <p class="text-sm text-muted-foreground">Tu as ouvert le lien sur un autre appareil ? Indique la même adresse e-mail que celle à laquelle il a été envoyé.</p>
             <div class="space-y-2"><Label for="confirm-email">Adresse e-mail</Label><Input id="confirm-email" v-model="email" type="email" autocomplete="email" /></div>
             <Button class="w-full" type="submit" :disabled="busy">{{ busy ? 'Connexion…' : 'Confirmer mon e-mail' }}</Button>
           </form>
