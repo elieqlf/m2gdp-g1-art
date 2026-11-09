@@ -48,7 +48,7 @@ describe('Parcours inscription Shadcn-Vue', () => {
     await wrapper.get('form').trigger('submit')
     await flushPromises()
     expect(api.requestSignInLink).toHaveBeenCalledWith('test@example.com')
-    expect(wrapper.text()).toContain('Consultez votre boîte mail')
+    expect(wrapper.text()).toContain('Consulte ta boîte mail')
     expect(wrapper.findAll('button').find(b => b.text().includes('Renvoyer'))?.attributes('disabled')).toBeDefined()
   })
   it('permet de réessayer après un échec réseau', async () => {
@@ -61,13 +61,13 @@ describe('Parcours inscription Shadcn-Vue', () => {
     expect(wrapper.get('button[type="submit"]').attributes('disabled')).toBeUndefined()
     await wrapper.get('form').trigger('submit')
     await flushPromises()
-    expect(wrapper.text()).toContain('Consultez votre boîte mail')
+    expect(wrapper.text()).toContain('Consulte ta boîte mail')
   })
   it('demande l’e-mail sur un autre appareil et gère un lien expiré', async () => {
     vi.mocked(api.hasSignInLink).mockReturnValue(true)
     vi.mocked(api.completeSignIn).mockRejectedValueOnce({ code: 'auth/expired-action-code' })
     await render()
-    expect(wrapper.text()).toContain('Confirmez votre e-mail')
+    expect(wrapper.text()).toContain('Confirme ton e-mail')
     await wrapper.get('#confirm-email').setValue('test@example.com')
     await wrapper.get('form').trigger('submit')
     await flushPromises()
@@ -100,7 +100,7 @@ describe('Parcours inscription Shadcn-Vue', () => {
     vi.mocked(api.saveProfile).mockRejectedValueOnce(new Error('offline'))
     await openProfile(); await fillProfile()
     await wrapper.get('form').trigger('submit'); await flushPromises()
-    expect(wrapper.text()).toContain('Vos informations sont conservées')
+    expect(wrapper.text()).toContain('Tes informations sont conservées')
     expect((wrapper.get('#firstName').element as HTMLInputElement).value).toBe('Camille')
   })
   it('affiche un utilisateur existant et permet la déconnexion', async () => {

@@ -145,7 +145,7 @@ onBeforeUnmount(() => {
     <CardHeader>
       <CardTitle>Carte des utilisateurs</CardTitle>
       <CardDescription>
-        Cliquez sur un point pour découvrir le profil.
+        Touche un point pour découvrir le profil.
       </CardDescription>
     </CardHeader>
 

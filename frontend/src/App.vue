@@ -45,7 +45,7 @@ const profile = reactive<Profile>(blankProfile())
 let unsubscribe: (() => void) | undefined
 let countdown: ReturnType<typeof setInterval> | undefined
 let accountRevision = 0
-const titles: Record<string, string> = { request: 'Bienvenue', sent: 'Consultez votre boîte mail', confirm: 'Confirmez votre e-mail', expired: 'Ce lien n’est plus valide', profile: 'Faisons connaissance', 'account-error': 'Chargement interrompu' }
+const titles: Record<string, string> = { request: 'Bienvenue', sent: 'Consulte ta boîte mail', confirm: 'Confirme ton e-mail', expired: 'Ce lien n’est plus valide', profile: 'Faisons connaissance', 'account-error': 'Chargement interrompu' }
 const title = computed(() => titles[screen.value] || 'Connexion en cours…')
 function startCooldown() {
   clearInterval(countdown)
@@ -55,10 +55,10 @@ function startCooldown() {
 async function sendLink() {
   error.value = ''
   email.value = email.value.trim()
-  if (!isValidEmail(email.value)) { error.value = 'Saisissez une adresse e-mail valide.'; return }
+  if (!isValidEmail(email.value)) { error.value = 'Saisis une adresse e-mail valide.'; return }
   busy.value = true
   try { await requestSignInLink(email.value); screen.value = 'sent'; startCooldown() }
-  catch { error.value = 'Envoi impossible pour le moment. Vérifiez votre connexion et réessayez.' }
+  catch { error.value = 'Envoi impossible pour le moment. Vérifie ta connexion et réessaie.' }
   finally { busy.value = false }
 }
 function enterApp() {
@@ -82,14 +82,14 @@ async function loadAccount(user: Account | null) {
     if (!saved.profileComplete) screen.value = 'profile'
     else enterApp()
   } catch {
-    if (revision === accountRevision) { screen.value = 'account-error'; error.value = 'Impossible de charger votre profil. Vérifiez votre connexion puis réessayez.' }
+    if (revision === accountRevision) { screen.value = 'account-error'; error.value = 'Impossible de charger ton profil. Vérifie ta connexion puis réessaie.' }
   }
 }
 function startAccountObserver() {
-  if (!unsubscribe) unsubscribe = observeAccount(user => { void loadAccount(user) }, () => { screen.value = 'request'; error.value = 'Connexion indisponible. Réessayez.' })
+  if (!unsubscribe) unsubscribe = observeAccount(user => { void loadAccount(user) }, () => { screen.value = 'request'; error.value = 'Connexion indisponible. Réessaie.' })
 }
 async function finishLink() {
-  if (!isValidEmail(email.value)) { error.value = 'Saisissez une adresse e-mail valide.'; return }
+  if (!isValidEmail(email.value)) { error.value = 'Saisis une adresse e-mail valide.'; return }
   busy.value = true
   error.value = ''
   try {
@@ -100,12 +100,12 @@ async function finishLink() {
     const code = (cause as { code?: string }).code
     if (code === 'auth/invalid-action-code' || code === 'auth/expired-action-code') {
       screen.value = 'expired'; startCooldown()
-    } else { screen.value = 'confirm'; error.value = 'Connexion impossible. Vérifiez votre e-mail et votre connexion, puis réessayez.' }
+    } else { screen.value = 'confirm'; error.value = 'Connexion impossible. Vérifie ton e-mail et ta connexion, puis réessaie.' }
   } finally { busy.value = false }
 }
 async function submitProfile() {
   error.value = ''
-  if (!profile.firstName.trim() || !profile.lastName.trim() || !profile.address.trim()) { error.value = 'Complétez le prénom, le nom et l’adresse.'; return }
+  if (!profile.firstName.trim() || !profile.lastName.trim() || !profile.address.trim()) { error.value = 'Complète ton prénom, ton nom et ton adresse.'; return }
   if (profile.photoUrl && !/^https?:\/\/\S+$/i.test(profile.photoUrl.trim())) { error.value = 'La photo doit être une URL commençant par http:// ou https://.'; return }
   if (!account.value) return
   busy.value = true
@@ -115,14 +115,14 @@ async function submitProfile() {
     await saveProfile(account.value.uid, saved)
     Object.assign(profile, saved, { profileComplete: true })
     enterApp()
-  } catch { error.value = 'Le profil n’a pas pu être enregistré. Vos informations sont conservées, réessayez.' }
+  } catch { error.value = 'Ton profil n’a pas pu être enregistré. Tes informations sont conservées, réessaie.' }
   finally { busy.value = false }
 }
 async function disconnect() {
   busy.value = true
   error.value = ''
   try { await logout() }
-  catch { error.value = 'Déconnexion impossible. Réessayez.' }
+  catch { error.value = 'Déconnexion impossible. Réessaie.' }
   finally { busy.value = false }
 }
 onMounted(() => {
@@ -168,13 +168,13 @@ onBeforeUnmount(() => { unsubscribe?.(); clearInterval(countdown); accountRevisi
           <img v-if="screen === 'profile'" src="/images/novart-mascot-joy.webp" alt="" class="profile-mascot" width="159" height="133" />
         </CardHeader>
         <CardContent class="space-y-5">
-          <p v-if="screen === 'loading'" role="status" class="text-sm text-muted-foreground">Nous préparons votre espace…</p>
+          <p v-if="screen === 'loading'" role="status" class="text-sm text-muted-foreground">Nous préparons ton espace…</p>
           <form v-if="screen === 'request'" class="space-y-5" novalidate @submit.prevent="sendLink">
             <div class="space-y-2">
               <Label for="email">Adresse e-mail</Label>
               <div class="field-control">
                 <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 6 9 7 9-7"/></svg>
-                <Input id="email" v-model="email" type="email" autocomplete="email" placeholder="vous@exemple.fr" :aria-invalid="!!error" :aria-describedby="error ? 'form-error' : undefined" />
+                <Input id="email" v-model="email" type="email" autocomplete="email" placeholder="toi@exemple.fr" :aria-invalid="!!error" :aria-describedby="error ? 'form-error' : undefined" />
               </div>
             </div>
             <Button class="w-full" type="submit" :disabled="busy">{{ busy ? 'Envoi en cours…' : 'Recevoir mon lien de connexion' }}</Button>

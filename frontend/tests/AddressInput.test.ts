@@ -38,6 +38,6 @@ it('conserve la saisie manuelle lorsque Google Places échoue', async () => {
   wrapper = mount(AddressInput, { props: { modelValue: '', 'onUpdate:modelValue': (value: string) => { void wrapper.setProps({ modelValue: value }) } } })
   await wrapper.get('input').setValue('Paris')
   await vi.advanceTimersByTimeAsync(300); await flushPromises()
-  expect(wrapper.text()).toContain('saisir votre adresse manuellement')
+  expect(wrapper.text()).toContain('saisir ton adresse manuellement')
   expect(wrapper.emitted('update:modelValue')?.at(-1)).toEqual(['Paris'])
 })

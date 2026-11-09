@@ -10,7 +10,7 @@ test('connexion : présentation mobile et envoi du lien', async ({ page }, testI
   expect(montserrat).toBe(true)
   await page.getByLabel('Adresse e-mail', { exact: true }).fill('preview@example.com')
   await page.getByRole('button', { name: 'Recevoir mon lien de connexion' }).click()
-  await expect(page.getByRole('heading', { name: 'Consultez votre boîte mail' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Consulte ta boîte mail' })).toBeVisible()
 })
 
 test('profil : champs existants puis arrivée sur Découvrir', async ({ page }, testInfo) => {
