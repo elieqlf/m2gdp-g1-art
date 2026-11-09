@@ -29,6 +29,7 @@ import { tabOf, useRoute } from '@/lib/router'
 type Screen = 'loading' | 'request' | 'sent' | 'confirm' | 'expired' | 'profile' | 'app' | 'account-error'
 const screen = ref<Screen>('loading')
 const email = ref('')
+const accountIntent = ref<'signin' | 'signup'>('signin')
 const error = ref('')
 const busy = ref(false)
 const account = ref<Account | null>(null)
@@ -51,6 +52,10 @@ function startCooldown() {
   clearInterval(countdown)
   cooldown.value = 60
   countdown = setInterval(() => { cooldown.value--; if (cooldown.value <= 0) clearInterval(countdown) }, 1000)
+}
+function toggleAccountIntent() {
+  accountIntent.value = accountIntent.value === 'signin' ? 'signup' : 'signin'
+  document.getElementById('email')?.focus()
 }
 async function sendLink() {
   error.value = ''
@@ -145,40 +150,45 @@ onBeforeUnmount(() => { unsubscribe?.(); clearInterval(countdown); accountRevisi
     <p v-if="store.notice" class="toast" role="status">{{ store.notice }}</p>
     <p v-if="error" class="toast toast--error" role="alert">{{ error }}</p>
   </div>
-  <div v-else class="novart-app">
+  <div v-else class="novart-app" :class="{ 'novart-app--auth-home': screen === 'request' }">
     <header v-if="account" class="site-header">
       <a href="/" class="wordmark wordmark--compact" aria-label="Novart, accueil"><img src="/images/novart-logo-secondary.png" alt="" class="brand-logo" width="924" height="886" /></a>
       <Button v-if="screen !== 'loading'" variant="outline" size="sm" :disabled="busy" @click="disconnect">Se déconnecter</Button>
     </header>
 
-    <main class="auth-layout" :class="{ 'auth-layout--profile': screen === 'profile' }">
+    <main class="auth-layout" :class="{ 'auth-layout--profile': screen === 'profile', 'auth-layout--home': screen === 'request' }">
       <section v-if="screen !== 'profile'" class="auth-story">
         <a href="/" class="wordmark wordmark--stacked" aria-label="Novart, accueil"><img src="/images/novart-logo-secondary.png" alt="" class="brand-logo" width="924" height="886" fetchpriority="high" /></a>
-        <h1 class="brand-slogan">L’art se crée ensemble.</h1>
-        <img src="/images/novart-mascot-welcome.webp" alt="" class="auth-mascot" width="558" height="380" />
+        <h1 class="brand-slogan"><span>L’art se crée ensemble.</span></h1>
+        <img src="/images/novart-mascot-welcome.webp" alt="" class="auth-mascot" width="1116" height="760" fetchpriority="high" decoding="async" />
       </section>
-      <Card class="auth-panel">
-        <CardHeader class="auth-panel-heading">
+      <Card class="auth-panel" :class="{ 'auth-panel--home': screen === 'request' }">
+        <CardHeader v-if="screen !== 'request'" class="auth-panel-heading">
           <div>
             <h1 v-if="screen === 'profile'" class="form-title">{{ title }}</h1>
             <h2 v-else class="form-title">{{ title }}</h2>
-            <CardDescription v-if="screen === 'request'">Reçois un lien pour créer ton compte ou te reconnecter.</CardDescription>
-            <CardDescription v-else-if="screen === 'profile'">Quelques informations pour compléter ton inscription.</CardDescription>
+            <CardDescription v-if="screen === 'profile'">Quelques informations pour compléter ton inscription.</CardDescription>
           </div>
           <img v-if="screen === 'profile'" src="/images/novart-mascot-joy.webp" alt="" class="profile-mascot" width="159" height="133" />
         </CardHeader>
-        <CardContent class="space-y-5">
+        <CardContent :class="screen === 'request' ? 'auth-panel-content--home' : 'space-y-5'">
           <p v-if="screen === 'loading'" role="status" class="text-sm text-muted-foreground">Nous préparons ton espace…</p>
-          <form v-if="screen === 'request'" class="space-y-5" novalidate @submit.prevent="sendLink">
-            <div class="space-y-2">
-              <Label for="email">Adresse e-mail</Label>
+          <form v-if="screen === 'request'" class="auth-home-form" novalidate @submit.prevent="sendLink">
+            <div class="auth-home-field">
+              <Label for="email" class="auth-home-label">Adresse e-mail</Label>
               <div class="field-control">
                 <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 6 9 7 9-7"/></svg>
-                <Input id="email" v-model="email" type="email" autocomplete="email" placeholder="toi@exemple.fr" :aria-invalid="!!error" :aria-describedby="error ? 'form-error' : undefined" />
+                <Input id="email" v-model="email" type="email" autocomplete="email" inputmode="email" placeholder="exemple@mail.com" :aria-invalid="!!error" :aria-describedby="error ? 'form-error' : undefined" />
               </div>
             </div>
-            <Button class="w-full" type="submit" :disabled="busy">{{ busy ? 'Envoi en cours…' : 'Recevoir mon lien de connexion' }}</Button>
-            <p class="auth-hint">Connexion par e-mail, sans mot de passe.</p>
+            <Button class="auth-continue-button" type="submit" :disabled="busy">
+              <span>{{ busy ? 'Envoi en cours…' : 'Continuer' }}</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15M13 5l7 7-7 7" /></svg>
+            </Button>
+            <p class="auth-account-switch">
+              <span>{{ accountIntent === 'signin' ? 'Pas encore de compte ?' : 'Tu as déjà un compte ?' }}</span>
+              <button type="button" class="auth-account-switch-link" @click="toggleAccountIntent">{{ accountIntent === 'signin' ? 'Créer un compte' : 'Se connecter' }}</button>
+            </p>
           </form>
           <div v-else-if="screen === 'sent'" class="space-y-5">
             <p class="text-sm leading-relaxed">Un lien de connexion a été envoyé à <strong class="break-all">{{ email }}</strong>. Clique sur ce lien pour continuer.</p>
