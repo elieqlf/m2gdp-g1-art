@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app'
-import { getAuth, sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink, onAuthStateChanged, signOut, type User } from 'firebase/auth'
+import { browserLocalPersistence, browserSessionPersistence, getAuth, getRedirectResult, GoogleAuthProvider, sendSignInLinkToEmail, isSignInWithEmailLink, OAuthProvider, onAuthStateChanged, setPersistence, signInWithEmailLink, signInWithRedirect, signOut, type User } from 'firebase/auth'
 import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, getDocs, serverTimestamp, arrayUnion, arrayRemove, deleteField } from 'firebase/firestore'
 import { firebaseConfig } from '../../../public/firebase-config.js'
 
@@ -7,6 +7,7 @@ const app = initializeApp(firebaseConfig)
 const auth = getAuth(app)
 export const db = getFirestore(app)
 const EMAIL_KEY = 'art_pending_signin_email'
+const REMEMBER_KEY = 'art_remember_signin'
 export type Account = Pick<User, 'uid' | 'email'>
 export interface Profile {
   firstName: string
@@ -25,13 +26,41 @@ export type Member = Partial<Profile> & { uid: string }
 export const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())
 export const hasSignInLink = () => isSignInWithEmailLink(auth, window.location.href)
 export const pendingEmail = () => localStorage.getItem(EMAIL_KEY) || ''
+export const rememberedSessionChoice = () => localStorage.getItem(REMEMBER_KEY) === '1'
+export async function setAuthPersistence(remember: boolean) {
+  localStorage.setItem(REMEMBER_KEY, remember ? '1' : '0')
+  await setPersistence(auth, remember ? browserLocalPersistence : browserSessionPersistence)
+}
+export async function signInWithSocialProvider(providerName: 'apple' | 'google', remember: boolean) {
+  await setAuthPersistence(remember)
+  if (providerName === 'google') {
+    const provider = new GoogleAuthProvider()
+    provider.setCustomParameters({ prompt: 'select_account' })
+    await signInWithRedirect(auth, provider)
+    return
+  }
+  const provider = new OAuthProvider('apple.com')
+  provider.addScope('email')
+  provider.addScope('name')
+  await signInWithRedirect(auth, provider)
+}
+export async function consumeSocialRedirect() {
+  const result = await getRedirectResult(auth)
+  if (result) localStorage.removeItem(REMEMBER_KEY)
+  return result
+}
 export async function requestSignInLink(email: string) {
-  await sendSignInLinkToEmail(auth, email, { url: `${window.location.origin}/login.html`, handleCodeInApp: true })
+  const continueUrl = new URL('/login.html', window.location.origin)
+  continueUrl.searchParams.set('remember', localStorage.getItem(REMEMBER_KEY) === '1' ? '1' : '0')
+  await sendSignInLinkToEmail(auth, email, { url: continueUrl.toString(), handleCodeInApp: true })
   localStorage.setItem(EMAIL_KEY, email)
 }
 export async function completeSignIn(email: string) {
+  const remember = new URLSearchParams(window.location.search).get('remember')
+  if (remember !== null) await setAuthPersistence(remember === '1')
   const result = await signInWithEmailLink(auth, email, window.location.href)
   localStorage.removeItem(EMAIL_KEY)
+  localStorage.removeItem(REMEMBER_KEY)
   return result.user
 }
 export const observeAccount = (callback: (user: Account | null) => void, onError: (error: Error) => void) => onAuthStateChanged(auth, callback, onError)
