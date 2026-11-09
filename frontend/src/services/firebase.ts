@@ -8,6 +8,7 @@ const auth = getAuth(app)
 export const db = getFirestore(app)
 const EMAIL_KEY = 'art_pending_signin_email'
 const REMEMBER_KEY = 'art_remember_signin'
+const SOCIAL_PROVIDER_KEY = 'art_pending_social_provider'
 export type Account = Pick<User, 'uid' | 'email'>
 export interface Profile {
   firstName: string
@@ -26,6 +27,8 @@ export type Member = Partial<Profile> & { uid: string }
 export const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())
 export const hasSignInLink = () => isSignInWithEmailLink(auth, window.location.href)
 export const pendingEmail = () => localStorage.getItem(EMAIL_KEY) || ''
+export const pendingSocialProvider = () => localStorage.getItem(SOCIAL_PROVIDER_KEY) as 'apple' | 'google' | null
+export const clearPendingSocialProvider = () => localStorage.removeItem(SOCIAL_PROVIDER_KEY)
 export const rememberedSessionChoice = () => localStorage.getItem(REMEMBER_KEY) === '1'
 export async function setAuthPersistence(remember: boolean) {
   localStorage.setItem(REMEMBER_KEY, remember ? '1' : '0')
@@ -33,6 +36,7 @@ export async function setAuthPersistence(remember: boolean) {
 }
 export async function signInWithSocialProvider(providerName: 'apple' | 'google', remember: boolean) {
   await setAuthPersistence(remember)
+  localStorage.setItem(SOCIAL_PROVIDER_KEY, providerName)
   if (providerName === 'google') {
     const provider = new GoogleAuthProvider()
     provider.setCustomParameters({ prompt: 'select_account' })
@@ -46,7 +50,10 @@ export async function signInWithSocialProvider(providerName: 'apple' | 'google',
 }
 export async function consumeSocialRedirect() {
   const result = await getRedirectResult(auth)
-  if (result) localStorage.removeItem(REMEMBER_KEY)
+  if (result) {
+    localStorage.removeItem(REMEMBER_KEY)
+    clearPendingSocialProvider()
+  }
   return result
 }
 export async function requestSignInLink(email: string) {

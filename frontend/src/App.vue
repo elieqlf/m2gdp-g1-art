@@ -21,13 +21,14 @@ import ProfileView from '@/views/ProfileView.vue'
 import ProfileEditView from '@/views/ProfileEditView.vue'
 import FavoritesView from '@/views/FavoritesView.vue'
 import CommunityView from '@/views/CommunityView.vue'
-import { isValidEmail, hasSignInLink, pendingEmail, rememberedSessionChoice, setAuthPersistence, requestSignInLink, completeSignIn, signInWithSocialProvider, consumeSocialRedirect, observeAccount, getProfile, saveProfile, logout, type Account, type Profile } from '@/services/firebase'
+import { isValidEmail, hasSignInLink, pendingEmail, pendingSocialProvider, clearPendingSocialProvider, rememberedSessionChoice, setAuthPersistence, requestSignInLink, completeSignIn, signInWithSocialProvider, consumeSocialRedirect, observeAccount, getProfile, saveProfile, logout, type Account, type Profile } from '@/services/firebase'
 import type { AddressSelection } from '@/services/places'
 import { loadActivities, loadMembers, resetStore, store } from '@/lib/store'
 import { tabOf, useRoute } from '@/lib/router'
 
 type Screen = 'loading' | 'request' | 'sent' | 'confirm' | 'expired' | 'profile' | 'app' | 'account-error'
 const screen = ref<Screen>('loading')
+const splashVisible = ref(import.meta.env.MODE !== 'test')
 const email = ref('')
 const accountIntent = ref<'signin' | 'signup'>('signin')
 const rememberMe = ref(rememberedSessionChoice())
@@ -46,7 +47,9 @@ const blankProfile = (): Profile => ({ firstName: '', lastName: '', userType: 'p
 const profile = reactive<Profile>(blankProfile())
 let unsubscribe: (() => void) | undefined
 let countdown: ReturnType<typeof setInterval> | undefined
+let splashTimer: ReturnType<typeof setTimeout> | undefined
 let accountRevision = 0
+let pendingSocialError = ''
 const titles: Record<string, string> = { request: 'Bienvenue', sent: 'Consulte ta boîte mail', confirm: 'Confirme ton e-mail', expired: 'Ce lien n’est plus valide', profile: 'Faisons connaissance', 'account-error': 'Chargement interrompu' }
 const title = computed(() => titles[screen.value] || 'Connexion en cours…')
 function startCooldown() {
@@ -69,21 +72,34 @@ async function sendLink() {
 }
 function socialErrorMessage(cause: unknown, provider?: 'Apple' | 'Google') {
   const code = (cause as { code?: string })?.code
-  if (code === 'auth/unauthorized-domain') return 'Cette adresse de prévisualisation doit être autorisée dans Firebase Authentication.'
-  if (code === 'auth/operation-not-allowed') return `La connexion ${provider ?? 'sociale'} doit être activée dans Firebase Authentication.`
-  if (code === 'auth/account-exists-with-different-credential') return 'Cette adresse e-mail est déjà liée à une autre méthode de connexion. Utilise cette méthode pour entrer.'
-  return `Connexion ${provider ?? 'sociale'} impossible pour le moment. Vérifie la configuration Firebase puis réessaie.`
+  if (code === 'auth/unauthorized-domain') return 'Ajoute cette URL aux domaines autorisés de Firebase Authentication.'
+  if (code === 'auth/operation-not-allowed') return `Active la connexion ${provider ?? 'sociale'} dans Firebase Authentication.`
+  if (code === 'auth/invalid-oauth-provider' || code === 'auth/invalid-client-id') return `La configuration OAuth ${provider ?? ''} est incomplète dans Firebase.`
+  if (code === 'auth/account-exists-with-different-credential') return 'Cet e-mail utilise déjà une autre méthode. Connecte-toi avec celle-ci.'
+  if (code === 'auth/network-request-failed') return 'Connexion réseau interrompue. Réessaie.'
+  return `Connexion ${provider ?? 'sociale'} impossible${code ? ` (${code})` : ''}. Vérifie le fournisseur dans Firebase.`
 }
 async function startSocialSignIn(provider: 'apple' | 'google') {
   error.value = ''
   busy.value = true
   try { await signInWithSocialProvider(provider, rememberMe.value) }
-  catch (cause) { error.value = socialErrorMessage(cause, provider === 'apple' ? 'Apple' : 'Google') }
+  catch (cause) {
+    clearPendingSocialProvider()
+    error.value = socialErrorMessage(cause, provider === 'apple' ? 'Apple' : 'Google')
+  }
   finally { busy.value = false }
 }
 async function handleSocialRedirect() {
-  try { await consumeSocialRedirect() }
-  catch (cause) { error.value = socialErrorMessage(cause) }
+  const provider = pendingSocialProvider()
+  try {
+    const result = await consumeSocialRedirect()
+    if (!result) clearPendingSocialProvider()
+  }
+  catch (cause) {
+    pendingSocialError = socialErrorMessage(cause, provider === 'apple' ? 'Apple' : provider === 'google' ? 'Google' : undefined)
+    error.value = pendingSocialError
+    clearPendingSocialProvider()
+  }
 }
 function enterApp() {
   screen.value = 'app'
@@ -94,8 +110,13 @@ function enterApp() {
 async function loadAccount(user: Account | null) {
   const revision = ++accountRevision
   account.value = user
+  if (!user) {
+    resetStore(); Object.assign(profile, blankProfile()); selection.value = null; screen.value = 'request'
+    error.value = pendingSocialError
+    pendingSocialError = ''
+    return
+  }
   error.value = ''
-  if (!user) { resetStore(); Object.assign(profile, blankProfile()); selection.value = null; screen.value = 'request'; return }
   store.account = user
   screen.value = 'loading'
   try {
@@ -150,6 +171,13 @@ async function disconnect() {
   finally { busy.value = false }
 }
 onMounted(() => {
+  if (splashVisible.value) {
+    for (const src of ['/images/novart-mascot-login.webp', '/images/novart-logo-primary-mask.webp']) {
+      const image = new Image()
+      image.src = src
+    }
+    splashTimer = setTimeout(() => { splashVisible.value = false }, 850)
+  }
   if (hasSignInLink()) {
     email.value = pendingEmail()
     if (email.value) void finishLink()
@@ -159,11 +187,16 @@ onMounted(() => {
     void handleSocialRedirect()
   }
 })
-onBeforeUnmount(() => { unsubscribe?.(); clearInterval(countdown); accountRevision++ })
+onBeforeUnmount(() => { unsubscribe?.(); clearInterval(countdown); clearTimeout(splashTimer); accountRevision++ })
 </script>
 
 <template>
-  <div v-if="screen === 'app'" class="novart-app app-frame">
+  <main v-if="splashVisible" class="novart-splash-screen" role="status" aria-label="Chargement de Novart">
+    <img src="/images/novart-logo-submark-vivid.svg" class="novart-splash-mark" width="952" height="887" alt="Logo Novart" fetchpriority="high" />
+    <span class="novart-splash-spinner" aria-hidden="true"></span>
+    <span class="sr-only">Préparation de l’application…</span>
+  </main>
+  <div v-else-if="screen === 'app'" class="novart-app app-frame">
     <a href="#app-main" class="skip-link">Aller au contenu</a>
     <main id="app-main" class="app-main" :class="{ 'app-main--no-nav': !showNav }">
       <component :is="currentView" :id="route.id" :key="viewKey" @logout="disconnect" />
@@ -184,7 +217,6 @@ onBeforeUnmount(() => { unsubscribe?.(); clearInterval(countdown); accountRevisi
         <h1 class="brand-slogan"><span>L’art se crée ensemble.</span></h1>
         <div class="auth-mascot-frame">
           <img src="/images/novart-mascot-login.webp" alt="" class="auth-mascot" width="1520" height="1035" fetchpriority="high" decoding="async" />
-          <img src="/images/novart-logo-submark-vivid.svg" alt="" class="auth-mascot-bag-submark" width="952" height="887" aria-hidden="true" />
         </div>
       </section>
       <Card class="auth-panel" :class="{ 'auth-panel--home': screen === 'request' }">
@@ -214,8 +246,9 @@ onBeforeUnmount(() => { unsubscribe?.(); clearInterval(countdown); accountRevisi
               <Label for="email" class="auth-home-label">Adresse e-mail</Label>
               <div class="field-control">
                 <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 6 9 7 9-7"/></svg>
-                <Input id="email" v-model="email" type="email" autocomplete="email" inputmode="email" placeholder="exemple@mail.com" :aria-invalid="!!error" :aria-describedby="error ? 'form-error' : undefined" />
+                <Input id="email" v-model="email" type="email" autocomplete="email" inputmode="email" placeholder="exemple@mail.com" :aria-invalid="!!error" :aria-describedby="error ? 'email-hint form-error' : 'email-hint'" />
               </div>
+              <p id="email-hint" class="auth-home-hint">Pas de mot de passe : tu recevras un lien sécurisé par e-mail.</p>
             </div>
             <label class="auth-remember-control" for="remember-session">
               <input id="remember-session" v-model="rememberMe" type="checkbox" />
