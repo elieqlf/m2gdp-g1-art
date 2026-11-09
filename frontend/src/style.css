@@ -97,6 +97,7 @@
 
 :root {
     color-scheme: light;
+    --novart-red: #DA0B19;
     --background: #FFFEF1;
     --foreground: #545454;
     --card: #FFFBFB;
@@ -247,7 +248,7 @@
   gap: clamp(1.8rem, 5vh, 3rem);
   min-height: 100svh;
   padding: 1.5rem;
-  background: #fffdfa;
+  background: var(--background);
 }
 
 .novart-splash-mark {
@@ -261,7 +262,7 @@
   width: 1.55rem;
   height: 1.55rem;
   border: 3px solid rgb(218 11 25 / .16);
-  border-top-color: #da0b19;
+  border-top-color: #DA0B19;
   border-radius: 50%;
   animation: novart-spinner 850ms linear infinite;
 }
@@ -434,7 +435,7 @@
 
 /* Accueil / connexion par e-mail : composition inspirée de la nouvelle maquette. */
 .novart-app--auth-home {
-  --novart-red: #da0b19;
+  --novart-red: #DA0B19;
   --primary: var(--novart-red);
   --primary-foreground: #fffdfb;
   --ring: var(--novart-red);
@@ -442,7 +443,7 @@
   height: 100svh;
   min-height: 100svh;
   overflow: hidden;
-  background: #fffdfa;
+  background: var(--background);
   color: var(--auth-home-ink);
 }
 
@@ -457,7 +458,7 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: .65rem;
+  gap: .95rem;
   overflow: hidden;
 }
 
@@ -469,17 +470,17 @@
 }
 
 .auth-layout--home .wordmark--stacked {
-  width: clamp(8rem, 39vw, 9.75rem);
+  width: clamp(9rem, 42vw, 11rem);
 }
 
 .novart-app--auth-home .brand-slogan {
   position: relative;
   width: max-content;
   max-width: 100%;
-  margin: .12rem auto .72rem;
-  color: var(--primary);
+  margin: .12rem auto .78rem;
+  color: var(--novart-red);
   font-family: 'Caveat', cursive;
-  font-size: clamp(1.9rem, 7.5vw, 2.4rem);
+  font-size: clamp(2rem, 7.8vw, 2.5rem);
   font-style: normal;
   font-weight: 700;
   letter-spacing: -.015em;
@@ -489,22 +490,10 @@
   transform: rotate(-1.5deg);
 }
 
-.novart-app--auth-home .brand-slogan::after {
-  position: absolute;
-  right: 12%;
-  bottom: -.28rem;
-  left: 20%;
-  height: .12rem;
-  border-radius: 50%;
-  background: currentColor;
-  content: '';
-  transform: rotate(-3deg);
-}
-
 .auth-mascot-frame {
   position: relative;
-  width: min(100%, 18rem);
-  max-height: 23svh;
+  width: min(100%, 20rem);
+  max-height: 27svh;
   margin: 0 auto;
   aspect-ratio: 1520 / 1035;
 }
@@ -536,7 +525,7 @@
 .novart-app .auth-panel-content--home {
   display: flex;
   flex-direction: column;
-  gap: .75rem;
+  gap: .85rem;
   padding: 0 !important;
 }
 
@@ -549,22 +538,22 @@
 .auth-home-form {
   display: flex;
   flex-direction: column;
-  gap: clamp(.4rem, .9svh, .58rem);
+  gap: clamp(.52rem, .95svh, .74rem);
 }
 
 .auth-social-buttons {
   display: grid;
-  gap: .42rem;
+  gap: .52rem;
 }
 
 .auth-social-button {
   display: flex;
   width: 100%;
-  min-height: 2.85rem;
+  min-height: 3rem;
   align-items: center;
   justify-content: center;
   gap: .75rem;
-  padding: .5rem 1rem;
+  padding: .55rem 1rem;
   border: 1px solid #e8e4e2;
   border-radius: 1.1rem;
   background: rgb(255 255 255 / .78);
@@ -641,13 +630,6 @@
 
 .auth-home-field { min-width: 0; }
 
-.auth-home-hint {
-  margin: .2rem 0 0;
-  color: #85898e;
-  font-size: .68rem;
-  line-height: 1.25;
-}
-
 .novart-app .auth-home-label {
   display: block;
   margin-bottom: .2rem;
@@ -657,8 +639,8 @@
 }
 
 .novart-app .auth-panel--home .field-control [data-slot="input"] {
-  min-height: 3.1rem;
-  height: 3.1rem;
+  min-height: 3.2rem;
+  height: 3.2rem;
   padding: .6rem 1rem .6rem 3.1rem;
   border: 1px solid #e7e0dc;
   border-radius: .9rem;
@@ -692,10 +674,10 @@
 .novart-app .auth-continue-button {
   position: relative;
   width: 100%;
-  min-height: 3.25rem !important;
+  min-height: 3.4rem !important;
   padding: .6rem 3.25rem;
   border-radius: .9rem;
-  background: var(--primary);
+  background: var(--novart-red);
   color: var(--primary-foreground);
   font-size: 1.08rem !important;
   font-weight: 600;
@@ -733,7 +715,7 @@
   padding: 0;
   border: 0;
   background: transparent;
-  color: var(--primary);
+  color: var(--novart-red);
   font: inherit;
   font-weight: 600;
   text-decoration: underline;
@@ -749,29 +731,47 @@
 
 @media (max-height: 740px) {
   .auth-layout--home {
-    padding-block: .35rem;
-    gap: .35rem;
+    padding-block: .45rem;
+    gap: .65rem;
   }
 
-  .auth-layout--home .wordmark--stacked { width: min(8rem, 36vw); }
-  .novart-app--auth-home .brand-slogan { margin: .05rem auto .4rem; font-size: clamp(1.65rem, 5.8vh, 2rem); }
-  .auth-mascot-frame { width: min(100%, 15rem); max-height: 16svh; }
-  .auth-home-form { gap: .34rem; }
-  .auth-social-buttons { gap: .3rem; }
-  .auth-social-button { min-height: 2.55rem; font-size: .86rem; }
-  .auth-home-divider { font-size: .78rem; }
-  .novart-app .auth-home-label { font-size: .82rem; }
-  .auth-home-hint { font-size: .64rem; }
-  .novart-app .auth-panel--home .field-control [data-slot="input"] { min-height: 2.75rem; height: 2.75rem; }
-  .auth-remember-control { font-size: .74rem; }
-  .novart-app .auth-continue-button { min-height: 2.85rem !important; font-size: .98rem !important; }
-  .auth-account-switch { font-size: .74rem; }
+  .auth-layout--home .wordmark--stacked { width: min(9.25rem, 40vw); }
+  .novart-app--auth-home .brand-slogan { margin: .1rem auto .65rem; font-size: clamp(1.8rem, 6vh, 2.15rem); }
+  .auth-mascot-frame { width: min(100%, 18rem); max-height: 21svh; }
+  .auth-home-form { gap: .45rem; }
+  .auth-social-buttons { gap: .42rem; }
+  .auth-social-button { min-height: 2.8rem; font-size: .88rem; }
+  .auth-home-divider { font-size: .82rem; }
+  .novart-app .auth-home-label { font-size: .84rem; }
+  .novart-app .auth-panel--home .field-control [data-slot="input"] { min-height: 2.9rem; height: 2.9rem; }
+  .auth-remember-control { font-size: .78rem; }
+  .novart-app .auth-continue-button { min-height: 3.05rem !important; font-size: 1rem !important; }
+  .auth-account-switch { font-size: .78rem; }
 }
 
 @media (max-height: 620px) and (orientation: portrait) {
-  .auth-layout--home .wordmark--stacked { width: min(7rem, 34vw); }
-  .novart-app--auth-home .brand-slogan { margin-bottom: .25rem; font-size: 1.55rem; }
-  .auth-mascot-frame { width: min(100%, 12.5rem); max-height: 12svh; }
+  .auth-layout--home .wordmark--stacked { width: min(8rem, 37vw); }
+  .novart-app--auth-home .brand-slogan { margin: .04rem auto .38rem; font-size: 1.65rem; }
+  .auth-mascot-frame { width: min(100%, 15rem); max-height: 17svh; }
+  .auth-layout--home { gap: .3rem; }
+  .auth-home-form { gap: .3rem; }
+  .auth-social-buttons { gap: .28rem; }
+  .auth-social-button { min-height: 2.6rem; }
+  .novart-app .auth-panel--home .field-control [data-slot="input"] { min-height: 2.7rem; height: 2.7rem; }
+  .novart-app .auth-continue-button { min-height: 2.8rem !important; }
+}
+
+@media (max-height: 740px) and (orientation: portrait) {
+  .auth-layout--home-has-error { gap: .25rem; padding-block: .25rem; }
+  .auth-layout--home-has-error .wordmark--stacked { width: min(8rem, 36vw); }
+  .auth-layout--home-has-error .brand-slogan { margin: .03rem auto .3rem; font-size: 1.55rem; }
+  .auth-layout--home-has-error .auth-mascot-frame { width: min(100%, 13rem); max-height: 14svh; }
+  .auth-layout--home-has-error .auth-panel-content--home { gap: .5rem; }
+  .auth-layout--home-has-error .auth-home-form { gap: .28rem; }
+  .auth-layout--home-has-error .auth-social-buttons { gap: .25rem; }
+  .auth-layout--home-has-error .auth-social-button { min-height: 2.5rem; }
+  .novart-app .auth-layout--home-has-error .auth-panel--home .field-control [data-slot="input"] { min-height: 2.6rem; height: 2.6rem; }
+  .novart-app .auth-layout--home-has-error .auth-continue-button { min-height: 2.7rem !important; }
 }
 
 @media (max-height: 600px) and (orientation: landscape) {
@@ -825,10 +825,10 @@
   line-height: 1.6;
 }
 
-/* Écran plus large que le téléphone : la colonne de l'application est posée
-   sur un fond rosé, avec une ombre légère. */
+/* Sur les écrans larges, l'application garde ses proportions mobiles tout en
+   se fondant dans le même arrière-plan que la page. */
 @media (min-width: 40rem) {
-  body { background: color-mix(in srgb, var(--primary) 7%, var(--card)); }
-  .novart-app { box-shadow: 0 0 0 1px color-mix(in srgb, var(--foreground) 10%, transparent), 0 10px 40px rgb(120 28 39 / .08); }
+  body { background: var(--background); }
+  .novart-app { box-shadow: none; }
   .auth-layout { padding-inline: 1.5rem; }
 }

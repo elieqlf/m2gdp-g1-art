@@ -211,7 +211,7 @@ onBeforeUnmount(() => { unsubscribe?.(); clearInterval(countdown); clearTimeout(
       <Button v-if="screen !== 'loading'" variant="outline" size="sm" :disabled="busy" @click="disconnect">Se déconnecter</Button>
     </header>
 
-    <main class="auth-layout" :class="{ 'auth-layout--profile': screen === 'profile', 'auth-layout--home': screen === 'request' }">
+    <main class="auth-layout" :class="{ 'auth-layout--profile': screen === 'profile', 'auth-layout--home': screen === 'request', 'auth-layout--home-has-error': screen === 'request' && !!error }">
       <section v-if="screen !== 'profile'" class="auth-story">
         <a href="/" class="wordmark wordmark--stacked" aria-label="Novart, accueil"><span class="brand-logo brand-logo--primary" aria-hidden="true"></span></a>
         <h1 class="brand-slogan"><span>L’art se crée ensemble.</span></h1>
@@ -246,9 +246,8 @@ onBeforeUnmount(() => { unsubscribe?.(); clearInterval(countdown); clearTimeout(
               <Label for="email" class="auth-home-label">Adresse e-mail</Label>
               <div class="field-control">
                 <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 6 9 7 9-7"/></svg>
-                <Input id="email" v-model="email" type="email" autocomplete="email" inputmode="email" placeholder="exemple@mail.com" :aria-invalid="!!error" :aria-describedby="error ? 'email-hint form-error' : 'email-hint'" />
+                <Input id="email" v-model="email" type="email" autocomplete="email" inputmode="email" placeholder="exemple@mail.com" :aria-invalid="!!error" :aria-describedby="error ? 'form-error' : undefined" />
               </div>
-              <p id="email-hint" class="auth-home-hint">Pas de mot de passe : tu recevras un lien sécurisé par e-mail.</p>
             </div>
             <label class="auth-remember-control" for="remember-session">
               <input id="remember-session" v-model="rememberMe" type="checkbox" />
