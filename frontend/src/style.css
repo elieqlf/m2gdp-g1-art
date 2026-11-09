@@ -97,14 +97,14 @@
 
 :root {
     color-scheme: light;
-    --novart-red: #DA0B19;
+    --novart-red: #FF0000;
     --background: #FFFEF1;
     --foreground: #545454;
     --card: #FFFBFB;
     --card-foreground: #545454;
     --popover: #FFFBFB;
     --popover-foreground: #545454;
-    --primary: #DA0B19;
+    --primary: #FF0000;
     --primary-foreground: #FFFBFB;
     --secondary: #FFFBFB;
     --secondary-foreground: #545454;
@@ -115,8 +115,8 @@
     --destructive: #781C27;
     --border: #D9D9D9;
     --input: #545454;
-    --ring: #DA0B19;
-    --chart-1: #DA0B19;
+    --ring: #FF0000;
+    --chart-1: #FF0000;
     --chart-2: #781C27;
     --chart-3: #545454;
     --chart-4: #D9D9D9;
@@ -124,12 +124,12 @@
     --radius: 1rem;
     --sidebar: #FFFBFB;
     --sidebar-foreground: #545454;
-    --sidebar-primary: #DA0B19;
+    --sidebar-primary: #FF0000;
     --sidebar-primary-foreground: #FFFBFB;
     --sidebar-accent: #781C27;
     --sidebar-accent-foreground: #FFFBFB;
     --sidebar-border: #D9D9D9;
-    --sidebar-ring: #DA0B19;
+    --sidebar-ring: #FF0000;
 }
 
 .dark {
@@ -233,9 +233,9 @@
 
 .brand-logo--primary {
   aspect-ratio: 1333 / 1180;
-  background-color: var(--novart-red, #da0b19);
-  -webkit-mask: url('/images/novart-logo-primary-mask.webp') center / contain no-repeat;
-  mask: url('/images/novart-logo-primary-mask.webp') center / contain no-repeat;
+  background-color: var(--novart-red, #ff0000);
+  -webkit-mask: url('/images/novart-logo-primary-vector.svg') center / contain no-repeat;
+  mask: url('/images/novart-logo-primary-vector.svg') center / contain no-repeat;
 }
 
 .novart-splash-screen {
@@ -261,8 +261,8 @@
 .novart-splash-spinner {
   width: 1.55rem;
   height: 1.55rem;
-  border: 3px solid rgb(218 11 25 / .16);
-  border-top-color: #DA0B19;
+  border: 3px solid rgb(255 0 0 / .16);
+  border-top-color: var(--novart-red);
   border-radius: 50%;
   animation: novart-spinner 850ms linear infinite;
 }
@@ -435,7 +435,7 @@
 
 /* Accueil / connexion par e-mail : composition inspirée de la nouvelle maquette. */
 .novart-app--auth-home {
-  --novart-red: #DA0B19;
+  --novart-red: #FF0000;
   --primary: var(--novart-red);
   --primary-foreground: #fffdfb;
   --ring: var(--novart-red);
@@ -679,13 +679,13 @@
   color: var(--primary-foreground);
   font-size: 1.08rem !important;
   font-weight: 600;
-  box-shadow: 0 8px 18px rgb(218 11 25 / .16);
+  box-shadow: 0 8px 18px rgb(255 0 0 / .16);
   transition: transform 140ms ease, box-shadow 140ms ease, background-color 140ms ease;
 }
 
 .novart-app .auth-continue-button:hover:not(:disabled) {
-  background: #bd0715;
-  box-shadow: 0 10px 22px rgb(218 11 25 / .22);
+  background: #d60000;
+  box-shadow: 0 10px 22px rgb(255 0 0 / .22);
   transform: translateY(-1px);
 }
 

@@ -6,6 +6,7 @@ l'utilisateur. Les usages sont ceux du Brand Board NOVART et des PDF de règles.
 | Fichier intégré | Original |
 | --- | --- |
 | `novart-logo-primary.png` | `Assets/Logos NOVART/Logo primaire — PNG.png`, 947 × 838 |
+| `novart-logo-primary-vector.svg` | Masque vectorisé depuis le logo primaire officiel pour un affichage net à toute taille |
 | `novart-logo-secondary.png` | `Assets/Logos NOVART/Logo secondaire — PNG.png`, 924 × 886 |
 | `novart-logo-submark.png` | `Assets/Logos NOVART/Logo submark - PNG.png`, 952 × 887 |
 | `novart-mascot-welcome.webp` | `Assets/Mascotte NOVART.pdf`, personnage principal, extrait de 558 × 380 agrandi ×2 (1116 × 760) |
