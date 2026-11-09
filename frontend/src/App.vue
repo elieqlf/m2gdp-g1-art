@@ -57,6 +57,9 @@ function toggleAccountIntent() {
   accountIntent.value = accountIntent.value === 'signin' ? 'signup' : 'signin'
   document.getElementById('email')?.focus()
 }
+function showProviderUnavailable(provider: 'Apple' | 'Google') {
+  error.value = `La connexion avec ${provider} sera bientôt disponible. Utilise ton adresse e-mail pour continuer.`
+}
 async function sendLink() {
   error.value = ''
   email.value = email.value.trim()
@@ -160,7 +163,7 @@ onBeforeUnmount(() => { unsubscribe?.(); clearInterval(countdown); accountRevisi
       <section v-if="screen !== 'profile'" class="auth-story">
         <a href="/" class="wordmark wordmark--stacked" aria-label="Novart, accueil"><img src="/images/novart-logo-secondary.png" alt="" class="brand-logo" width="924" height="886" fetchpriority="high" /></a>
         <h1 class="brand-slogan"><span>L’art se crée ensemble.</span></h1>
-        <img src="/images/novart-mascot-welcome.webp" alt="" class="auth-mascot" width="1116" height="760" fetchpriority="high" decoding="async" />
+        <img src="/images/novart-mascot-login.webp" alt="" class="auth-mascot" width="1520" height="1035" fetchpriority="high" decoding="async" />
       </section>
       <Card class="auth-panel" :class="{ 'auth-panel--home': screen === 'request' }">
         <CardHeader v-if="screen !== 'request'" class="auth-panel-heading">
@@ -174,6 +177,17 @@ onBeforeUnmount(() => { unsubscribe?.(); clearInterval(countdown); accountRevisi
         <CardContent :class="screen === 'request' ? 'auth-panel-content--home' : 'space-y-5'">
           <p v-if="screen === 'loading'" role="status" class="text-sm text-muted-foreground">Nous préparons ton espace…</p>
           <form v-if="screen === 'request'" class="auth-home-form" novalidate @submit.prevent="sendLink">
+            <div class="auth-social-buttons">
+              <button type="button" class="auth-social-button" @click="showProviderUnavailable('Apple')">
+                <svg class="auth-social-icon auth-social-icon--apple" viewBox="0 0 24 24" aria-hidden="true"><path d="M16.37 12.01c.02 2.16 1.9 2.88 1.92 2.9-.02.05-.3 1.03-.98 2.04-.59.87-1.2 1.74-2.16 1.75-.94.02-1.25-.57-2.34-.57-1.08 0-1.43.55-2.32.59-.93.04-1.64-.95-2.24-1.82-1.23-1.78-2.17-5.03-.91-7.23.62-1.09 1.73-1.78 2.93-1.8.92-.02 1.78.63 2.34.63.56 0 1.61-.78 2.71-.66.46.02 1.77.19 2.61 1.43-.07.04-1.56.91-1.55 2.74ZM14.59 5.98c.49-.6.82-1.43.73-2.26-.71.03-1.57.47-2.08 1.07-.46.53-.86 1.37-.75 2.17.79.06 1.61-.4 2.1-.98Z"/></svg>
+                <span>Continuer avec Apple</span>
+              </button>
+              <button type="button" class="auth-social-button" @click="showProviderUnavailable('Google')">
+                <svg class="auth-social-icon auth-social-icon--google" viewBox="0 0 48 48" aria-hidden="true"><path fill="#4285F4" d="M43.6 24.5c0-1.4-.1-2.8-.4-4.1H24v7.8h11c-.5 2.5-1.9 4.6-4 6l6.5 5c3.8-3.5 6.1-8.6 6.1-14.7Z"/><path fill="#34A853" d="M24 44c5.5 0 10.1-1.8 13.5-4.8l-6.5-5c-1.8 1.2-4.1 2-7 2-5.4 0-10-3.7-11.7-8.7l-6.7 5.1C9 39.3 15.9 44 24 44Z"/><path fill="#FBBC05" d="M12.3 27.5a12 12 0 0 1 0-7l-6.7-5.1a20 20 0 0 0 0 17.2l6.7-5.1Z"/><path fill="#EA4335" d="M24 11.8c3 0 5.7 1 7.8 3.1l5.8-5.8C34.1 5.6 29.5 4 24 4 15.9 4 9 8.7 5.6 15.4l6.7 5.1c1.7-5 6.3-8.7 11.7-8.7Z"/></svg>
+                <span>Continuer avec Google</span>
+              </button>
+            </div>
+            <div class="auth-home-divider" aria-hidden="true"><span>ou</span></div>
             <div class="auth-home-field">
               <Label for="email" class="auth-home-label">Adresse e-mail</Label>
               <div class="field-control">

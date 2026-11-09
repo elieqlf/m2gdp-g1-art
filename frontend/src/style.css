@@ -472,6 +472,68 @@
   gap: clamp(1rem, 2.7svh, 1.4rem);
 }
 
+.auth-social-buttons {
+  display: grid;
+  gap: .72rem;
+}
+
+.auth-social-button {
+  display: flex;
+  width: 100%;
+  min-height: 3.55rem;
+  align-items: center;
+  justify-content: center;
+  gap: .85rem;
+  padding: .7rem 1rem;
+  border: 1px solid #e8e4e2;
+  border-radius: 1.1rem;
+  background: rgb(255 255 255 / .78);
+  color: var(--auth-home-ink);
+  font: inherit;
+  font-size: 1.02rem;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgb(60 70 80 / .035);
+  cursor: pointer;
+  transition: border-color 140ms ease, background-color 140ms ease, transform 140ms ease;
+}
+
+.auth-social-button:hover {
+  border-color: #d6cdca;
+  background: #fff;
+  transform: translateY(-1px);
+}
+
+.auth-social-button:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--primary) 45%, transparent);
+  outline-offset: 2px;
+}
+
+.auth-social-icon {
+  display: block;
+  width: 1.65rem;
+  height: 1.65rem;
+  flex: 0 0 auto;
+}
+
+.auth-social-icon--apple { fill: #090909; }
+
+.auth-home-divider {
+  display: flex;
+  align-items: center;
+  gap: .85rem;
+  color: #85898e;
+  font-size: .95rem;
+  line-height: 1;
+}
+
+.auth-home-divider::before,
+.auth-home-divider::after {
+  height: 1px;
+  flex: 1;
+  background: #e6e0de;
+  content: '';
+}
+
 .auth-home-field { min-width: 0; }
 
 .novart-app .auth-home-label {
