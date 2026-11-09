@@ -28,7 +28,7 @@ npx --yes --package firebase-tools firebase deploy --only hosting:landing --proj
 ## Ressources
 
 - `assets/site.css` : styles (base téléphone, puis `min-width` 30, 48 et 64 rem) ; `assets/site.js` : menu mobile, apparition au défilement, formulaire.
-- `assets/img/` : logos officiels (le secondaire détouré), mascotte et onze poses découpées dans la planche « Mascotte NOVART » du DA, fond rendu transparent avec `scripts/design/detourer-fond.py`.
+- `assets/img/` : logos officiels (le secondaire détouré), mascotte et onze poses découpées dans la planche « Mascotte NOVART » du DA, agrandies ×3 (`scripts/design/agrandir-mascotte.py`), détourées (`scripts/design/detourer-fond.py`) et enregistrées en WebP. Les fichiers HD d'origine du DA donneraient un rendu encore meilleur.
 - `assets/screens/` : captures de l'application (données de démonstration), à refaire si l'interface change.
 - `assets/covers/` : illustrations par discipline (`scripts/design/generate-covers.mjs`).
 - Pictogrammes Lucide (ISC) intégrés en sprite au début de chaque page ; polices dans `assets/fonts/` avec leurs licences.
