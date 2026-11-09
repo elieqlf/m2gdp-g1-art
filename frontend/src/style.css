@@ -37,14 +37,6 @@
 }
 
 @font-face {
-  font-family: 'Sigmar One';
-  src: url('/fonts/sigmar-one-regular.ttf') format('truetype');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
   font-family: 'Montserrat';
   src: url('/fonts/montserrat-extra-light.ttf') format('truetype');
   font-weight: 200;
@@ -55,9 +47,9 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-    --font-sans: 'Caveat', cursive;
+    --font-sans: 'Poppins', Arial, sans-serif;
     --font-heading: 'Caveat', cursive;
-    --font-secondary: 'Caveat', cursive;
+    --font-secondary: 'Montserrat', 'Poppins', Arial, sans-serif;
     --color-sidebar-ring: var(--sidebar-ring);
     --color-sidebar-border: var(--sidebar-border);
     --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
