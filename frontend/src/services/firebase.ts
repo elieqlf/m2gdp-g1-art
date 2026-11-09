@@ -9,7 +9,7 @@ export const db = getFirestore(app)
 const EMAIL_KEY = 'art_pending_signin_email'
 const REMEMBER_KEY = 'art_remember_signin'
 const SOCIAL_PROVIDER_KEY = 'art_pending_social_provider'
-export type Account = Pick<User, 'uid' | 'email'>
+export type Account = Pick<User, 'uid' | 'email' | 'displayName' | 'photoURL' | 'emailVerified'>
 export interface Profile {
   firstName: string
   lastName: string
@@ -22,6 +22,10 @@ export interface Profile {
   bio?: string
   interests?: string[]
   favoriteIds?: string[]
+  discoveryRadiusKm?: number | null
+  useCurrentLocation?: boolean
+  onboardingGoals?: string[]
+  onboardingStep?: number
 }
 export type Member = Partial<Profile> & { uid: string }
 export const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())
@@ -87,6 +91,9 @@ export async function getProfile(user: Account): Promise<Partial<Profile>> {
 }
 export async function saveProfile(uid: string, profile: Profile) {
   await setDoc(doc(db, 'users', uid), { ...profile, profileComplete: true }, { merge: true })
+}
+export async function saveOnboardingProgress(uid: string, profile: Partial<Profile>, onboardingStep: number) {
+  await setDoc(doc(db, 'users', uid), { ...profile, profileComplete: false, onboardingStep }, { merge: true })
 }
 export async function listMembers(): Promise<Member[]> {
   const snapshot = await getDocs(collection(db, 'users'))

@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
+import { ArrowRight, Camera, Check, ChevronLeft, GraduationCap, Heart, Lightbulb, Mail, MapPin, Sprout, Star, Users } from '@lucide/vue'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/card'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import AddressInput from '@/components/AddressInput.vue'
+import DisciplineIcon from '@/components/DisciplineIcon.vue'
 import BottomNav from '@/components/BottomNav.vue'
 import DiscoverView from '@/views/DiscoverView.vue'
 import SearchView from '@/views/SearchView.vue'
@@ -21,12 +22,13 @@ import ProfileView from '@/views/ProfileView.vue'
 import ProfileEditView from '@/views/ProfileEditView.vue'
 import FavoritesView from '@/views/FavoritesView.vue'
 import CommunityView from '@/views/CommunityView.vue'
-import { isValidEmail, hasSignInLink, pendingEmail, pendingSocialProvider, clearPendingSocialProvider, rememberedSessionChoice, setAuthPersistence, requestSignInLink, completeSignIn, signInWithSocialProvider, consumeSocialRedirect, observeAccount, getProfile, saveProfile, logout, type Account, type Profile } from '@/services/firebase'
+import { isValidEmail, hasSignInLink, pendingEmail, pendingSocialProvider, clearPendingSocialProvider, rememberedSessionChoice, setAuthPersistence, requestSignInLink, completeSignIn, signInWithSocialProvider, consumeSocialRedirect, observeAccount, getProfile, saveOnboardingProgress, saveProfile, logout, type Account, type Profile } from '@/services/firebase'
 import type { AddressSelection } from '@/services/places'
-import { loadActivities, loadMembers, resetStore, store } from '@/lib/store'
+import { disciplines } from '@/lib/activity'
+import { loadActivities, loadMembers, requestPosition, resetStore, store } from '@/lib/store'
 import { tabOf, useRoute } from '@/lib/router'
 
-type Screen = 'loading' | 'request' | 'sent' | 'confirm' | 'expired' | 'profile' | 'app' | 'account-error'
+type Screen = 'loading' | 'request' | 'sent' | 'confirm' | 'expired' | 'profile' | 'preferences' | 'complete' | 'app' | 'account-error'
 const screen = ref<Screen>('loading')
 const splashVisible = ref(import.meta.env.MODE !== 'test')
 const email = ref('')
@@ -43,14 +45,34 @@ const currentView = computed(() => views[route.value.name])
 const viewKey = computed(() => `${route.value.name}:${route.value.id ?? ''}`)
 const showNav = computed(() => !['participation', 'conversation'].includes(route.value.name))
 const selection = ref<AddressSelection | null>(null)
-const blankProfile = (): Profile => ({ firstName: '', lastName: '', userType: 'participant', address: '', addressLat: null, addressLng: null, photoUrl: '' })
+const blankProfile = (): Profile => ({ firstName: '', lastName: '', userType: 'participant', address: '', addressLat: null, addressLng: null, photoUrl: '', interests: [], discoveryRadiusKm: 10, useCurrentLocation: false, onboardingGoals: [], onboardingStep: 1 })
 const profile = reactive<Profile>(blankProfile())
+const isOnboardingScreen = computed(() => ['profile', 'preferences', 'complete'].includes(screen.value))
+const onboardingStep = computed(() => screen.value === 'preferences' ? 2 : screen.value === 'complete' ? 3 : 1)
+const signupDisciplines = computed(() => disciplines.filter(d => ['peinture', 'dessin', 'musique', 'danse', 'photo', 'theatre', 'street-art', 'artisanat', 'autre'].includes(d.id)))
+const goalOptions = [
+  { id: 'meet-people', label: 'Rencontrer du monde', icon: Users },
+  { id: 'discover', label: 'Découvrir de nouvelles pratiques', icon: Sprout },
+  { id: 'create', label: 'Créer ensemble', icon: Heart },
+  { id: 'learn', label: 'Apprendre', icon: GraduationCap },
+  { id: 'go-out', label: 'Sortir et se divertir', icon: Star },
+  { id: 'inspiration', label: 'Être inspiré·e', icon: Lightbulb },
+]
+const radiusOptions = [
+  { label: '2 km', value: 2 },
+  { label: '5 km', value: 5 },
+  { label: '10 km', value: 10 },
+  { label: '20 km', value: 20 },
+  { label: 'Toute la ville', value: null },
+]
+const photoInput = ref<HTMLInputElement | null>(null)
+const showCityEditor = ref(false)
 let unsubscribe: (() => void) | undefined
 let countdown: ReturnType<typeof setInterval> | undefined
 let splashTimer: ReturnType<typeof setTimeout> | undefined
 let accountRevision = 0
 let pendingSocialError = ''
-const titles: Record<string, string> = { request: 'Bienvenue', sent: 'Consulte ta boîte mail', confirm: 'Confirme ton e-mail', expired: 'Ce lien n’est plus valide', profile: 'Faisons connaissance', 'account-error': 'Chargement interrompu' }
+const titles: Record<string, string> = { request: 'Bienvenue', sent: 'Consulte ta boîte mail', confirm: 'Confirme ton e-mail', expired: 'Ce lien n’est plus valide', profile: 'Crée ton compte', preferences: 'Personnalise ton expérience', complete: 'Presque terminé !', 'account-error': 'Chargement interrompu' }
 const title = computed(() => titles[screen.value] || 'Connexion en cours…')
 function startCooldown() {
   clearInterval(countdown)
@@ -117,15 +139,21 @@ async function loadAccount(user: Account | null) {
     return
   }
   error.value = ''
+  email.value = user.email ?? ''
   store.account = user
   screen.value = 'loading'
   try {
     const saved = await getProfile(user)
     if (revision !== accountRevision) return
     Object.assign(profile, blankProfile(), saved)
+    if (!profile.firstName && user.displayName) profile.firstName = user.displayName
+    if (!profile.photoUrl && user.photoURL) profile.photoUrl = user.photoURL
     store.profile = { ...saved }
-    if (!saved.profileComplete) screen.value = 'profile'
-    else enterApp()
+    if (profile.useCurrentLocation) void requestPosition()
+    if (!saved.profileComplete) {
+      const step = Number(saved.onboardingStep) || 1
+      screen.value = step >= 3 ? 'complete' : step === 2 ? 'preferences' : 'profile'
+    } else enterApp()
   } catch {
     if (revision === accountRevision) { screen.value = 'account-error'; error.value = 'Impossible de charger ton profil. Vérifie ta connexion puis réessaie.' }
   }
@@ -148,20 +176,113 @@ async function finishLink() {
     } else { screen.value = 'confirm'; error.value = 'Connexion impossible. Vérifie ton e-mail et ta connexion, puis réessaie.' }
   } finally { busy.value = false }
 }
+function toggleInterest(id: string) {
+  const selected = profile.interests ?? []
+  profile.interests = selected.includes(id) ? selected.filter(item => item !== id) : [...selected, id]
+}
+function toggleGoal(id: string) {
+  const selected = profile.onboardingGoals ?? []
+  profile.onboardingGoals = selected.includes(id) ? selected.filter(item => item !== id) : [...selected, id]
+}
+function handleAddressSelection(value: AddressSelection | null) {
+  selection.value = value
+  if (value) {
+    profile.addressLat = value.lat
+    profile.addressLng = value.lng
+  } else {
+    profile.addressLat = null
+    profile.addressLng = null
+  }
+}
+async function chooseProfilePhoto(event: Event) {
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0]
+  input.value = ''
+  if (!file) return
+  if (!file.type.startsWith('image/')) { error.value = 'Choisis un fichier image.'; return }
+  if (file.size > 10 * 1024 * 1024) { error.value = 'Cette image est trop lourde (10 Mo maximum).'; return }
+  error.value = ''
+  const url = URL.createObjectURL(file)
+  try {
+    const image = new Image()
+    await new Promise<void>((resolve, reject) => { image.onload = () => resolve(); image.onerror = () => reject(new Error('invalid-image')); image.src = url })
+    const side = Math.min(image.naturalWidth, image.naturalHeight)
+    const canvas = document.createElement('canvas')
+    canvas.width = 384
+    canvas.height = 384
+    const context = canvas.getContext('2d')
+    if (!context) throw new Error('canvas-unavailable')
+    context.drawImage(image, (image.naturalWidth - side) / 2, (image.naturalHeight - side) / 2, side, side, 0, 0, 384, 384)
+    profile.photoUrl = canvas.toDataURL('image/webp', .84)
+  } catch { error.value = 'Cette image n’a pas pu être chargée. Réessaie avec un autre fichier.' }
+  finally { URL.revokeObjectURL(url) }
+}
 async function submitProfile() {
   error.value = ''
-  if (!profile.firstName.trim() || !profile.lastName.trim() || !profile.address.trim()) { error.value = 'Complète ton prénom, ton nom et ton adresse.'; return }
-  if (profile.photoUrl && !/^https?:\/\/\S+$/i.test(profile.photoUrl.trim())) { error.value = 'La photo doit être une URL commençant par http:// ou https://.'; return }
+  if (!profile.firstName.trim() || !profile.address.trim()) { error.value = 'Indique ton prénom ou pseudo et ta ville ou ton quartier.'; return }
+  if (!(profile.interests?.length)) { error.value = 'Choisis au moins un centre d’intérêt artistique.'; return }
   if (!account.value) return
   busy.value = true
   try {
-    const selected = selection.value?.address === profile.address.trim() ? selection.value : null
-    const saved: Profile = { firstName: profile.firstName.trim(), lastName: profile.lastName.trim(), userType: profile.userType, address: profile.address.trim(), photoUrl: profile.photoUrl.trim(), addressLat: selected?.lat ?? null, addressLng: selected?.lng ?? null }
-    await saveProfile(account.value.uid, saved)
-    Object.assign(profile, saved, { profileComplete: true })
-    enterApp()
-  } catch { error.value = 'Ton profil n’a pas pu être enregistré. Tes informations sont conservées, réessaie.' }
+    const saved: Partial<Profile> = { firstName: profile.firstName.trim(), lastName: profile.lastName.trim(), userType: 'participant', address: profile.address.trim(), photoUrl: profile.photoUrl, addressLat: profile.addressLat, addressLng: profile.addressLng, interests: [...(profile.interests ?? [])] }
+    await saveOnboardingProgress(account.value.uid, saved, 2)
+    Object.assign(profile, saved, { onboardingStep: 2 })
+    screen.value = 'preferences'
+  } catch { error.value = 'Ton profil n’a pas pu être enregistré. Réessaie.' }
   finally { busy.value = false }
+}
+async function toggleCurrentLocation() {
+  error.value = ''
+  if (profile.useCurrentLocation) {
+    profile.useCurrentLocation = false
+    store.gps = null
+    return
+  }
+  busy.value = true
+  try {
+    const enabled = await requestPosition()
+    if (!enabled) { error.value = 'La localisation n’est pas disponible. Tu peux continuer avec ta ville ou ton quartier.'; return }
+    profile.useCurrentLocation = true
+  } finally { busy.value = false }
+}
+async function savePreferences() {
+  if (!account.value) return
+  error.value = ''
+  busy.value = true
+  try {
+    const saved: Partial<Profile> = { discoveryRadiusKm: profile.discoveryRadiusKm ?? 10, useCurrentLocation: !!profile.useCurrentLocation, onboardingGoals: [...(profile.onboardingGoals ?? [])] }
+    await saveOnboardingProgress(account.value.uid, saved, 3)
+    Object.assign(profile, saved, { onboardingStep: 3 })
+    screen.value = 'complete'
+  } catch { error.value = 'Tes préférences n’ont pas pu être enregistrées. Réessaie.' }
+  finally { busy.value = false }
+}
+async function finishOnboarding() {
+  if (!account.value) return
+  error.value = ''
+  busy.value = true
+  try {
+    const saved: Profile = { ...profile, firstName: profile.firstName.trim(), lastName: profile.lastName.trim(), userType: 'participant', address: profile.address.trim(), addressLat: profile.addressLat, addressLng: profile.addressLng, photoUrl: profile.photoUrl, interests: [...(profile.interests ?? [])], discoveryRadiusKm: profile.discoveryRadiusKm ?? 10, useCurrentLocation: !!profile.useCurrentLocation, onboardingGoals: [...(profile.onboardingGoals ?? [])], onboardingStep: 3, profileComplete: true }
+    await saveProfile(account.value.uid, saved)
+    Object.assign(profile, saved)
+    enterApp()
+  } catch { error.value = 'Ton inscription n’a pas pu être finalisée. Réessaie.' }
+  finally { busy.value = false }
+}
+async function goBackOnboarding() {
+  if (screen.value === 'complete') {
+    screen.value = 'preferences'
+    profile.onboardingStep = 2
+    if (account.value) await saveOnboardingProgress(account.value.uid, {}, 2).catch(() => { error.value = 'La progression n’a pas pu être enregistrée.' })
+    return
+  }
+  if (screen.value === 'preferences') {
+    screen.value = 'profile'
+    profile.onboardingStep = 1
+    if (account.value) await saveOnboardingProgress(account.value.uid, {}, 1).catch(() => { error.value = 'La progression n’a pas pu être enregistrée.' })
+    return
+  }
+  await disconnect()
 }
 async function disconnect() {
   busy.value = true
@@ -205,13 +326,152 @@ onBeforeUnmount(() => { unsubscribe?.(); clearInterval(countdown); clearTimeout(
     <p v-if="store.notice" class="toast" role="status">{{ store.notice }}</p>
     <p v-if="error" class="toast toast--error" role="alert">{{ error }}</p>
   </div>
-  <div v-else class="novart-app" :class="{ 'novart-app--auth-home': screen === 'request' }">
-    <header v-if="account" class="site-header">
+  <div v-else class="novart-app" :class="{ 'novart-app--auth-home': screen === 'request', 'novart-app--onboarding': isOnboardingScreen }">
+    <header v-if="account && !isOnboardingScreen" class="site-header">
       <a href="/" class="wordmark wordmark--compact" aria-label="Novart, accueil"><span class="brand-logo brand-logo--primary" aria-hidden="true"></span></a>
       <Button v-if="screen !== 'loading'" variant="outline" size="sm" :disabled="busy" @click="disconnect">Se déconnecter</Button>
     </header>
 
-    <main class="auth-layout" :class="{ 'auth-layout--profile': screen === 'profile', 'auth-layout--home': screen === 'request', 'auth-layout--home-has-error': screen === 'request' && !!error }">
+    <main v-if="isOnboardingScreen" class="onboarding-screen">
+      <nav class="onboarding-topbar" aria-label="Étapes de création du compte">
+        <button type="button" class="onboarding-back" aria-label="Retour" :disabled="busy" @click="goBackOnboarding"><ChevronLeft aria-hidden="true" /></button>
+        <div class="onboarding-progress" aria-hidden="true">
+          <span v-for="step in [1, 2, 3]" :key="step" :class="{ 'is-active': step <= onboardingStep }"></span>
+        </div>
+        <span class="onboarding-step-number">{{ onboardingStep }}/3</span>
+      </nav>
+
+      <section class="onboarding-intro" :class="`onboarding-intro--${screen}`">
+        <div class="onboarding-intro-copy">
+          <h1>{{ title }}</h1>
+          <p v-if="screen === 'profile'">Rejoins la communauté NOVART et découvre des activités artistiques près de chez toi.</p>
+          <p v-else-if="screen === 'preferences'">Quelques choix pour te proposer des activités qui te correspondent.</p>
+          <p v-else>Un dernier petit pas pour rejoindre NOVART.</p>
+        </div>
+        <img
+          :src="screen === 'profile' ? '/images/novart-onboarding-profile-hd.webp' : screen === 'preferences' ? '/images/novart-onboarding-location-hd.webp' : '/images/novart-onboarding-complete-hd.webp'"
+          :alt="screen === 'profile' ? 'Le chat NOVART te souhaite la bienvenue' : screen === 'preferences' ? 'Le chat NOVART découvre une carte' : 'Le chat NOVART célèbre ton inscription'"
+          class="onboarding-mascot"
+          width="1536"
+          height="1024"
+          fetchpriority="high"
+          decoding="async"
+        />
+      </section>
+
+      <form v-if="screen === 'profile'" class="onboarding-form onboarding-form--profile" novalidate @submit.prevent="submitProfile">
+        <div class="onboarding-photo-row">
+          <label for="onboarding-photo" class="onboarding-photo-picker" :class="{ 'has-photo': !!profile.photoUrl }" aria-label="Ajouter une photo de profil, optionnel">
+            <img v-if="profile.photoUrl" :src="profile.photoUrl" alt="Aperçu de la photo de profil" />
+            <Camera v-else aria-hidden="true" />
+            <span class="onboarding-photo-add" aria-hidden="true">+</span>
+          </label>
+          <input id="onboarding-photo" ref="photoInput" class="sr-only" type="file" accept="image/*" @change="chooseProfilePhoto" />
+          <div class="onboarding-photo-copy"><strong>Photo de profil</strong><span>Ajoute une photo pour te présenter <span class="optional">(au choix)</span></span></div>
+        </div>
+
+        <div class="onboarding-fields">
+          <div class="onboarding-field">
+            <Label for="onboarding-name">Prénom ou pseudo <span class="required-mark">*</span></Label>
+            <Input id="onboarding-name" v-model="profile.firstName" autocomplete="given-name" placeholder="Ton prénom ou pseudo" required />
+          </div>
+          <div class="onboarding-field">
+            <Label for="onboarding-email">Adresse e-mail <span class="required-mark">*</span></Label>
+            <Input id="onboarding-email" v-model="email" type="email" autocomplete="email" readonly aria-readonly="true" />
+          </div>
+          <div class="onboarding-field">
+            <Label for="onboarding-city">Ville ou quartier <span class="required-mark">*</span></Label>
+            <div class="onboarding-address-field">
+              <MapPin class="onboarding-field-icon" aria-hidden="true" />
+              <AddressInput v-model="profile.address" input-id="onboarding-city" placeholder="Ex. : Paris, Belleville" @select="handleAddressSelection" />
+            </div>
+          </div>
+        </div>
+
+        <fieldset class="onboarding-interest-section">
+          <legend>Tes centres d’intérêt artistiques</legend>
+          <p>Choisis au moins un domaine qui t’intéresse.</p>
+          <div class="onboarding-interest-grid">
+            <button v-for="discipline in signupDisciplines" :key="discipline.id" type="button" class="onboarding-interest-chip" :class="{ 'is-selected': profile.interests?.includes(discipline.id) }" :aria-pressed="profile.interests?.includes(discipline.id) ?? false" @click="toggleInterest(discipline.id)">
+              <DisciplineIcon :discipline="discipline.id" />
+              <span>{{ discipline.label }}</span>
+              <span v-if="profile.interests?.includes(discipline.id)" class="onboarding-chip-check"><Check aria-hidden="true" /></span>
+            </button>
+          </div>
+        </fieldset>
+
+        <p v-if="error" class="onboarding-error" role="alert">{{ error }}</p>
+        <button type="submit" class="onboarding-submit" :disabled="busy">
+          <span>{{ busy ? 'Enregistrement…' : 'Créer mon profil' }}</span><ArrowRight aria-hidden="true" />
+        </button>
+      </form>
+
+      <form v-else-if="screen === 'preferences'" class="onboarding-form onboarding-form--preferences" novalidate @submit.prevent="savePreferences">
+        <section class="onboarding-preference-section">
+          <div class="onboarding-section-heading">
+            <MapPin aria-hidden="true" />
+            <div><h2>Jusqu’où veux-tu découvrir des activités ?</h2><p>Choisis un rayon autour de ta localisation.</p></div>
+          </div>
+          <div class="onboarding-radius-options" role="group" aria-label="Rayon de découverte">
+            <button v-for="option in radiusOptions" :key="option.label" type="button" :class="{ 'is-selected': profile.discoveryRadiusKm === option.value }" :aria-pressed="profile.discoveryRadiusKm === option.value" @click="profile.discoveryRadiusKm = option.value">{{ option.label }}</button>
+          </div>
+          <button type="button" class="onboarding-location-toggle" role="switch" :aria-checked="!!profile.useCurrentLocation" :disabled="busy" @click="toggleCurrentLocation">
+            <span class="onboarding-location-icon" aria-hidden="true"><span></span></span>
+            <span class="onboarding-location-copy"><strong>Utiliser ma localisation actuelle</strong><small>Pour te proposer des activités près de toi.</small></span>
+            <span class="onboarding-switch" aria-hidden="true"><span></span></span>
+          </button>
+          <button type="button" class="onboarding-city-toggle" :aria-expanded="showCityEditor" @click="showCityEditor = !showCityEditor">
+            <MapPin aria-hidden="true" />
+            <span><strong>Utiliser ma ville ou mon quartier</strong><small>{{ profile.address || 'Choisis ta zone de découverte' }}</small></span>
+            <ChevronLeft aria-hidden="true" />
+          </button>
+          <div v-if="showCityEditor" class="onboarding-city-editor">
+            <Label for="onboarding-city-edit">Ville ou quartier</Label>
+            <div class="onboarding-address-field">
+              <MapPin class="onboarding-field-icon" aria-hidden="true" />
+              <AddressInput v-model="profile.address" input-id="onboarding-city-edit" placeholder="Ex. : Paris, Belleville" @select="handleAddressSelection" />
+            </div>
+          </div>
+        </section>
+
+        <fieldset class="onboarding-preference-section onboarding-goal-section">
+          <legend><Heart aria-hidden="true" />Ce que tu recherches sur NOVART</legend>
+          <p>Tu peux choisir plusieurs options.</p>
+          <div class="onboarding-goal-grid">
+            <button v-for="goal in goalOptions" :key="goal.id" type="button" class="onboarding-goal-card" :class="{ 'is-selected': profile.onboardingGoals?.includes(goal.id) }" :aria-pressed="profile.onboardingGoals?.includes(goal.id) ?? false" @click="toggleGoal(goal.id)">
+              <component :is="goal.icon" aria-hidden="true" />
+              <span>{{ goal.label }}</span>
+              <span v-if="profile.onboardingGoals?.includes(goal.id)" class="onboarding-chip-check"><Check aria-hidden="true" /></span>
+            </button>
+          </div>
+        </fieldset>
+
+        <p v-if="error" class="onboarding-error" role="alert">{{ error }}</p>
+        <button type="submit" class="onboarding-submit" :disabled="busy">
+          <span>{{ busy ? 'Enregistrement…' : 'Continuer' }}</span><ArrowRight aria-hidden="true" />
+        </button>
+      </form>
+
+      <section v-else class="onboarding-complete">
+        <div class="onboarding-email-card">
+          <span class="onboarding-email-icon"><Mail aria-hidden="true" /><span><Check aria-hidden="true" /></span></span>
+          <h2>{{ account?.emailVerified ? 'Ton adresse est confirmée' : 'Ta connexion est confirmée' }}</h2>
+          <p>{{ account?.emailVerified ? 'Elle a été vérifiée lors de ta connexion sécurisée.' : 'Ton compte est prêt à rejoindre la communauté.' }}</p>
+          <span class="onboarding-email-address"><Mail aria-hidden="true" />{{ account?.email }}</span>
+        </div>
+        <ol class="onboarding-timeline">
+          <li class="is-complete"><span class="onboarding-timeline-mark"><Check aria-hidden="true" /></span><div><strong>Compte créé</strong><p>Tes informations sont bien enregistrées.</p></div></li>
+          <li class="is-complete"><span class="onboarding-timeline-mark"><Check aria-hidden="true" /></span><div><strong>{{ account?.emailVerified ? 'E-mail confirmé' : 'Connexion sécurisée' }}</strong><p>{{ account?.emailVerified ? 'Ton adresse e-mail est validée.' : 'Ton compte est authentifié.' }}</p></div></li>
+          <li class="is-current"><span class="onboarding-timeline-mark"><span>···</span></span><div><strong>C’est parti !</strong><p>Découvre les activités artistiques près de chez toi.</p></div></li>
+        </ol>
+        <p v-if="error" class="onboarding-error" role="alert">{{ error }}</p>
+        <button type="button" class="onboarding-submit" :disabled="busy" @click="finishOnboarding">
+          <span>{{ busy ? 'Ouverture de NOVART…' : 'Découvrir NOVART' }}</span><ArrowRight aria-hidden="true" />
+        </button>
+      </section>
+    </main>
+
+    <main v-else class="auth-layout" :class="{ 'auth-layout--profile': screen === 'profile', 'auth-layout--home': screen === 'request', 'auth-layout--home-has-error': screen === 'request' && !!error }">
       <section v-if="screen !== 'profile'" class="auth-story">
         <a href="/" class="wordmark wordmark--stacked" aria-label="Novart, accueil"><span class="brand-logo brand-logo--primary" aria-hidden="true"></span></a>
         <h1 class="brand-slogan"><span>L’art se crée ensemble</span></h1>
@@ -273,22 +533,6 @@ onBeforeUnmount(() => { unsubscribe?.(); clearInterval(countdown); clearTimeout(
             <p class="text-sm text-muted-foreground">Ce lien a expiré ou a déjà été utilisé. Demande un nouveau lien pour continuer.</p>
             <div class="space-y-2"><Label for="resend-email">Adresse e-mail</Label><Input id="resend-email" v-model="email" type="email" autocomplete="email" /></div>
             <Button class="w-full" type="submit" :disabled="busy || cooldown > 0">{{ cooldown > 0 ? `Renvoyer dans ${cooldown} s` : 'Recevoir un nouveau lien' }}</Button>
-          </form>
-          <form v-else-if="screen === 'profile'" class="space-y-5" novalidate @submit.prevent="submitProfile">
-            <div class="grid gap-5 sm:grid-cols-2">
-              <div class="space-y-2"><Label for="firstName">Prénom</Label><Input id="firstName" v-model="profile.firstName" autocomplete="given-name" placeholder="Ton prénom" /></div>
-              <div class="space-y-2"><Label for="lastName">Nom</Label><Input id="lastName" v-model="profile.lastName" autocomplete="family-name" placeholder="Ton nom" /></div>
-            </div>
-            <div class="space-y-2"><Label for="userType">Je souhaite participer en tant que</Label><Select v-model="profile.userType"><SelectTrigger id="userType" class="w-full"><SelectValue placeholder="Choisir un rôle" /></SelectTrigger><SelectContent><SelectItem value="participant">Participant</SelectItem><SelectItem value="organisateur">Organisateur</SelectItem></SelectContent></Select></div>
-            <div class="space-y-2"><Label for="address">Adresse</Label><AddressInput v-model="profile.address" @select="selection = $event" /></div>
-            <div class="space-y-2">
-              <Label for="photoUrl">Lien vers ta photo <span class="font-normal text-muted-foreground">(facultatif)</span></Label>
-              <div class="field-control">
-                <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="m10 13 4-4m-6 7-2 2a4 4 0 0 1-6-6l5-5a4 4 0 0 1 6 0m2 1 2-2a4 4 0 0 1 6 6l-5 5a4 4 0 0 1-6 0" transform="translate(2 0)"/></svg>
-                <Input id="photoUrl" v-model="profile.photoUrl" type="url" placeholder="https://…" />
-              </div>
-            </div>
-            <Button class="w-full" type="submit" :disabled="busy">{{ busy ? 'Enregistrement…' : 'Terminer mon inscription' }}</Button>
           </form>
           <Button v-else-if="screen === 'account-error'" class="w-full" @click="loadAccount(account)">Réessayer</Button>
           <Alert v-if="error" id="form-error" variant="destructive" role="alert"><AlertDescription>{{ error }}</AlertDescription></Alert>
