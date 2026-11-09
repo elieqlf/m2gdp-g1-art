@@ -51,7 +51,8 @@ export function notify(text: string, duration = 3500, background = false) {
   noticeTimer = setTimeout(() => {
     store.notice = ''
     const next = pending.shift()
-    if (next) setTimeout(() => notify(next.text, next.duration), 300)
+    // Rejoué comme message d'arrière-plan : il n'écrase pas une réponse affichée entre-temps.
+    if (next) setTimeout(() => notify(next.text, next.duration, true), 300)
   }, duration)
 }
 /** Message flottant quand la position de l'appareil n'a pas pu être obtenue. */

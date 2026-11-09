@@ -29,6 +29,14 @@
 }
 
 @font-face {
+  font-family: 'Caveat';
+  src: url('/fonts/caveat-variable.ttf') format('truetype');
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
   font-family: 'Sigmar One';
   src: url('/fonts/sigmar-one-regular.ttf') format('truetype');
   font-weight: 400;
@@ -89,13 +97,14 @@
 
 :root {
     color-scheme: light;
+    --novart-red: #DA0B19;
     --background: #FFFEF1;
     --foreground: #545454;
     --card: #FFFBFB;
     --card-foreground: #545454;
     --popover: #FFFBFB;
     --popover-foreground: #545454;
-    --primary: #C03C3A;
+    --primary: #DA0B19;
     --primary-foreground: #FFFBFB;
     --secondary: #FFFBFB;
     --secondary-foreground: #545454;
@@ -106,8 +115,8 @@
     --destructive: #781C27;
     --border: #D9D9D9;
     --input: #545454;
-    --ring: #781C27;
-    --chart-1: #C03C3A;
+    --ring: #DA0B19;
+    --chart-1: #DA0B19;
     --chart-2: #781C27;
     --chart-3: #545454;
     --chart-4: #D9D9D9;
@@ -115,12 +124,12 @@
     --radius: 1rem;
     --sidebar: #FFFBFB;
     --sidebar-foreground: #545454;
-    --sidebar-primary: #C03C3A;
+    --sidebar-primary: #DA0B19;
     --sidebar-primary-foreground: #FFFBFB;
     --sidebar-accent: #781C27;
     --sidebar-accent-foreground: #FFFBFB;
     --sidebar-border: #D9D9D9;
-    --sidebar-ring: #781C27;
+    --sidebar-ring: #DA0B19;
 }
 
 .dark {
@@ -220,6 +229,53 @@
   width: 100%;
   height: auto;
   object-fit: contain;
+}
+
+.brand-logo--primary {
+  aspect-ratio: 1333 / 1180;
+  background-color: var(--novart-red, #da0b19);
+  -webkit-mask: url('/images/novart-logo-primary-mask.webp') center / contain no-repeat;
+  mask: url('/images/novart-logo-primary-mask.webp') center / contain no-repeat;
+}
+
+.novart-splash-screen {
+  position: fixed;
+  z-index: 100;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: clamp(1.8rem, 5vh, 3rem);
+  min-height: 100svh;
+  padding: 1.5rem;
+  background: var(--background);
+}
+
+.novart-splash-mark {
+  display: block;
+  width: clamp(13rem, 68vw, 17rem);
+  height: auto;
+  animation: novart-splash-enter 520ms cubic-bezier(.2,.8,.2,1) both;
+}
+
+.novart-splash-spinner {
+  width: 1.55rem;
+  height: 1.55rem;
+  border: 3px solid rgb(218 11 25 / .16);
+  border-top-color: #DA0B19;
+  border-radius: 50%;
+  animation: novart-spinner 850ms linear infinite;
+}
+
+@keyframes novart-spinner { to { transform: rotate(360deg); } }
+@keyframes novart-splash-enter {
+  from { opacity: 0; transform: translateY(.45rem) scale(.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .novart-splash-mark { animation: none; }
+  .novart-splash-spinner { animation-duration: 1.8s; }
 }
 
 .auth-layout {
@@ -384,6 +440,375 @@
   color: var(--muted-foreground);
 }
 
+/* Accueil / connexion par e-mail : composition inspirée de la nouvelle maquette. */
+.novart-app--auth-home {
+  --novart-red: #DA0B19;
+  --primary: var(--novart-red);
+  --primary-foreground: #fffdfb;
+  --ring: var(--novart-red);
+  --auth-home-ink: #3c4650;
+  height: 100svh;
+  min-height: 100svh;
+  overflow: hidden;
+  background: var(--background);
+  color: var(--auth-home-ink);
+}
+
+.novart-app--auth-home .site-footer { display: none; }
+
+.auth-layout--home {
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  margin: 0 auto;
+  padding: max(.5rem, env(safe-area-inset-top)) clamp(1rem, 5vw, 1.4rem) max(.5rem, env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  gap: .95rem;
+  overflow: hidden;
+}
+
+.auth-layout--home .auth-story {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.auth-layout--home .wordmark--stacked {
+  width: clamp(9rem, 42vw, 11rem);
+}
+
+.novart-app--auth-home .brand-slogan {
+  position: relative;
+  width: max-content;
+  max-width: 100%;
+  margin: .12rem auto .78rem;
+  color: var(--novart-red);
+  font-family: 'Caveat', cursive;
+  font-size: clamp(2rem, 7.8vw, 2.5rem);
+  font-style: normal;
+  font-weight: 700;
+  letter-spacing: -.015em;
+  line-height: .95;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  transform: rotate(-1.5deg);
+}
+
+.auth-mascot-frame {
+  position: relative;
+  width: min(100%, 20rem);
+  max-height: 27svh;
+  margin: 0 auto;
+  aspect-ratio: 1520 / 1035;
+}
+
+.auth-layout--home .auth-mascot {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-height: 100%;
+  margin: 0;
+  object-fit: contain;
+  object-position: center;
+  transform: translateX(3%);
+}
+
+.novart-app .auth-panel--home {
+  width: 100%;
+  flex: 0 0 auto;
+  gap: 0;
+  padding: 0 !important;
+  overflow: visible;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  --tw-ring-color: transparent;
+  --tw-ring-shadow: 0 0 #0000;
+}
+
+.novart-app .auth-panel-content--home {
+  display: flex;
+  flex-direction: column;
+  gap: .85rem;
+  padding: 0 !important;
+}
+
+.novart-app .auth-panel-content--home [data-slot="alert"] {
+  padding: .5rem .7rem;
+  font-size: .78rem;
+  line-height: 1.25;
+}
+
+.auth-home-form {
+  display: flex;
+  flex-direction: column;
+  gap: .85rem;
+}
+
+.auth-social-buttons {
+  display: grid;
+  gap: .52rem;
+}
+
+.auth-social-button {
+  display: flex;
+  width: 100%;
+  min-height: 3rem;
+  align-items: center;
+  justify-content: center;
+  gap: .75rem;
+  padding: .55rem 1rem;
+  border: 1px solid #e8e4e2;
+  border-radius: 1.1rem;
+  background: rgb(255 255 255 / .78);
+  color: var(--auth-home-ink);
+  font: inherit;
+  font-size: .94rem;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgb(60 70 80 / .035);
+  cursor: pointer;
+  transition: border-color 140ms ease, background-color 140ms ease, transform 140ms ease;
+}
+
+.auth-social-button:hover {
+  border-color: #d6cdca;
+  background: #fff;
+  transform: translateY(-1px);
+}
+
+.auth-social-button:disabled {
+  cursor: wait;
+  opacity: .7;
+}
+
+.auth-social-button:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--primary) 45%, transparent);
+  outline-offset: 2px;
+}
+
+.auth-social-icon {
+  display: block;
+  width: 1.5rem;
+  height: 1.5rem;
+  flex: 0 0 auto;
+}
+
+.auth-home-divider {
+  display: flex;
+  align-items: center;
+  gap: .65rem;
+  color: #85898e;
+  font-size: .95rem;
+  line-height: 1;
+}
+
+.auth-home-divider::before,
+.auth-home-divider::after {
+  height: 1px;
+  flex: 1;
+  background: #e6e0de;
+  content: '';
+}
+
+.auth-remember-control {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: .5rem;
+  align-self: stretch;
+  padding-inline: .2rem;
+  color: #6e747a;
+  font-size: .8rem;
+  line-height: 1.35;
+  cursor: pointer;
+}
+
+.auth-remember-control input {
+  width: 1.05rem;
+  height: 1.05rem;
+  flex: 0 0 auto;
+  accent-color: var(--novart-red);
+}
+
+.auth-home-field { min-width: 0; }
+
+.novart-app .auth-home-label {
+  display: block;
+  margin-bottom: .2rem;
+  color: var(--auth-home-ink);
+  font-size: .88rem;
+  font-weight: 500;
+}
+
+.novart-app .auth-panel--home .field-control [data-slot="input"] {
+  min-height: 3.2rem;
+  height: 3.2rem;
+  padding: .6rem 1rem .6rem 3.1rem;
+  border: 1px solid #e7e0dc;
+  border-radius: .9rem;
+  background: #fffefa;
+  color: var(--auth-home-ink);
+  font-size: .95rem;
+  box-shadow: 0 1px 4px rgb(60 70 80 / .035);
+}
+
+.novart-app .auth-panel--home .field-control [data-slot="input"]::placeholder {
+  color: #a9a4a2;
+  opacity: 1;
+}
+
+.novart-app .auth-panel--home .field-control [data-slot="input"]:focus-visible {
+  border-color: var(--primary);
+  outline: 2px solid color-mix(in srgb, var(--primary) 25%, transparent);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary) 10%, transparent);
+}
+
+.novart-app .auth-panel--home .field-icon {
+  top: 50%;
+  left: 1rem;
+  width: 1.35rem;
+  height: 1.35rem;
+  color: var(--auth-home-ink);
+  transform: translateY(-50%);
+}
+
+.novart-app .auth-continue-button {
+  position: relative;
+  width: 100%;
+  min-height: 3.4rem !important;
+  padding: .6rem 3.25rem;
+  border-radius: .9rem;
+  background: var(--novart-red);
+  color: var(--primary-foreground);
+  font-size: 1.08rem !important;
+  font-weight: 600;
+  box-shadow: 0 8px 18px rgb(218 11 25 / .16);
+  transition: transform 140ms ease, box-shadow 140ms ease, background-color 140ms ease;
+}
+
+.novart-app .auth-continue-button:hover:not(:disabled) {
+  background: #bd0715;
+  box-shadow: 0 10px 22px rgb(218 11 25 / .22);
+  transform: translateY(-1px);
+}
+
+.novart-app .auth-continue-button > svg {
+  position: absolute;
+  right: 1rem;
+  width: 1.35rem;
+  height: 1.35rem;
+}
+
+.auth-account-switch {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: .3rem .4rem;
+  margin: .35rem 0 0;
+  color: #7a7d82;
+  font-size: .82rem;
+  line-height: 1.25;
+  text-align: center;
+}
+
+.auth-account-switch-link {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--novart-red);
+  font: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: .18em;
+  cursor: pointer;
+}
+
+.auth-account-switch-link:focus-visible {
+  border-radius: .15rem;
+  outline: 2px solid var(--ring);
+  outline-offset: 3px;
+}
+
+@media (max-height: 740px) {
+  .auth-layout--home {
+    padding-block: .45rem;
+    gap: .65rem;
+  }
+
+  .auth-layout--home .wordmark--stacked { width: min(9.25rem, 40vw); }
+  .novart-app--auth-home .brand-slogan { margin: .1rem auto .65rem; font-size: clamp(1.8rem, 6vh, 2.15rem); }
+  .auth-mascot-frame { width: min(100%, 18rem); max-height: 21svh; }
+  .auth-home-form { gap: .7rem; }
+  .auth-social-buttons { gap: .42rem; }
+  .auth-social-button { min-height: 2.8rem; font-size: .88rem; }
+  .auth-home-divider { font-size: .82rem; }
+  .novart-app .auth-home-label { font-size: .84rem; }
+  .novart-app .auth-panel--home .field-control [data-slot="input"] { min-height: 2.9rem; height: 2.9rem; }
+  .auth-remember-control { font-size: .78rem; }
+  .novart-app .auth-continue-button { min-height: 3.05rem !important; font-size: 1rem !important; }
+  .auth-account-switch { font-size: .78rem; }
+  .auth-account-switch { margin-top: .3rem; }
+}
+
+@media (max-width: 23rem) {
+  .auth-layout--home .auth-mascot { transform: translateX(1.3%); }
+}
+
+@media (max-height: 620px) and (orientation: portrait) {
+  .auth-layout--home .wordmark--stacked { width: min(8rem, 37vw); }
+  .novart-app--auth-home .brand-slogan { margin: .04rem auto .38rem; font-size: 1.65rem; }
+  .auth-mascot-frame { width: min(100%, 15rem); max-height: 17svh; }
+  .auth-layout--home { gap: .3rem; }
+  .auth-home-form { gap: .5rem; }
+  .auth-social-buttons { gap: .28rem; }
+  .auth-social-button { min-height: 2.6rem; }
+  .novart-app .auth-panel--home .field-control [data-slot="input"] { min-height: 2.7rem; height: 2.7rem; }
+  .novart-app .auth-continue-button { min-height: 2.8rem !important; }
+  .auth-account-switch { margin-top: .25rem; }
+}
+
+@media (max-height: 740px) and (orientation: portrait) {
+  .auth-layout--home-has-error { gap: .25rem; padding-block: .25rem; }
+  .auth-layout--home-has-error .wordmark--stacked { width: min(8rem, 36vw); }
+  .auth-layout--home-has-error .brand-slogan { margin: .03rem auto .3rem; font-size: 1.55rem; }
+  .auth-layout--home-has-error .auth-mascot-frame { width: min(100%, 13rem); max-height: 14svh; }
+  .auth-layout--home-has-error .auth-panel-content--home { gap: .5rem; }
+  .auth-layout--home-has-error .auth-home-form { gap: .28rem; }
+  .auth-layout--home-has-error .auth-social-buttons { gap: .25rem; }
+  .auth-layout--home-has-error .auth-social-button { min-height: 2.5rem; }
+  .novart-app .auth-layout--home-has-error .auth-panel--home .field-control [data-slot="input"] { min-height: 2.6rem; height: 2.6rem; }
+  .novart-app .auth-layout--home-has-error .auth-continue-button { min-height: 2.7rem !important; }
+}
+
+@media (max-height: 600px) and (orientation: landscape) {
+  .novart-app--auth-home { --app-width: 56rem; }
+  .auth-layout--home {
+    display: grid;
+    grid-template-columns: minmax(0, .85fr) minmax(0, 1fr);
+    align-items: center;
+    gap: .9rem;
+    padding: .4rem .8rem;
+  }
+  .auth-layout--home .wordmark--stacked { width: min(7rem, 18vh); }
+  .novart-app--auth-home .brand-slogan { margin: .05rem auto .35rem; font-size: 1.45rem; }
+  .auth-mascot-frame { width: min(100%, 39vh); max-height: 33svh; }
+  .auth-home-form { gap: .32rem; }
+  .auth-social-buttons { gap: .3rem; }
+  .auth-social-button { min-height: 2.45rem; font-size: .82rem; }
+  .auth-social-icon { width: 1.35rem; height: 1.35rem; }
+  .auth-home-divider { font-size: .75rem; }
+  .novart-app .auth-home-label { font-size: .78rem; }
+  .novart-app .auth-panel--home .field-control [data-slot="input"] { min-height: 2.65rem; height: 2.65rem; }
+  .auth-remember-control { font-size: .72rem; }
+  .novart-app .auth-continue-button { min-height: 2.7rem !important; font-size: .9rem !important; }
+  .auth-account-switch { font-size: .71rem; }
+}
+
 /* Carte de la communauté (UsersMap.vue). */
 .novart-app .users-map-card {
   margin-block: 0 1.5rem;
@@ -411,10 +836,10 @@
   line-height: 1.6;
 }
 
-/* Écran plus large que le téléphone : la colonne de l'application est posée
-   sur un fond rosé, avec une ombre légère. */
+/* Sur les écrans larges, l'application garde ses proportions mobiles tout en
+   se fondant dans le même arrière-plan que la page. */
 @media (min-width: 40rem) {
-  body { background: color-mix(in srgb, var(--primary) 7%, var(--card)); }
-  .novart-app { box-shadow: 0 0 0 1px color-mix(in srgb, var(--foreground) 10%, transparent), 0 10px 40px rgb(120 28 39 / .08); }
+  body { background: var(--background); }
+  .novart-app { box-shadow: none; }
   .auth-layout { padding-inline: 1.5rem; }
 }

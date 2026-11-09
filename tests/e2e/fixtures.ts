@@ -52,6 +52,13 @@ export const hasSignInLink = () => false;
 export const pendingEmail = () => '';
 export const requestSignInLink = async () => {};
 export const completeSignIn = async () => {};
+export const pendingSocialProvider = () => null;
+export const clearPendingSocialProvider = () => {};
+export const rememberedSessionChoice = () => false;
+export const setAuthPersistence = async () => {};
+// Redirection Google simulée : au retour, la session s'ouvre.
+export const signInWithSocialProvider = async () => { observer?.(me); };
+export const consumeSocialRedirect = async () => null;
 export const observeAccount = callback => { observer = callback; queueMicrotask(() => callback(mode === 'request' ? null : me)); return () => {}; };
 export const getProfile = async () => ({ ...profile });
 export const saveProfile = async (uid, data) => { profile = { ...profile, ...data, profileComplete: true }; };
@@ -153,16 +160,17 @@ export async function openApp(page: Page, mode: Mode, hash = '') {
 }
 
 /** Vérifie polices et visuels réellement chargés, l'absence de défilement horizontal, puis enregistre une capture. */
-export async function capture(page: Page, testInfo: TestInfo, name: string, selector?: string) {
-  const assets = await page.evaluate(async selector => {
+/** `heading` : police de titre attendue (Sigmar One dans l'appli, Caveat sur l'écran de connexion refondu). */
+export async function capture(page: Page, testInfo: TestInfo, name: string, selector?: string, heading = 'Sigmar One') {
+  const assets = await page.evaluate(async ({ selector, heading }) => {
     await document.fonts.ready
     const images = selector ? Array.from(document.querySelectorAll<HTMLImageElement>(selector)) : []
     images.forEach(image => { image.loading = 'eager' })
     await Promise.all(images.map(image => image.decode().catch(() => undefined)))
     const loaded = (family: string) => Array.from(document.fonts).some(font => font.family.replaceAll('"', '') === family && font.status === 'loaded')
-    return { imagesLoaded: !selector || (images.length > 0 && images.every(image => image.naturalWidth > 0)), poppins: loaded('Poppins'), sigmar: loaded('Sigmar One') }
-  }, selector)
-  expect(assets).toEqual({ imagesLoaded: true, poppins: true, sigmar: true })
+    return { imagesLoaded: !selector || (images.length > 0 && images.every(image => image.naturalWidth > 0)), poppins: loaded('Poppins'), heading: loaded(heading) }
+  }, { selector, heading })
+  expect(assets).toEqual({ imagesLoaded: true, poppins: true, heading: true })
   await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
   await page.screenshot({ path: testInfo.outputPath(name + '.png'), fullPage: true })
 }

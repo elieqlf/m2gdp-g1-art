@@ -8,7 +8,9 @@ import { navigate } from '../src/lib/router'
 vi.mock('../src/services/firebase', () => ({
   isValidEmail: (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim()),
   hasSignInLink: vi.fn(() => false), pendingEmail: vi.fn(() => ''),
-  requestSignInLink: vi.fn(), completeSignIn: vi.fn(), observeAccount: vi.fn(),
+  pendingSocialProvider: vi.fn(() => null), clearPendingSocialProvider: vi.fn(),
+  rememberedSessionChoice: vi.fn(() => false), setAuthPersistence: vi.fn(async () => undefined),
+  requestSignInLink: vi.fn(), completeSignIn: vi.fn(), signInWithSocialProvider: vi.fn(), consumeSocialRedirect: vi.fn(async () => null), observeAccount: vi.fn(),
   getProfile: vi.fn(), saveProfile: vi.fn(), listMembers: vi.fn(), logout: vi.fn(), updateProfile: vi.fn(), setFavorite: vi.fn(),
 }))
 vi.mock('../src/services/activities', () => ({ listActivities: vi.fn(async () => []), getActivity: vi.fn(async () => null), ActivityFullError: class extends Error {}, watchMyOffers: vi.fn(() => () => {}) }))
