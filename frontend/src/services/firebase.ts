@@ -45,9 +45,9 @@ export interface SocialIdentity { firstName: string; lastName: string; photoUrl:
  * (setPersistence déplace la session déjà ouverte).
  */
 export async function signInWithSocialProvider(providerName: 'apple' | 'google', remember: boolean): Promise<SocialIdentity> {
-  const provider = providerName === 'google'
-    ? new GoogleAuthProvider().setCustomParameters({ prompt: 'select_account' })
-    : new OAuthProvider('apple.com').addScope('email').addScope('name')
+  const provider = providerName === 'google' ? new GoogleAuthProvider() : new OAuthProvider('apple.com')
+  if (provider instanceof GoogleAuthProvider) provider.setCustomParameters({ prompt: 'select_account' })
+  else { provider.addScope('email'); provider.addScope('name') }
   const { user } = await signInWithPopup(auth, provider)
   await setAuthPersistence(remember)
   const [firstName = '', ...rest] = (user.displayName ?? '').trim().split(/\s+/)
