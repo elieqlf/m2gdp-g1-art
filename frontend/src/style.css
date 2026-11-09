@@ -736,7 +736,7 @@
   .auth-layout--home .wordmark--stacked { width: min(9.25rem, 40vw); }
   .novart-app--auth-home .brand-slogan { margin: .1rem auto .65rem; font-size: clamp(1.8rem, 6vh, 2.15rem); }
   .auth-mascot-frame { width: min(100%, 18rem); max-height: 21svh; }
-  .auth-home-form { gap: .52rem; }
+  .auth-home-form { gap: .7rem; }
   .auth-social-buttons { gap: .42rem; }
   .auth-social-button { min-height: 2.8rem; font-size: .88rem; }
   .auth-home-divider { font-size: .82rem; }
@@ -757,7 +757,7 @@
   .novart-app--auth-home .brand-slogan { margin: .04rem auto .38rem; font-size: 1.65rem; }
   .auth-mascot-frame { width: min(100%, 15rem); max-height: 17svh; }
   .auth-layout--home { gap: .3rem; }
-  .auth-home-form { gap: .35rem; }
+  .auth-home-form { gap: .5rem; }
   .auth-social-buttons { gap: .28rem; }
   .auth-social-button { min-height: 2.6rem; }
   .novart-app .auth-panel--home .field-control [data-slot="input"] { min-height: 2.7rem; height: 2.7rem; }
