@@ -98,7 +98,7 @@
 :root {
     color-scheme: light;
     --novart-red: #FF0000;
-    --background: #FFFEF1;
+    --background: #F5F5F5;
     --foreground: #545454;
     --card: #FFFBFB;
     --card-foreground: #545454;
@@ -328,6 +328,100 @@
 .auth-panel [data-slot="card-description"] {
   font-size: 1rem;
   line-height: 1.5;
+}
+
+/* L’écran d’envoi du lien garde la hiérarchie douce de la connexion et tient
+   dans la hauteur d’un téléphone sans le grand titre d’affichage. */
+.auth-layout--status .form-title {
+  margin: 0;
+  color: var(--novart-red);
+  font-family: var(--font-sans);
+  font-size: clamp(1.65rem, 6.8vw, 2.15rem);
+  font-weight: 600;
+  letter-spacing: -.035em;
+  line-height: 1.18;
+  text-align: center;
+}
+
+.auth-layout--sent {
+  gap: .7rem;
+  padding-block: .8rem;
+}
+
+.auth-layout--sent .auth-story {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.auth-layout--sent .wordmark--stacked { width: clamp(5.5rem, 20vw, 6.5rem); }
+.auth-layout--sent .brand-slogan { margin: .2rem auto .4rem; font-size: 1.1rem; }
+.auth-layout--sent .auth-mascot { width: 7.25rem; }
+
+.novart-app .auth-layout--sent .auth-panel {
+  padding-block: .75rem;
+  border: 1px solid color-mix(in srgb, var(--foreground) 10%, transparent);
+  border-radius: 1.2rem;
+  background: var(--card);
+  box-shadow: 0 8px 24px rgb(60 70 80 / .06);
+}
+
+.auth-layout--sent .auth-panel [data-slot="card-header"] { padding: .35rem 1.1rem .55rem; }
+.auth-layout--sent .auth-panel [data-slot="card-content"] { padding: 0 1.1rem .45rem; }
+
+.auth-sent-content {
+  display: grid;
+  justify-items: center;
+  gap: .65rem;
+  text-align: center;
+}
+
+.auth-sent-icon {
+  position: relative;
+  width: 3rem;
+  height: 3rem;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: rgb(255 0 0 / .08);
+  color: var(--novart-red);
+}
+
+.auth-sent-icon > svg:first-child { width: 1.55rem; height: 1.55rem; }
+.auth-sent-icon > svg:last-child { position: absolute; right: -.15rem; bottom: -.1rem; width: 1.05rem; height: 1.05rem; padding: .15rem; border-radius: 50%; background: var(--novart-red); color: white; }
+.auth-sent-lead, .auth-sent-next, .auth-sent-hint { margin: 0; }
+.auth-sent-lead { font-size: .93rem; line-height: 1.4; }
+
+.auth-sent-address {
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .55rem;
+  padding: .65rem .8rem;
+  border: 1px solid var(--border);
+  border-radius: .9rem;
+  background: #fff;
+  color: var(--auth-home-ink, var(--foreground));
+  font-size: .9rem;
+  overflow-wrap: anywhere;
+}
+
+.auth-sent-address > svg { width: 1.1rem; height: 1.1rem; flex: 0 0 auto; color: var(--novart-red); }
+.auth-sent-address > strong { min-width: 0; overflow-wrap: anywhere; }
+.auth-sent-next { max-width: 34ch; font-size: .9rem; line-height: 1.5; }
+.auth-sent-hint { color: var(--muted-foreground); font-size: .8rem; line-height: 1.4; }
+.novart-app .auth-layout--sent .auth-sent-resend { width: 100%; min-height: 2.9rem; border-color: color-mix(in srgb, var(--novart-red) 40%, white); color: var(--novart-red); }
+.novart-app .auth-layout--sent .auth-sent-resend:disabled { opacity: .72; color: #757b82; }
+.novart-app .auth-layout--sent .auth-sent-change { min-height: 2.25rem; padding-block: .2rem; color: var(--novart-red); text-decoration: underline; text-underline-offset: 3px; }
+
+@media (max-height: 740px) {
+  .auth-layout--sent { gap: .45rem; padding-block: .45rem; }
+  .auth-layout--sent .wordmark--stacked { width: 5.25rem; }
+  .auth-layout--sent .brand-slogan { margin: .1rem auto .25rem; }
+  .auth-layout--sent .auth-mascot { width: 6.25rem; }
+  .auth-sent-content { gap: .5rem; }
 }
 
 /* Création du profil : le titre prend toute la largeur, la mascotte reste

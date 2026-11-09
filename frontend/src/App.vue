@@ -101,6 +101,9 @@ async function sendLink() {
 }
 function socialErrorMessage(cause: unknown, provider?: 'Apple' | 'Google') {
   const code = (cause as { code?: string })?.code
+  if (code === 'auth/popup-closed-by-user') return 'La fenêtre Google a été fermée avant la fin de la connexion. Réessaie.'
+  if (code === 'auth/popup-blocked') return 'Ton navigateur a bloqué la fenêtre Google. Autorise les fenêtres pop-up pour NOVART, puis réessaie.'
+  if (code === 'auth/cancelled-popup-request') return 'Une connexion Google est déjà en cours. Termine-la ou ferme sa fenêtre, puis réessaie.'
   if (code === 'auth/unauthorized-domain') return 'Ajoute cette URL aux domaines autorisés de Firebase Authentication.'
   if (code === 'auth/operation-not-allowed') return `Active la connexion ${provider ?? 'sociale'} dans Firebase Authentication.`
   if (code === 'auth/invalid-oauth-provider' || code === 'auth/invalid-client-id') return `La configuration OAuth ${provider ?? ''} est incomplète dans Firebase.`
@@ -111,7 +114,10 @@ function socialErrorMessage(cause: unknown, provider?: 'Apple' | 'Google') {
 async function startSocialSignIn(provider: 'apple' | 'google') {
   error.value = ''
   busy.value = true
-  try { await signInWithSocialProvider(provider, rememberMe.value) }
+  try {
+    const result = await signInWithSocialProvider(provider, rememberMe.value)
+    if (result && account.value?.uid !== result.user.uid) await loadAccount(result.user)
+  }
   catch (cause) {
     clearPendingSocialProvider()
     error.value = socialErrorMessage(cause, provider === 'apple' ? 'Apple' : 'Google')
@@ -500,7 +506,7 @@ onBeforeUnmount(() => { unsubscribe?.(); clearInterval(countdown); accountRevisi
       </section>
     </main>
 
-    <main v-else class="auth-layout" :class="{ 'auth-layout--profile': screen === 'profile', 'auth-layout--home': screen === 'request', 'auth-layout--home-has-error': screen === 'request' && !!error }">
+    <main v-else class="auth-layout" :class="{ 'auth-layout--profile': screen === 'profile', 'auth-layout--home': screen === 'request', 'auth-layout--home-has-error': screen === 'request' && !!error, 'auth-layout--status': ['sent', 'confirm', 'expired', 'account-error'].includes(screen), 'auth-layout--sent': screen === 'sent' }">
       <section v-if="screen !== 'profile'" class="auth-story">
         <a href="/" class="wordmark wordmark--stacked" aria-label="Novart, accueil"><span class="brand-logo brand-logo--primary" aria-hidden="true"></span></a>
         <h1 class="brand-slogan"><span>L’art se crée ensemble</span></h1>
@@ -546,11 +552,14 @@ onBeforeUnmount(() => { unsubscribe?.(); clearInterval(countdown); accountRevisi
               <button type="button" class="auth-account-switch-link" @click="toggleAccountIntent">{{ accountIntent === 'signin' ? 'Créer un compte' : 'Se connecter' }}</button>
             </p>
           </form>
-          <div v-else-if="screen === 'sent'" class="space-y-5">
-            <p class="text-sm leading-relaxed">Un lien a été envoyé à <strong class="break-all">{{ email }}</strong>. Ouvre-le pour continuer. Si tu l’ouvres sur un autre appareil, confirme la même adresse e-mail.</p>
-            <p class="text-sm text-muted-foreground">Si tu découvres NOVART, tu créeras ton profil en trois étapes après cette connexion. Si ton profil existe déjà, tu arriveras directement dans l’application. Pense aussi à vérifier tes courriers indésirables.</p>
-            <Button variant="outline" class="w-full" :disabled="busy || cooldown > 0" @click="sendLink">{{ cooldown > 0 ? `Renvoyer dans ${cooldown} s` : 'Renvoyer le lien' }}</Button>
-            <Button variant="link" class="w-full" @click="screen = 'request'; error = ''">Utiliser une autre adresse</Button>
+          <div v-else-if="screen === 'sent'" class="auth-sent-content">
+            <span class="auth-sent-icon" aria-hidden="true"><Mail /><Check /></span>
+            <p class="auth-sent-lead">Le lien pour accéder à NOVART a été envoyé à</p>
+            <div class="auth-sent-address"><Mail aria-hidden="true" /><strong>{{ email }}</strong></div>
+            <p class="auth-sent-next">Ouvre-le sur cet appareil pour te connecter. Si tu découvres NOVART, tu pourras ensuite créer ton profil.</p>
+            <p class="auth-sent-hint">Tu ne vois pas le message ? Regarde dans tes courriers indésirables.</p>
+            <Button variant="outline" class="auth-sent-resend" :disabled="busy || cooldown > 0" @click="sendLink">{{ cooldown > 0 ? `Renvoyer le lien dans ${cooldown} s` : 'Renvoyer le lien' }}</Button>
+            <Button variant="link" class="auth-sent-change" @click="screen = 'request'; error = ''">Utiliser une autre adresse</Button>
           </div>
           <form v-else-if="screen === 'confirm'" class="space-y-5" novalidate @submit.prevent="finishLink">
             <p class="text-sm text-muted-foreground">Tu as ouvert le lien sur un autre appareil ? Indique la même adresse e-mail que celle à laquelle il a été envoyé.</p>

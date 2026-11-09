@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app'
-import { browserLocalPersistence, browserSessionPersistence, getAuth, getRedirectResult, GoogleAuthProvider, sendSignInLinkToEmail, isSignInWithEmailLink, OAuthProvider, onAuthStateChanged, setPersistence, signInWithEmailLink, signInWithRedirect, signOut, type User } from 'firebase/auth'
+import { browserLocalPersistence, browserSessionPersistence, getAuth, getRedirectResult, GoogleAuthProvider, sendSignInLinkToEmail, isSignInWithEmailLink, OAuthProvider, onAuthStateChanged, setPersistence, signInWithEmailLink, signInWithPopup, signInWithRedirect, signOut, type User } from 'firebase/auth'
 import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, getDocs, serverTimestamp, arrayUnion, arrayRemove, deleteField } from 'firebase/firestore'
 import { firebaseConfig } from '../../../public/firebase-config.js'
 
@@ -40,13 +40,15 @@ export async function setAuthPersistence(remember: boolean) {
 }
 export async function signInWithSocialProvider(providerName: 'apple' | 'google', remember: boolean) {
   await setAuthPersistence(remember)
-  localStorage.setItem(SOCIAL_PROVIDER_KEY, providerName)
   if (providerName === 'google') {
     const provider = new GoogleAuthProvider()
     provider.setCustomParameters({ prompt: 'select_account' })
-    await signInWithRedirect(auth, provider)
-    return
+    const result = await signInWithPopup(auth, provider)
+    localStorage.removeItem(SOCIAL_PROVIDER_KEY)
+    localStorage.removeItem(REMEMBER_KEY)
+    return result
   }
+  localStorage.setItem(SOCIAL_PROVIDER_KEY, providerName)
   const provider = new OAuthProvider('apple.com')
   provider.addScope('email')
   provider.addScope('name')
