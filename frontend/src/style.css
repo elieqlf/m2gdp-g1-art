@@ -332,7 +332,14 @@
   border-color: var(--primary);
 }
 
-.novart-app :is([data-slot="input"], [data-slot="select-trigger"], [data-slot="button"], a):focus-visible,
+/* Champs Shadcn : bordure rouge et halo rosé plutôt qu'un contour sombre. */
+.novart-app [data-slot="input"]:focus-visible {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 16%, var(--card));
+}
+
+.novart-app :is([data-slot="select-trigger"], [data-slot="button"], a):focus-visible,
 [data-slot="select-item"]:focus-visible {
   outline: 2px solid var(--ring);
   outline-offset: 3px;
