@@ -21,7 +21,7 @@ Firebase détermine l’écran à afficher selon l’état de connexion et le pr
 
 ## Parcours disponibles
 
-- Connexion et inscription par lien envoyé par Firebase Authentication.
+- Connexion et inscription par lien e-mail, avec retour Google OAuth lorsque le fournisseur est activé dans Firebase.
 - Confirmation de l’e-mail quand le lien est ouvert dans un autre navigateur.
 - Nouveau lien après expiration et délai de 60 secondes avant renvoi.
 - Après authentification, création du profil en trois étapes ; les profils existants vont

@@ -30,7 +30,7 @@ import { tabOf, useRoute } from '@/lib/router'
 
 type Screen = 'loading' | 'request' | 'sent' | 'confirm' | 'expired' | 'profile' | 'preferences' | 'complete' | 'app' | 'account-error'
 const screen = ref<Screen>('loading')
-const splashVisible = ref(import.meta.env.MODE !== 'test')
+const splashVisible = computed(() => import.meta.env.MODE !== 'test' && screen.value === 'loading')
 const email = ref('')
 const accountIntent = ref<'signin' | 'signup'>('signin')
 const rememberMe = ref(rememberedSessionChoice())
@@ -69,11 +69,11 @@ const photoInput = ref<HTMLInputElement | null>(null)
 const showCityEditor = ref(false)
 let unsubscribe: (() => void) | undefined
 let countdown: ReturnType<typeof setInterval> | undefined
-let splashTimer: ReturnType<typeof setTimeout> | undefined
 let accountRevision = 0
+let authStateReady = false
 let pendingSocialError = ''
-const titles: Record<string, string> = { request: 'Bienvenue', sent: 'Consulte ta boîte mail', confirm: 'Confirme ton e-mail', expired: 'Ce lien n’est plus valide', profile: 'Crée ton profil', preferences: 'Personnalise ton expérience', complete: 'Presque terminé !', 'account-error': 'Chargement interrompu' }
-const title = computed(() => titles[screen.value] || 'Connexion en cours…')
+const titles: Record<string, string> = { loading: '', request: 'Bienvenue', sent: 'Consulte ta boîte mail', confirm: 'Confirme ton e-mail', expired: 'Ce lien n’est plus valide', profile: 'Crée ton profil', preferences: 'Personnalise ton expérience', complete: 'Presque terminé !', 'account-error': 'Chargement interrompu' }
+const title = computed(() => titles[screen.value] ?? '')
 function startCooldown() {
   clearInterval(countdown)
   cooldown.value = 60
@@ -122,12 +122,20 @@ async function handleSocialRedirect() {
   const provider = pendingSocialProvider()
   try {
     const result = await consumeSocialRedirect()
-    if (!result) clearPendingSocialProvider()
+    if (result) {
+      await loadAccount(result.user)
+      clearPendingSocialProvider()
+      return
+    }
+    if (provider) pendingSocialError = `La connexion ${provider === 'google' ? 'Google' : 'Apple'} a été interrompue. Réessaie.`
+    clearPendingSocialProvider()
+    if (provider && authStateReady && !account.value) await loadAccount(null)
   }
   catch (cause) {
     pendingSocialError = socialErrorMessage(cause, provider === 'apple' ? 'Apple' : provider === 'google' ? 'Google' : undefined)
     error.value = pendingSocialError
     clearPendingSocialProvider()
+    if (authStateReady && !account.value) await loadAccount(null)
   }
 }
 function enterApp() {
@@ -168,7 +176,14 @@ async function loadAccount(user: Account | null) {
   }
 }
 function startAccountObserver() {
-  if (!unsubscribe) unsubscribe = observeAccount(user => { void loadAccount(user) }, () => { screen.value = 'request'; error.value = 'Connexion indisponible. Réessaie.' })
+  if (!unsubscribe) unsubscribe = observeAccount(user => {
+    authStateReady = true
+    if (!user && pendingSocialProvider()) {
+      screen.value = 'loading'
+      return
+    }
+    void loadAccount(user)
+  }, () => { authStateReady = true; screen.value = 'request'; error.value = 'Connexion indisponible. Réessaie.' })
 }
 async function finishLink() {
   if (!isValidEmail(email.value)) { error.value = 'Saisis une adresse e-mail valide.'; return }
@@ -301,12 +316,11 @@ async function disconnect() {
   finally { busy.value = false }
 }
 onMounted(() => {
-  if (splashVisible.value) {
+  if (import.meta.env.MODE !== 'test') {
     for (const src of ['/images/novart-mascot-login.webp', '/images/novart-logo-primary-vector.svg']) {
       const image = new Image()
       image.src = src
     }
-    splashTimer = setTimeout(() => { splashVisible.value = false }, 850)
   }
   if (hasSignInLink()) {
     email.value = pendingEmail()
@@ -317,7 +331,7 @@ onMounted(() => {
     void handleSocialRedirect()
   }
 })
-onBeforeUnmount(() => { unsubscribe?.(); clearInterval(countdown); clearTimeout(splashTimer); accountRevision++ })
+onBeforeUnmount(() => { unsubscribe?.(); clearInterval(countdown); accountRevision++ })
 </script>
 
 <template>
@@ -489,7 +503,7 @@ onBeforeUnmount(() => { unsubscribe?.(); clearInterval(countdown); clearTimeout(
         </div>
       </section>
       <Card class="auth-panel" :class="{ 'auth-panel--home': screen === 'request' }">
-        <CardHeader v-if="screen !== 'request'" class="auth-panel-heading">
+        <CardHeader v-if="screen !== 'request' && screen !== 'loading'" class="auth-panel-heading">
           <div>
             <h1 v-if="screen === 'profile'" class="form-title">{{ title }}</h1>
             <h2 v-else class="form-title">{{ title }}</h2>
@@ -498,7 +512,6 @@ onBeforeUnmount(() => { unsubscribe?.(); clearInterval(countdown); clearTimeout(
           <img v-if="screen === 'profile'" src="/images/novart-mascot-joy.webp" alt="" class="profile-mascot" width="159" height="133" />
         </CardHeader>
         <CardContent :class="screen === 'request' ? 'auth-panel-content--home' : 'space-y-5'">
-          <p v-if="screen === 'loading'" role="status" class="text-sm text-muted-foreground">Nous préparons ton espace…</p>
           <form v-if="screen === 'request'" class="auth-home-form" novalidate @submit.prevent="sendLink">
             <div class="auth-social-buttons">
               <button type="button" class="auth-social-button" :disabled="busy" @click="startSocialSignIn('google')">

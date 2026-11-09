@@ -14,7 +14,8 @@ Statut : POC repris dans Vue + Shadcn-Vue (`frontend/src/App.vue`, `frontend/src
 | CA3 | E-mail reçu et lien ouvert — authentification Firebase, puis orientation selon l'état du profil |
 | CA4 | Nouveau profil — après authentification, la personne complète les trois étapes de profil avant d'entrer dans l'application |
 | CA5 | Profil existant complet — accès direct à l'application, sans créer de doublon ni repasser par l'inscription |
-| CA6 | Lien périmé & renvoi sous 60s — blocage avec alerte explicite si lien expiré/rejoué, bouton de réémission disponible après 60 secondes |
+| CA6 | Connexion Google — au retour du fournisseur, le même routage selon l'état du profil est appliqué |
+| CA7 | Lien périmé & renvoi sous 60s — blocage avec alerte explicite si lien expiré/rejoué, bouton de réémission disponible après 60 secondes |
 
 ## Spécifications techniques
 
@@ -26,6 +27,7 @@ Statut : POC repris dans Vue + Shadcn-Vue (`frontend/src/App.vue`, `frontend/src
 | ST4 | Maintien de l'état de session — `onAuthStateChanged` sur `users.html`/`index.html` |
 | ST5 | `ActionCodeSettings.url` pointe vers `/login.html` du domaine courant ; domaines autorisés dans Firebase Auth |
 | ST6 | Reprise du profil — `onboardingStep` enregistre l'étape à reprendre après une reconnexion |
+| ST7 | Google OAuth — le résultat de redirection est consommé explicitement, puis suit le même routage que le lien e-mail |
 
 ## Cas gérés
 

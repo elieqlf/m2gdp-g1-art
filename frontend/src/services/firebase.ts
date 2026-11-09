@@ -54,10 +54,7 @@ export async function signInWithSocialProvider(providerName: 'apple' | 'google',
 }
 export async function consumeSocialRedirect() {
   const result = await getRedirectResult(auth)
-  if (result) {
-    localStorage.removeItem(REMEMBER_KEY)
-    clearPendingSocialProvider()
-  }
+  if (result) localStorage.removeItem(REMEMBER_KEY)
   return result
 }
 export async function requestSignInLink(email: string) {
