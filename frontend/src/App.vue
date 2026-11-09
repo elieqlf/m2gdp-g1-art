@@ -165,10 +165,16 @@ async function loadAccount(user: Account | null) {
     if (!profile.photoUrl && user.photoURL) profile.photoUrl = user.photoURL
     store.profile = { ...saved }
     if (profile.useCurrentLocation) void requestPosition()
-    // Une fois l'adresse authentifiée, le profil décide de la destination :
-    // les comptes incomplets reprennent l'étape sauvegardée, les autres entrent dans l'app.
-    if (!saved.profileComplete) {
-      const step = Number(saved.onboardingStep) || 1
+    // Le drapeau historique peut être périmé : les champs obligatoires restent la référence.
+    const requiredProfileReady = typeof profile.firstName === 'string'
+      && profile.firstName.trim().length > 0
+      && typeof profile.address === 'string'
+      && profile.address.trim().length > 0
+      && Array.isArray(profile.interests)
+      && profile.interests.length > 0
+    // Après authentification, les profils incomplets reprennent la bonne étape.
+    if (!saved.profileComplete || !requiredProfileReady) {
+      const step = requiredProfileReady ? Number(saved.onboardingStep) || 2 : 1
       screen.value = step >= 3 ? 'complete' : step === 2 ? 'preferences' : 'profile'
     } else enterApp()
   } catch {
