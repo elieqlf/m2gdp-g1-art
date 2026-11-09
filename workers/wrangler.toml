@@ -1,7 +1,7 @@
 name = "projet-art-api"
 main = "src/index.js"
 compatibility_date = "2026-09-01"
-account_id = "c787d4666094708bb9e93531fda13ce4"
+account_id = "3d01e59c36f8d072357c98cf331780f6"
 
 [[d1_databases]]
 binding = "DB"
