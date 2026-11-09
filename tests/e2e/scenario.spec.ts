@@ -147,3 +147,23 @@ test('US-13/14 : profil, statistiques et modification des informations', async (
   await expect(page.getByText('Aquarelliste du dimanche.')).toBeVisible()
   await expect(page.getByText('Peinture · Dessin · Musique · Théâtre')).toBeVisible()
 })
+
+test.describe('Position de l’appareil', () => {
+  // Téléphone situé à Confluence (Lyon 2e), autorisation de localisation accordée.
+  test.use({ geolocation: { latitude: 45.7426, longitude: 4.8185 }, permissions: ['geolocation'] })
+  test('l’accueil part de la position réelle, pas du centre de Lyon', async ({ page }) => {
+    await openApp(page, 'app', '#/decouvrir')
+    await expect(page.getByText('Distances depuis ta position')).toBeVisible()
+    await page.goto('/#/rechercher')
+    await expect(page.getByText(/distances depuis ta position/)).toBeVisible()
+  })
+})
+
+test('sans localisation, un message flottant prévient puis disparaît', async ({ page, context }) => {
+  await context.clearPermissions()
+  await openApp(page, 'app', '#/decouvrir')
+  const toast = page.getByRole('status').filter({ hasText: 'les distances partent de ton adresse' })
+  await expect(toast).toBeVisible()
+  await expect(page.getByText('Distances depuis ton adresse')).toBeVisible()
+  await expect(toast).toBeHidden({ timeout: 8000 })
+})

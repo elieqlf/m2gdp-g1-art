@@ -23,7 +23,7 @@ import FavoritesView from '@/views/FavoritesView.vue'
 import CommunityView from '@/views/CommunityView.vue'
 import { isValidEmail, hasSignInLink, pendingEmail, requestSignInLink, completeSignIn, observeAccount, getProfile, saveProfile, logout, type Account, type Profile } from '@/services/firebase'
 import type { AddressSelection } from '@/services/places'
-import { loadActivities, loadMembers, resetStore, store } from '@/lib/store'
+import { loadActivities, loadMembers, notifyPositionFallback, requestPosition, resetStore, store } from '@/lib/store'
 import { tabOf, useRoute } from '@/lib/router'
 
 type Screen = 'loading' | 'request' | 'sent' | 'confirm' | 'expired' | 'profile' | 'app' | 'account-error'
@@ -66,6 +66,8 @@ function enterApp() {
   Object.assign(store.profile, { ...profile })
   void loadActivities(true)
   void loadMembers(true)
+  // Comme une application de carte, on part de la position réelle de l'appareil.
+  if (store.gpsStatus === 'idle') void requestPosition().then(found => { if (!found) notifyPositionFallback() })
 }
 async function loadAccount(user: Account | null) {
   const revision = ++accountRevision

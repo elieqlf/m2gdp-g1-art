@@ -16,7 +16,7 @@ Code : `frontend/src/views/`, logique pure dans `frontend/src/lib/activity.ts`, 
 | CA4 | « Selon tes envies » (centres d'intérêt du profil), « Activités populaires », « À ne pas manquer » | idem |
 | CA5 | États chargement, erreur avec « Réessayer », aucune activité avec appel à créer | `App.test.ts` |
 
-Distance : depuis la position demandée (bouton « Me localiser »), sinon les coordonnées de l'adresse du profil, sinon le centre de Lyon (place Bellecour). L'origine utilisée est affichée.
+Distance : depuis la **position de l'appareil**, demandée à l'ouverture de l'application (autorisation du navigateur la première fois). Si elle est refusée ou introuvable, un message flottant prévient pendant quelques secondes et les distances partent de l'adresse du profil, sinon du centre de Lyon (place Bellecour). Le bouton « Me localiser » relance la demande. L'origine utilisée est affichée dans le panneau.
 
 ## US-04 / US-05 — Rechercher et filtrer
 

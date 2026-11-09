@@ -12,6 +12,7 @@ export const store = reactive({
   members: {} as Record<string, Member>,
   membersStatus: 'idle' as 'idle' | 'loading' | 'ready' | 'error',
   gps: null as Point | null,
+  gpsStatus: 'idle' as 'idle' | 'pending' | 'granted' | 'denied' | 'unavailable',
   notice: '' as string,
 })
 
@@ -25,14 +26,21 @@ export const origin = computed<Point>(() => store.gps
 export const originLabel = computed(() => store.gps ? 'ta position' : typeof store.profile.addressLat === 'number' ? 'ton adresse' : 'le centre de Lyon')
 
 export function resetStore() {
-  Object.assign(store, { account: null, profile: {}, activities: [], activitiesStatus: 'idle', members: {}, membersStatus: 'idle', gps: null, notice: '' })
+  Object.assign(store, { account: null, profile: {}, activities: [], activitiesStatus: 'idle', members: {}, membersStatus: 'idle', gps: null, gpsStatus: 'idle', notice: '' })
 }
 let noticeTimer: ReturnType<typeof setTimeout> | undefined
 /** Message de confirmation éphémère (« Activité publiée », etc.). */
-export function notify(text: string) {
+export function notify(text: string, duration = 3500) {
   store.notice = text
   clearTimeout(noticeTimer)
-  noticeTimer = setTimeout(() => { store.notice = '' }, 3500)
+  noticeTimer = setTimeout(() => { store.notice = '' }, duration)
+}
+/** Message flottant quand la position de l'appareil n'a pas pu être obtenue. */
+export function notifyPositionFallback() {
+  const where = typeof store.profile.addressLat === 'number' ? 'ton adresse' : 'le centre de Lyon'
+  notify(store.gpsStatus === 'denied'
+    ? `Localisation désactivée : les distances partent de ${where}. Tu peux l’autoriser dans les réglages de ton navigateur.`
+    : `Position introuvable : les distances partent de ${where}.`, 6000)
 }
 export async function loadActivities(force = false) {
   if (!force && (store.activitiesStatus === 'loading' || store.activitiesStatus === 'ready')) return
@@ -79,13 +87,19 @@ export async function toggleFavorite(activityId: string) {
   try { await setFavorite(uid.value, activityId, on) }
   catch { store.profile.favoriteIds = current; throw new Error('Favori non enregistré') }
 }
+/**
+ * Position de l'appareil : demandée à l'ouverture de l'application (le navigateur
+ * demande l'autorisation la première fois). En cas de refus ou d'échec, les distances
+ * se calculent depuis l'adresse du profil, sinon depuis le centre de Lyon.
+ */
 export function requestPosition(): Promise<boolean> {
   return new Promise(resolve => {
-    if (!('geolocation' in navigator)) return resolve(false)
+    if (!('geolocation' in navigator)) { store.gpsStatus = 'unavailable'; return resolve(false) }
+    store.gpsStatus = 'pending'
     navigator.geolocation.getCurrentPosition(
-      position => { store.gps = { lat: position.coords.latitude, lng: position.coords.longitude }; resolve(true) },
-      () => resolve(false),
-      { enableHighAccuracy: false, timeout: 8000, maximumAge: 300000 },
+      position => { store.gps = { lat: position.coords.latitude, lng: position.coords.longitude }; store.gpsStatus = 'granted'; resolve(true) },
+      error => { store.gpsStatus = error.code === error.PERMISSION_DENIED ? 'denied' : 'unavailable'; resolve(false) },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 },
     )
   })
 }

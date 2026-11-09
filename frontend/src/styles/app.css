@@ -513,6 +513,8 @@
 /* Message éphémère */
 .toast { position: fixed; z-index: 70; left: 50%; bottom: calc(var(--nav-height) + 1rem + env(safe-area-inset-bottom)); transform: translateX(-50%); width: max-content; max-width: calc(100% - 2rem); padding: .75rem 1.2rem; border-radius: 1rem; background: var(--ink); color: var(--card); font-weight: 500; box-shadow: var(--shadow); }
 .toast--error { background: var(--accent); }
+/* Sur l'accueil-carte, le message flotte sur la carte pour ne pas cacher le panneau. */
+.app-frame:has(.discover) .toast { bottom: auto; top: 8.4rem; font-size: .92rem; }
 
 /* Téléphones plus larges (≥ 416 px) : on enrichit la mise en page de base. */
 @media (min-width: 26rem) {

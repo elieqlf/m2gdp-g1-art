@@ -6,7 +6,7 @@ import ActivityMap from '@/components/ActivityMap.vue'
 import DisciplineIcon from '@/components/DisciplineIcon.vue'
 import MascotState from '@/components/MascotState.vue'
 import { activityDistance, disciplines, formatDistance, isFull, isPast, placesLeft, sortActivities, startsAt } from '@/lib/activity'
-import { loadActivities, notify, origin, originLabel, requestPosition, store } from '@/lib/store'
+import { loadActivities, notifyPositionFallback, origin, originLabel, requestPosition, store } from '@/lib/store'
 import { navigate } from '@/lib/router'
 
 // US-03 : accueil « Découvrir ». La carte s'affiche dès l'ouverture (à la manière
@@ -47,8 +47,8 @@ async function locate() {
   locating.value = true
   const ok = await requestPosition()
   locating.value = false
-  if (ok) map.value?.recenter(origin.value)
-  else { map.value?.recenter(origin.value); notify(`Position indisponible : carte centrée sur ${originLabel.value}.`) }
+  map.value?.recenter(origin.value)
+  if (!ok) notifyPositionFallback()
 }
 // Glisser le panneau vers le haut ou le bas (en plus du bouton).
 let startY: number | null = null
@@ -103,7 +103,8 @@ function dragEnd(event: PointerEvent) {
           <a href="#/creer" class="btn btn--primary">Créer une activité</a>
         </MascotState>
         <template v-else>
-          <p class="results-count">Distances depuis {{ originLabel }}</p>
+          <p v-if="store.gpsStatus === 'pending'" class="results-count" role="status">Recherche de ta position…</p>
+          <p v-else class="results-count">Distances depuis {{ originLabel }}</p>
           <div v-if="!sheetOpen" class="discover-sheet__peek">
             <ActivityCard v-for="a in peek" :key="a.id" :activity="a" variant="row" :class="{ 'is-highlighted': a.id === selectedId }" />
           </div>
