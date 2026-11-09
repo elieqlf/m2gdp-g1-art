@@ -80,6 +80,40 @@ service cloud.firestore {
       }
     }
 
+    // Messagerie privée (« Contact » du sujet ART) : une conversation par paire de membres,
+    // d'identifiant « uidA__uidB » (uid triés). Seuls ses deux membres la lisent et y écrivent.
+    match /privateChats/{chatId} {
+      function inChat(data) { return request.auth.uid in data.memberIds; }
+      function validLast(data) {
+        return !('lastMessage' in data) || data.lastMessage == null || (data.lastMessage.authorId == request.auth.uid
+          && data.lastMessage.text is string && data.lastMessage.text.size() > 0 && data.lastMessage.text.size() <= 1000);
+      }
+      function onlyMyRead(data, before) {
+        return !('readAtMs' in data) || data.readAtMs.diff(before).affectedKeys().hasOnly([request.auth.uid]);
+      }
+      allow read: if signedIn() && inChat(resource.data);
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly(['memberIds', 'lastMessage', 'readAtMs', 'updatedAtMs', 'activityId', 'activityTitle'])
+        && request.resource.data.memberIds is list && request.resource.data.memberIds.size() == 2
+        && inChat(request.resource.data)
+        && request.resource.data.memberIds[0] < request.resource.data.memberIds[1]
+        && chatId == request.resource.data.memberIds[0] + '__' + request.resource.data.memberIds[1]
+        && validLast(request.resource.data) && onlyMyRead(request.resource.data, {});
+      allow update: if signedIn() && inChat(resource.data)
+        && changed().hasOnly(['lastMessage', 'readAtMs', 'updatedAtMs', 'activityId', 'activityTitle'])
+        && (!('lastMessage' in changed()) || validLast(request.resource.data))
+        && onlyMyRead(request.resource.data, resource.data.get('readAtMs', {}));
+
+      match /messages/{messageId} {
+        function chat() { return get(/databases/$(database)/documents/privateChats/$(chatId)).data; }
+        allow read: if signedIn() && request.auth.uid in chat().memberIds;
+        allow create: if signedIn() && request.auth.uid in chat().memberIds
+          && request.resource.data.authorId == request.auth.uid
+          && request.resource.data.text is string
+          && request.resource.data.text.size() > 0 && request.resource.data.text.size() <= 1000;
+      }
+    }
+
     // Verrouillé par défaut — à ouvrir progressivement par collection
     // au fur et à mesure des User Stories (voir /specs/user-stories).
     match /{document=**} {

@@ -1,0 +1,1326 @@
+[
+ {
+  "id": "demo-user-103__demo-user-111",
+  "memberIds": [
+   "demo-user-103",
+   "demo-user-111"
+  ],
+  "activityId": "demo-act-111",
+  "activityTitle": "Bœuf blues ouvert",
+  "lastMessage": {
+   "text": "Oui, des arceaux juste devant l’entrée.",
+   "authorId": "demo-user-103",
+   "sentAtMs": 1794007320000
+  },
+  "readAtMs": {
+   "demo-user-111": 1794006000000,
+   "demo-user-103": 1794007320000
+  },
+  "updatedAtMs": 1794007320000,
+  "demo": true,
+  "messages": [
+   {
+    "authorId": "demo-user-111",
+    "text": "Bonjour, il y a un endroit pour garer un vélo ?",
+    "sentAtMs": 1794006000000,
+    "demo": true
+   },
+   {
+    "authorId": "demo-user-103",
+    "text": "Oui, des arceaux juste devant l’entrée.",
+    "sentAtMs": 1794007320000,
+    "demo": true
+   }
+  ]
+ },
+ {
+  "id": "demo-user-043__demo-user-067",
+  "memberIds": [
+   "demo-user-043",
+   "demo-user-067"
+  ],
+  "activityId": "demo-act-044",
+  "activityTitle": "Initiation au lettrage",
+  "lastMessage": {
+   "text": "Oui, des arceaux juste devant l’entrée.",
+   "authorId": "demo-user-043",
+   "sentAtMs": 1793968500000
+  },
+  "readAtMs": {
+   "demo-user-067": 1793955600000,
+   "demo-user-043": 1793968500000
+  },
+  "updatedAtMs": 1793968500000,
+  "demo": true,
+  "messages": [
+   {
+    "authorId": "demo-user-067",
+    "text": "Bonjour, il y a un endroit pour garer un vélo ?",
+    "sentAtMs": 1793955600000,
+    "demo": true
+   },
+   {
+    "authorId": "demo-user-043",
+    "text": "Oui, des arceaux juste devant l’entrée.",
+    "sentAtMs": 1793968500000,
+    "demo": true
+   }
+  ]
+ },
+ {
+  "id": "demo-user-043__demo-user-047",
+  "memberIds": [
+   "demo-user-043",
+   "demo-user-047"
+  ],
+  "activityId": "demo-act-044",
+  "activityTitle": "Initiation au lettrage",
+  "lastMessage": {
+   "text": "Bonjour ! Est-ce que l’atelier convient à quelqu’un qui débute complètement ?",
+   "authorId": "demo-user-047",
+   "sentAtMs": 1794117600000
+  },
+  "readAtMs": {
+   "demo-user-047": 1794117600000,
+   "demo-user-043": 0
+  },
+  "updatedAtMs": 1794117600000,
+  "demo": true,
+  "messages": [
+   {
+    "authorId": "demo-user-047",
+    "text": "Bonjour ! Est-ce que l’atelier convient à quelqu’un qui débute complètement ?",
+    "sentAtMs": 1794117600000,
+    "demo": true
+   }
+  ]
+ },
+ {
+  "id": "demo-user-073__demo-user-112",
+  "memberIds": [
+   "demo-user-073",
+   "demo-user-112"
+  ],
+  "activityId": "demo-act-169",
+  "activityTitle": "Atelier peinture libre",
+  "lastMessage": {
+   "text": "Oui, le lieu est de plain-pied et l’entrée est accessible.",
+   "authorId": "demo-user-073",
+   "sentAtMs": 1794117120000
+  },
+  "readAtMs": {
+   "demo-user-112": 1794106800000,
+   "demo-user-073": 1794117120000
+  },
+  "updatedAtMs": 1794117120000,
+  "demo": true,
+  "messages": [
+   {
+    "authorId": "demo-user-112",
+    "text": "Bonjour, est-ce accessible en fauteuil roulant ?",
+    "sentAtMs": 1794106800000,
+    "demo": true
+   },
+   {
+    "authorId": "demo-user-073",
+    "text": "Oui, le lieu est de plain-pied et l’entrée est accessible.",
+    "sentAtMs": 1794117120000,
+    "demo": true
+   }
+  ]
+ },
+ {
+  "id": "demo-user-070__demo-user-093",
+  "memberIds": [
+   "demo-user-070",
+   "demo-user-093"
+  ],
+  "activityId": "demo-act-206",
+  "activityTitle": "Atelier BD : créer son personnage",
+  "lastMessage": {
+   "text": "Pas de souci, on commence doucement. Préviens-moi juste par message.",
+   "authorId": "demo-user-070",
+   "sentAtMs": 1794093300000
+  },
+  "readAtMs": {
+   "demo-user-093": 1794081600000,
+   "demo-user-070": 1794093300000
+  },
+  "updatedAtMs": 1794093300000,
+  "demo": true,
+  "messages": [
+   {
+    "authorId": "demo-user-093",
+    "text": "Hello ! Je risque d’arriver avec 10 minutes de retard, c’est gênant ?",
+    "sentAtMs": 1794081600000,
+    "demo": true
+   },
+   {
+    "authorId": "demo-user-070",
+    "text": "Pas de souci, on commence doucement. Préviens-moi juste par message.",
+    "sentAtMs": 1794093300000,
+    "demo": true
+   }
+  ]
+ },
+ {
+  "id": "demo-user-022__demo-user-117",
+  "memberIds": [
+   "demo-user-022",
+   "demo-user-117"
+  ],
+  "activityId": "demo-act-095",
+  "activityTitle": "Sculpture en fil de fer",
+  "lastMessage": {
+   "text": "Oui, le lieu est de plain-pied et l’entrée est accessible.",
+   "authorId": "demo-user-022",
+   "sentAtMs": 1794012660000
+  },
+  "readAtMs": {
+   "demo-user-117": 1793998800000,
+   "demo-user-022": 1794012660000
+  },
+  "updatedAtMs": 1794012660000,
+  "demo": true,
+  "messages": [
+   {
+    "authorId": "demo-user-117",
+    "text": "Bonjour, est-ce accessible en fauteuil roulant ?",
+    "sentAtMs": 1793998800000,
+    "demo": true
+   },
+   {
+    "authorId": "demo-user-022",
+    "text": "Oui, le lieu est de plain-pied et l’entrée est accessible.",
+    "sentAtMs": 1794012660000,
+    "demo": true
+   }
+  ]
+ },
+ {
+  "id": "demo-user-001__demo-user-005",
+  "memberIds": [
+   "demo-user-001",
+   "demo-user-005"
+  ],
+  "activityId": "demo-act-049",
+  "activityTitle": "Initiation à la peinture à l’huile",
+  "lastMessage": {
+   "text": "Pas de souci, on commence doucement. Préviens-moi juste par message.",
+   "authorId": "demo-user-001",
+   "sentAtMs": 1793938800000
+  },
+  "readAtMs": {
+   "demo-user-005": 1793926800000,
+   "demo-user-001": 1793938800000
+  },
+  "updatedAtMs": 1793938800000,
+  "demo": true,
+  "messages": [
+   {
+    "authorId": "demo-user-005",
+    "text": "Hello ! Je risque d’arriver avec 10 minutes de retard, c’est gênant ?",
+    "sentAtMs": 1793926800000,
+    "demo": true
+   },
+   {
+    "authorId": "demo-user-001",
+    "text": "Pas de souci, on commence doucement. Préviens-moi juste par message.",
+    "sentAtMs": 1793938800000,
+    "demo": true
+   }
+  ]
+ },
+ {
+  "id": "demo-user-086__demo-user-112",
+  "memberIds": [
+   "demo-user-086",
+   "demo-user-112"
+  ],
+  "activityId": "demo-act-043",
+  "activityTitle": "Photo de nuit sur les quais",
+  "lastMessage": {
+   "text": "Oui, des arceaux juste devant l’entrée.",
+   "authorId": "demo-user-112",
+   "sentAtMs": 1794066480000
+  },
+  "readAtMs": {
+   "demo-user-086": 1794063600000,
+   "demo-user-112": 1794066480000
+  },
+  "updatedAtMs": 1794066480000,
+  "demo": true,
+  "messages": [
+   {
+    "authorId": "demo-user-086",
+    "text": "Bonjour, il y a un endroit pour garer un vélo ?",
+    "sentAtMs": 1794063600000,
+    "demo": true
+   },
+   {
+    "authorId": "demo-user-112",
+    "text": "Oui, des arceaux juste devant l’entrée.",
+    "sentAtMs": 1794066480000,
+    "demo": true
+   }
+  ]
+ },
+ {
+  "id": "demo-user-091__demo-user-099",
+  "memberIds": [
+   "demo-user-091",
+   "demo-user-099"
+  ],
+  "activityId": "demo-act-046",
+  "activityTitle": "Écriture de chansons",
+  "lastMessage": {
+   "text": "Salut, faut-il apporter son propre matériel ?",
+   "authorId": "demo-user-099",
+   "sentAtMs": 1793955600000
+  },
+  "readAtMs": {
+   "demo-user-099": 1793955600000,
+   "demo-user-091": 0
+  },
+  "updatedAtMs": 1793955600000,
+  "demo": true,
+  "messages": [
+   {
+    "authorId": "demo-user-099",
+    "text": "Salut, faut-il apporter son propre matériel ?",
+    "sentAtMs": 1793955600000,
+    "demo": true
+   }
+  ]
+ },
+ {
+  "id": "demo-user-012__demo-user-088",
+  "memberIds": [
+   "demo-user-012",
+   "demo-user-088"
+  ],
+  "activityId": "demo-act-024",
+  "activityTitle": "Origami géant",
+  "lastMessage": {
+   "text": "Oui, bien sûr ! On commence par les bases, tu seras à l’aise.",
+   "authorId": "demo-user-088",
+   "sentAtMs": 1793930040000
+  },
+  "readAtMs": {
+   "demo-user-012": 1793926800000,
+   "demo-user-088": 1793930040000
+  },
+  "updatedAtMs": 1793930040000,
+  "demo": true,
+  "messages": [
+   {
+    "authorId": "demo-user-012",
+    "text": "Bonjour ! Est-ce que l’atelier convient à quelqu’un qui débute complètement ?",
+    "sentAtMs": 1793926800000,
+    "demo": true
+   },
+   {
+    "authorId": "demo-user-088",
+    "text": "Oui, bien sûr ! On commence par les bases, tu seras à l’aise.",
+    "sentAtMs": 1793930040000,
+    "demo": true
+   }
+  ]
+ },
+ {
+  "id": "demo-user-106__demo-user-112",
+  "memberIds": [
+   "demo-user-106",
+   "demo-user-112"
+  ],
+  "activityId": "demo-act-083",
+  "activityTitle": "Linogravure : premiers motifs",
+  "lastMessage": {
+   "text": "Bonjour, il y a un endroit pour garer un vélo ?",
+   "authorId": "demo-user-112",
+   "sentAtMs": 1794060000000
+  },
+  "readAtMs": {
+   "demo-user-112": 1794060000000,
+   "demo-user-106": 0
+  },
+  "updatedAtMs": 1794060000000,
+  "demo": true,
+  "messages": [
+   {
+    "authorId": "demo-user-112",
+    "text": "Bonjour, il y a un endroit pour garer un vélo ?",
+    "sentAtMs": 1794060000000,
+    "demo": true
+   }
+  ]
+ },
+ {
+  "id": "demo-user-001__demo-user-025",
+  "memberIds": [
+   "demo-user-001",
+   "demo-user-025"
+  ],
+  "activityId": "demo-act-009",
+  "activityTitle": "Initiation à la poterie",
+  "lastMessage": {
+   "text": "Pas de souci, on commence doucement. Préviens-moi juste par message.",
+   "authorId": "demo-user-025",
+   "sentAtMs": 1794021780000
+  },
+  "readAtMs": {
+   "demo-user-001": 1794016800000,
+   "demo-user-025": 1794021780000
+  },
+  "updatedAtMs": 1794021780000,
+  "demo": true,
+  "messages": [
+   {
+    "authorId": "demo-user-001",
+    "text": "Hello ! Je risque d’arriver avec 10 minutes de retard, c’est gênant ?",
+    "sentAtMs": 1794016800000,
+    "demo": true
+   },
+   {
+    "authorId": "demo-user-025",
+    "text": "Pas de souci, on commence doucement. Préviens-moi juste par message.",
+    "sentAtMs": 1794021780000,
+    "demo": true
+   }
+  ]
+ },
+ {
+  "id": "demo-user-100__demo-user-101",
+  "memberIds": [
+   "demo-user-100",
+   "demo-user-101"
+  ],
+  "activityId": "demo-act-114",
+  "activityTitle": "Mime et expression corporelle",
+  "lastMessage": {
+   "text": "Oui, des arceaux juste devant l’entrée.",
+   "authorId": "demo-user-100",
+   "sentAtMs": 1794063300000
+  },
+  "readAtMs": {
+   "demo-user-101": 1794056400000,
+   "demo-user-100": 1794063300000
+  },
+  "updatedAtMs": 1794063300000,
+  "demo": true,
+  "messages": [
+   {
+    "authorId": "demo-user-101",
+    "text": "Bonjour, il y a un endroit pour garer un vélo ?",
+    "sentAtMs": 1794056400000,
+    "demo": true
+   },
+   {
+    "authorId": "demo-user-100",
+    "text": "Oui, des arceaux juste devant l’entrée.",
+    "sentAtMs": 1794063300000,
+    "demo": true
+   }
+  ]
+ },
+ {
+  "id": "demo-user-027__demo-user-076",
+  "memberIds": [
+   "demo-user-027",
+   "demo-user-076"
+  ],
+  "activityId": "demo-act-149",
+  "activityTitle": "Cours de danse contemporaine",
+  "lastMessage": {
+   "text": "Oui, bien sûr ! On commence par les bases, tu seras à l’aise.",
+   "authorId": "demo-user-076",
+   "sentAtMs": 1794123540000
+  },
+  "readAtMs": {
+   "demo-user-027": 1794110400000,
+   "demo-user-076": 1794123540000
+  },
+  "updatedAtMs": 1794123540000,
+  "demo": true,
+  "messages": [
+   {
+    "authorId": "demo-user-027",
+    "text": "Bonjour ! Est-ce que l’atelier convient à quelqu’un qui débute complètement ?",
+    "sentAtMs": 1794110400000,
+    "demo": true
+   },
+   {
+    "authorId": "demo-user-076",
+    "text": "Oui, bien sûr ! On commence par les bases, tu seras à l’aise.",
+    "sentAtMs": 1794123540000,
+    "demo": true
+   }
+  ]
+ },
+ {
+  "id": "demo-user-025__demo-user-067",
+  "memberIds": [
+   "demo-user-025",
+   "demo-user-067"
+  ],
+  "activityId": "demo-act-009",
+  "activityTitle": "Initiation à la poterie",
+  "lastMessage": {
+   "text": "Hello ! Je risque d’arriver avec 10 minutes de retard, c’est gênant ?",
+   "authorId": "demo-user-067",
+   "sentAtMs": 1794034800000
+  },
+  "readAtMs": {
+   "demo-user-067": 1794034800000,
+   "demo-user-025": 0
+  },
+  "updatedAtMs": 1794034800000,
+  "demo": true,
+  "messages": [
+   {
+    "authorId": "demo-user-067",
+    "text": "Hello ! Je risque d’arriver avec 10 minutes de retard, c’est gênant ?",
+    "sentAtMs": 1794034800000,
+    "demo": true
+   }
+  ]
+ },
+ {
+  "id": "demo-user-029__demo-user-085",
+  "memberIds": [
+   "demo-user-029",
+   "demo-user-085"
+  ],
+  "activityId": "demo-act-033",
+  "activityTitle": "Atelier couture zéro déchet",
+  "lastMessage": {
+   "text": "Non, tout est fourni sur place. Prends juste une tenue confortable.",
+   "authorId": "demo-user-085",
+   "sentAtMs": 1793974320000
+  },
+  "readAtMs": {
+   "demo-user-029": 1793973600000,
+   "demo-user-085": 1793974320000
+  },
+  "updatedAtMs": 1793974320000,
+  "demo": true,
+  "messages": [
+   {
+    "authorId": "demo-user-029",
+    "text": "Salut, faut-il apporter son propre matériel ?",
+    "sentAtMs": 1793973600000,
+    "demo": true
+   },
+   {
+    "authorId": "demo-user-085",
+    "text": "Non, tout est fourni sur place. Prends juste une tenue confortable.",
+    "sentAtMs": 1793974320000,
+    "demo": true
+   }
+  ]
+ },
+ {
+  "id": "demo-user-004__demo-user-059",
+  "memberIds": [
+   "demo-user-004",
+   "demo-user-059"
+  ],
+  "activityId": "demo-act-110",
+  "activityTitle": "Balade urban sketching",
+  "lastMessage": {
+   "text": "Oui, bien sûr ! On commence par les bases, tu seras à l’aise.",
+   "authorId": "demo-user-004",
+   "sentAtMs": 1794163140000
+  },
+  "readAtMs": {
+   "demo-user-059": 1794153600000,
+   "demo-user-004": 1794163140000
+  },
+  "updatedAtMs": 1794163140000,
+  "demo": true,
+  "messages": [
+   {
+    "authorId": "demo-user-059",
+    "text": "Bonjour ! Est-ce que l’atelier convient à quelqu’un qui débute complètement ?",
+    "sentAtMs": 1794153600000,
+    "demo": true
+   },
+   {
+    "authorId": "demo-user-004",
+    "text": "Oui, bien sûr ! On commence par les bases, tu seras à l’aise.",
+    "sentAtMs": 1794163140000,
+    "demo": true
+   }
+  ]
+ },
+ {
+  "id": "demo-user-031__demo-user-070",
+  "memberIds": [
+   "demo-user-031",
+   "demo-user-070"
+  ],
+  "activityId": "demo-act-175",
+  "activityTitle": "Balade argentique",
+  "lastMessage": {
+   "text": "Le nombre de places est limité, le mieux est qu’elle s’inscrive aussi (ou en liste d’attente).",
+   "authorId": "demo-user-070",
+   "sentAtMs": 1793940480000
+  },
+  "readAtMs": {
+   "demo-user-031": 1793934000000,
+   "demo-user-070": 1793940480000
+  },
+  "updatedAtMs": 1793940480000,
+  "demo": true,
+  "messages": [
+   {
+    "authorId": "demo-user-031",
+    "text": "Est-ce que je peux venir avec une amie qui n’est pas inscrite ?",
+    "sentAtMs": 1793934000000,
+    "demo": true
+   },
+   {
+    "authorId": "demo-user-070",
+    "text": "Le nombre de places est limité, le mieux est qu’elle s’inscrive aussi (ou en liste d’attente).",
+    "sentAtMs": 1793940480000,
+    "demo": true
+   }
+  ]
+ },
+ {
+  "id": "demo-user-073__demo-user-075",
+  "memberIds": [
+   "demo-user-073",
+   "demo-user-075"
+  ],
+  "activityId": "demo-act-092",
+  "activityTitle": "Collage urbain autorisé",
+  "lastMessage": {
+   "text": "Oui, le lieu est de plain-pied et l’entrée est accessible.",
+   "authorId": "demo-user-073",
+   "sentAtMs": 1793962680000
+  },
+  "readAtMs": {
+   "demo-user-075": 1793952000000,
+   "demo-user-073": 1793962680000
+  },
+  "updatedAtMs": 1793962680000,
+  "demo": true,
+  "messages": [
+   {
+    "authorId": "demo-user-075",
+    "text": "Bonjour, est-ce accessible en fauteuil roulant ?",
+    "sentAtMs": 1793952000000,
+    "demo": true
+   },
+   {
+    "authorId": "demo-user-073",
+    "text": "Oui, le lieu est de plain-pied et l’entrée est accessible.",
+    "sentAtMs": 1793962680000,
+    "demo": true
+   }
+  ]
+ },
+ {
+  "id": "demo-user-016__demo-user-107",
+  "memberIds": [
+   "demo-user-016",
+   "demo-user-107"
+  ],
+  "activityId": "demo-act-105",
+  "activityTitle": "Atelier couture zéro déchet",
+  "lastMessage": {
+   "text": "Le nombre de places est limité, le mieux est qu’elle s’inscrive aussi (ou en liste d’attente).",
+   "authorId": "demo-user-016",
+   "sentAtMs": 1794037140000
+  },
+  "readAtMs": {
+   "demo-user-107": 1794024000000,
+   "demo-user-016": 1794037140000
+  },
+  "updatedAtMs": 1794037140000,
+  "demo": true,
+  "messages": [
+   {
+    "authorId": "demo-user-107",
+    "text": "Est-ce que je peux venir avec une amie qui n’est pas inscrite ?",
+    "sentAtMs": 1794024000000,
+    "demo": true
+   },
+   {
+    "authorId": "demo-user-016",
+    "text": "Le nombre de places est limité, le mieux est qu’elle s’inscrive aussi (ou en liste d’attente).",
+    "sentAtMs": 1794037140000,
+    "demo": true
+   }
+  ]
+ },
+ {
+  "id": "demo-user-104__demo-user-106",
+  "memberIds": [
+   "demo-user-104",
+   "demo-user-106"
+  ],
+  "activityId": "demo-act-007",
+  "activityTitle": "Sortie photo de rue",
+  "lastMessage": {
+   "text": "Oui, le lieu est de plain-pied et l’entrée est accessible.",
+   "authorId": "demo-user-106",
+   "sentAtMs": 1794138480000
+  },
+  "readAtMs": {
+   "demo-user-104": 1794124800000,
+   "demo-user-106": 1794138480000
+  },
+  "updatedAtMs": 1794138480000,
+  "demo": true,
+  "messages": [
+   {
+    "authorId": "demo-user-104",
+    "text": "Bonjour, est-ce accessible en fauteuil roulant ?",
+    "sentAtMs": 1794124800000,
+    "demo": true
+   },
+   {
+    "authorId": "demo-user-106",
+    "text": "Oui, le lieu est de plain-pied et l’entrée est accessible.",
+    "sentAtMs": 1794138480000,
+    "demo": true
+   }
+  ]
+ },
+ {
+  "id": "demo-user-022__demo-user-064",
+  "memberIds": [
+   "demo-user-022",
+   "demo-user-064"
+  ],
+  "activityId": "demo-act-041",
+  "activityTitle": "Danses africaines au parc",
+  "lastMessage": {
+   "text": "Oui, bien sûr ! On commence par les bases, tu seras à l’aise.",
+   "authorId": "demo-user-064",
+   "sentAtMs": 1794087060000
+  },
+  "readAtMs": {
+   "demo-user-022": 1794085200000,
+   "demo-user-064": 1794087060000
+  },
+  "updatedAtMs": 1794087060000,
+  "demo": true,
+  "messages": [
+   {
+    "authorId": "demo-user-022",
+    "text": "Bonjour ! Est-ce que l’atelier convient à quelqu’un qui débute complètement ?",
+    "sentAtMs": 1794085200000,
+    "demo": true
+   },
+   {
+    "authorId": "demo-user-064",
+    "text": "Oui, bien sûr ! On commence par les bases, tu seras à l’aise.",
+    "sentAtMs": 1794087060000,
+    "demo": true
+   }
+  ]
+ },
+ {
+  "id": "demo-user-001__demo-user-007",
+  "memberIds": [
+   "demo-user-001",
+   "demo-user-007"
+  ],
+  "activityId": "demo-act-038",
+  "activityTitle": "Atelier BD : créer son personnage",
+  "lastMessage": {
+   "text": "Oui, des arceaux juste devant l’entrée.",
+   "authorId": "demo-user-001",
+   "sentAtMs": 1794118680000
+  },
+  "readAtMs": {
+   "demo-user-007": 1794110400000,
+   "demo-user-001": 1794118680000
+  },
+  "updatedAtMs": 1794118680000,
+  "demo": true,
+  "messages": [
+   {
+    "authorId": "demo-user-007",
+    "text": "Bonjour, il y a un endroit pour garer un vélo ?",
+    "sentAtMs": 1794110400000,
+    "demo": true
+   },
+   {
+    "authorId": "demo-user-001",
+    "text": "Oui, des arceaux juste devant l’entrée.",
+    "sentAtMs": 1794118680000,
+    "demo": true
+   }
+  ]
+ },
+ {
+  "id": "demo-user-003__demo-user-112",
+  "memberIds": [
+   "demo-user-003",
+   "demo-user-112"
+  ],
+  "activityId": "demo-act-016",
+  "activityTitle": "Chants du monde à plusieurs voix",
+  "lastMessage": {
+   "text": "Non, tout est fourni sur place. Prends juste une tenue confortable.",
+   "authorId": "demo-user-112",
+   "sentAtMs": 1793972700000
+  },
+  "readAtMs": {
+   "demo-user-003": 1793966400000,
+   "demo-user-112": 1793972700000
+  },
+  "updatedAtMs": 1793972700000,
+  "demo": true,
+  "messages": [
+   {
+    "authorId": "demo-user-003",
+    "text": "Salut, faut-il apporter son propre matériel ?",
+    "sentAtMs": 1793966400000,
+    "demo": true
+   },
+   {
+    "authorId": "demo-user-112",
+    "text": "Non, tout est fourni sur place. Prends juste une tenue confortable.",
+    "sentAtMs": 1793972700000,
+    "demo": true
+   }
+  ]
+ },
+ {
+  "id": "demo-user-001__demo-user-037",
+  "memberIds": [
+   "demo-user-001",
+   "demo-user-037"
+  ],
+  "activityId": "demo-act-178",
+  "activityTitle": "Carnet de voyage illustré",
+  "lastMessage": {
+   "text": "Oui, bien sûr ! On commence par les bases, tu seras à l’aise.",
+   "authorId": "demo-user-001",
+   "sentAtMs": 1794124680000
+  },
+  "readAtMs": {
+   "demo-user-037": 1794114000000,
+   "demo-user-001": 1794124680000
+  },
+  "updatedAtMs": 1794124680000,
+  "demo": true,
+  "messages": [
+   {
+    "authorId": "demo-user-037",
+    "text": "Bonjour ! Est-ce que l’atelier convient à quelqu’un qui débute complètement ?",
+    "sentAtMs": 1794114000000,
+    "demo": true
+   },
+   {
+    "authorId": "demo-user-001",
+    "text": "Oui, bien sûr ! On commence par les bases, tu seras à l’aise.",
+    "sentAtMs": 1794124680000,
+    "demo": true
+   }
+  ]
+ },
+ {
+  "id": "demo-user-004__demo-user-092",
+  "memberIds": [
+   "demo-user-004",
+   "demo-user-092"
+  ],
+  "activityId": "demo-act-019",
+  "activityTitle": "Portraits en lumière naturelle",
+  "lastMessage": {
+   "text": "Salut, faut-il apporter son propre matériel ?",
+   "authorId": "demo-user-092",
+   "sentAtMs": 1794002400000
+  },
+  "readAtMs": {
+   "demo-user-092": 1794002400000,
+   "demo-user-004": 0
+  },
+  "updatedAtMs": 1794002400000,
+  "demo": true,
+  "messages": [
+   {
+    "authorId": "demo-user-092",
+    "text": "Salut, faut-il apporter son propre matériel ?",
+    "sentAtMs": 1794002400000,
+    "demo": true
+   }
+  ]
+ },
+ {
+  "id": "demo-user-054__demo-user-085",
+  "memberIds": [
+   "demo-user-054",
+   "demo-user-085"
+  ],
+  "activityId": "demo-act-033",
+  "activityTitle": "Atelier couture zéro déchet",
+  "lastMessage": {
+   "text": "Oui, bien sûr ! On commence par les bases, tu seras à l’aise.",
+   "authorId": "demo-user-085",
+   "sentAtMs": 1794106980000
+  },
+  "readAtMs": {
+   "demo-user-054": 1794096000000,
+   "demo-user-085": 1794106980000
+  },
+  "updatedAtMs": 1794106980000,
+  "demo": true,
+  "messages": [
+   {
+    "authorId": "demo-user-054",
+    "text": "Bonjour ! Est-ce que l’atelier convient à quelqu’un qui débute complètement ?",
+    "sentAtMs": 1794096000000,
+    "demo": true
+   },
+   {
+    "authorId": "demo-user-085",
+    "text": "Oui, bien sûr ! On commence par les bases, tu seras à l’aise.",
+    "sentAtMs": 1794106980000,
+    "demo": true
+   }
+  ]
+ },
+ {
+  "id": "demo-user-021__demo-user-088",
+  "memberIds": [
+   "demo-user-021",
+   "demo-user-088"
+  ],
+  "activityId": "demo-act-024",
+  "activityTitle": "Origami géant",
+  "lastMessage": {
+   "text": "Non, tout est fourni sur place. Prends juste une tenue confortable.",
+   "authorId": "demo-user-088",
+   "sentAtMs": 1793949300000
+  },
+  "readAtMs": {
+   "demo-user-021": 1793948400000,
+   "demo-user-088": 1793949300000
+  },
+  "updatedAtMs": 1793949300000,
+  "demo": true,
+  "messages": [
+   {
+    "authorId": "demo-user-021",
+    "text": "Salut, faut-il apporter son propre matériel ?",
+    "sentAtMs": 1793948400000,
+    "demo": true
+   },
+   {
+    "authorId": "demo-user-088",
+    "text": "Non, tout est fourni sur place. Prends juste une tenue confortable.",
+    "sentAtMs": 1793949300000,
+    "demo": true
+   }
+  ]
+ },
+ {
+  "id": "demo-user-082__demo-user-100",
+  "memberIds": [
+   "demo-user-082",
+   "demo-user-100"
+  ],
+  "activityId": "demo-act-039",
+  "activityTitle": "Initiation à la guitare",
+  "lastMessage": {
+   "text": "Non, tout est fourni sur place. Prends juste une tenue confortable.",
+   "authorId": "demo-user-100",
+   "sentAtMs": 1794186840000
+  },
+  "readAtMs": {
+   "demo-user-082": 1794178800000,
+   "demo-user-100": 1794186840000
+  },
+  "updatedAtMs": 1794186840000,
+  "demo": true,
+  "messages": [
+   {
+    "authorId": "demo-user-082",
+    "text": "Salut, faut-il apporter son propre matériel ?",
+    "sentAtMs": 1794178800000,
+    "demo": true
+   },
+   {
+    "authorId": "demo-user-100",
+    "text": "Non, tout est fourni sur place. Prends juste une tenue confortable.",
+    "sentAtMs": 1794186840000,
+    "demo": true
+   }
+  ]
+ },
+ {
+  "id": "demo-user-032__demo-user-112",
+  "memberIds": [
+   "demo-user-032",
+   "demo-user-112"
+  ],
+  "activityId": "demo-act-043",
+  "activityTitle": "Photo de nuit sur les quais",
+  "lastMessage": {
+   "text": "Oui, le lieu est de plain-pied et l’entrée est accessible.",
+   "authorId": "demo-user-112",
+   "sentAtMs": 1793926920000
+  },
+  "readAtMs": {
+   "demo-user-032": 1793923200000,
+   "demo-user-112": 1793926920000
+  },
+  "updatedAtMs": 1793926920000,
+  "demo": true,
+  "messages": [
+   {
+    "authorId": "demo-user-032",
+    "text": "Bonjour, est-ce accessible en fauteuil roulant ?",
+    "sentAtMs": 1793923200000,
+    "demo": true
+   },
+   {
+    "authorId": "demo-user-112",
+    "text": "Oui, le lieu est de plain-pied et l’entrée est accessible.",
+    "sentAtMs": 1793926920000,
+    "demo": true
+   }
+  ]
+ },
+ {
+  "id": "demo-user-086__demo-user-103",
+  "memberIds": [
+   "demo-user-086",
+   "demo-user-103"
+  ],
+  "activityId": "demo-act-068",
+  "activityTitle": "Fresque collective dans le quartier",
+  "lastMessage": {
+   "text": "Oui, le lieu est de plain-pied et l’entrée est accessible.",
+   "authorId": "demo-user-103",
+   "sentAtMs": 1794174000000
+  },
+  "readAtMs": {
+   "demo-user-086": 1794164400000,
+   "demo-user-103": 1794174000000
+  },
+  "updatedAtMs": 1794174000000,
+  "demo": true,
+  "messages": [
+   {
+    "authorId": "demo-user-086",
+    "text": "Bonjour, est-ce accessible en fauteuil roulant ?",
+    "sentAtMs": 1794164400000,
+    "demo": true
+   },
+   {
+    "authorId": "demo-user-103",
+    "text": "Oui, le lieu est de plain-pied et l’entrée est accessible.",
+    "sentAtMs": 1794174000000,
+    "demo": true
+   }
+  ]
+ },
+ {
+  "id": "demo-user-040__demo-user-112",
+  "memberIds": [
+   "demo-user-040",
+   "demo-user-112"
+  ],
+  "activityId": "demo-act-034",
+  "activityTitle": "Écrire une nouvelle en deux heures",
+  "lastMessage": {
+   "text": "Oui, bien sûr ! On commence par les bases, tu seras à l’aise.",
+   "authorId": "demo-user-112",
+   "sentAtMs": 1794025320000
+  },
+  "readAtMs": {
+   "demo-user-040": 1794024000000,
+   "demo-user-112": 1794025320000
+  },
+  "updatedAtMs": 1794025320000,
+  "demo": true,
+  "messages": [
+   {
+    "authorId": "demo-user-040",
+    "text": "Bonjour ! Est-ce que l’atelier convient à quelqu’un qui débute complètement ?",
+    "sentAtMs": 1794024000000,
+    "demo": true
+   },
+   {
+    "authorId": "demo-user-112",
+    "text": "Oui, bien sûr ! On commence par les bases, tu seras à l’aise.",
+    "sentAtMs": 1794025320000,
+    "demo": true
+   }
+  ]
+ },
+ {
+  "id": "demo-user-046__demo-user-062",
+  "memberIds": [
+   "demo-user-046",
+   "demo-user-062"
+  ],
+  "activityId": "demo-act-099",
+  "activityTitle": "Cercle de percussions",
+  "lastMessage": {
+   "text": "Oui, le lieu est de plain-pied et l’entrée est accessible.",
+   "authorId": "demo-user-046",
+   "sentAtMs": 1794057420000
+  },
+  "readAtMs": {
+   "demo-user-062": 1794049200000,
+   "demo-user-046": 1794057420000
+  },
+  "updatedAtMs": 1794057420000,
+  "demo": true,
+  "messages": [
+   {
+    "authorId": "demo-user-062",
+    "text": "Bonjour, est-ce accessible en fauteuil roulant ?",
+    "sentAtMs": 1794049200000,
+    "demo": true
+   },
+   {
+    "authorId": "demo-user-046",
+    "text": "Oui, le lieu est de plain-pied et l’entrée est accessible.",
+    "sentAtMs": 1794057420000,
+    "demo": true
+   }
+  ]
+ },
+ {
+  "id": "demo-user-019__demo-user-085",
+  "memberIds": [
+   "demo-user-019",
+   "demo-user-085"
+  ],
+  "activityId": "demo-act-171",
+  "activityTitle": "Jam session acoustique",
+  "lastMessage": {
+   "text": "Oui, le lieu est de plain-pied et l’entrée est accessible.",
+   "authorId": "demo-user-085",
+   "sentAtMs": 1794139800000
+  },
+  "readAtMs": {
+   "demo-user-019": 1794128400000,
+   "demo-user-085": 1794139800000
+  },
+  "updatedAtMs": 1794139800000,
+  "demo": true,
+  "messages": [
+   {
+    "authorId": "demo-user-019",
+    "text": "Bonjour, est-ce accessible en fauteuil roulant ?",
+    "sentAtMs": 1794128400000,
+    "demo": true
+   },
+   {
+    "authorId": "demo-user-085",
+    "text": "Oui, le lieu est de plain-pied et l’entrée est accessible.",
+    "sentAtMs": 1794139800000,
+    "demo": true
+   }
+  ]
+ },
+ {
+  "id": "demo-user-004__demo-user-029",
+  "memberIds": [
+   "demo-user-004",
+   "demo-user-029"
+  ],
+  "activityId": "demo-act-190",
+  "activityTitle": "Atelier écriture et slam",
+  "lastMessage": {
+   "text": "Salut, faut-il apporter son propre matériel ?",
+   "authorId": "demo-user-029",
+   "sentAtMs": 1794060000000
+  },
+  "readAtMs": {
+   "demo-user-029": 1794060000000,
+   "demo-user-004": 0
+  },
+  "updatedAtMs": 1794060000000,
+  "demo": true,
+  "messages": [
+   {
+    "authorId": "demo-user-029",
+    "text": "Salut, faut-il apporter son propre matériel ?",
+    "sentAtMs": 1794060000000,
+    "demo": true
+   }
+  ]
+ },
+ {
+  "id": "demo-user-004__demo-user-044",
+  "memberIds": [
+   "demo-user-004",
+   "demo-user-044"
+  ],
+  "activityId": "demo-act-214",
+  "activityTitle": "Écrire une nouvelle en deux heures",
+  "lastMessage": {
+   "text": "Oui, bien sûr ! On commence par les bases, tu seras à l’aise.",
+   "authorId": "demo-user-004",
+   "sentAtMs": 1794102300000
+  },
+  "readAtMs": {
+   "demo-user-044": 1794092400000,
+   "demo-user-004": 1794102300000
+  },
+  "updatedAtMs": 1794102300000,
+  "demo": true,
+  "messages": [
+   {
+    "authorId": "demo-user-044",
+    "text": "Bonjour ! Est-ce que l’atelier convient à quelqu’un qui débute complètement ?",
+    "sentAtMs": 1794092400000,
+    "demo": true
+   },
+   {
+    "authorId": "demo-user-004",
+    "text": "Oui, bien sûr ! On commence par les bases, tu seras à l’aise.",
+    "sentAtMs": 1794102300000,
+    "demo": true
+   }
+  ]
+ },
+ {
+  "id": "demo-user-038__demo-user-046",
+  "memberIds": [
+   "demo-user-038",
+   "demo-user-046"
+  ],
+  "activityId": "demo-act-062",
+  "activityTitle": "Dessin d’observation au musée",
+  "lastMessage": {
+   "text": "Oui, des arceaux juste devant l’entrée.",
+   "authorId": "demo-user-046",
+   "sentAtMs": 1794125640000
+  },
+  "readAtMs": {
+   "demo-user-038": 1794117600000,
+   "demo-user-046": 1794125640000
+  },
+  "updatedAtMs": 1794125640000,
+  "demo": true,
+  "messages": [
+   {
+    "authorId": "demo-user-038",
+    "text": "Bonjour, il y a un endroit pour garer un vélo ?",
+    "sentAtMs": 1794117600000,
+    "demo": true
+   },
+   {
+    "authorId": "demo-user-046",
+    "text": "Oui, des arceaux juste devant l’entrée.",
+    "sentAtMs": 1794125640000,
+    "demo": true
+   }
+  ]
+ },
+ {
+  "id": "demo-user-046__demo-user-079",
+  "memberIds": [
+   "demo-user-046",
+   "demo-user-079"
+  ],
+  "activityId": "demo-act-099",
+  "activityTitle": "Cercle de percussions",
+  "lastMessage": {
+   "text": "Oui, bien sûr ! On commence par les bases, tu seras à l’aise.",
+   "authorId": "demo-user-046",
+   "sentAtMs": 1794012600000
+  },
+  "readAtMs": {
+   "demo-user-079": 1794009600000,
+   "demo-user-046": 1794012600000
+  },
+  "updatedAtMs": 1794012600000,
+  "demo": true,
+  "messages": [
+   {
+    "authorId": "demo-user-079",
+    "text": "Bonjour ! Est-ce que l’atelier convient à quelqu’un qui débute complètement ?",
+    "sentAtMs": 1794009600000,
+    "demo": true
+   },
+   {
+    "authorId": "demo-user-046",
+    "text": "Oui, bien sûr ! On commence par les bases, tu seras à l’aise.",
+    "sentAtMs": 1794012600000,
+    "demo": true
+   }
+  ]
+ },
+ {
+  "id": "demo-user-061__demo-user-095",
+  "memberIds": [
+   "demo-user-061",
+   "demo-user-095"
+  ],
+  "activityId": "demo-act-010",
+  "activityTitle": "Atelier écriture et slam",
+  "lastMessage": {
+   "text": "Oui, le lieu est de plain-pied et l’entrée est accessible.",
+   "authorId": "demo-user-061",
+   "sentAtMs": 1794085920000
+  },
+  "readAtMs": {
+   "demo-user-095": 1794081600000,
+   "demo-user-061": 1794085920000
+  },
+  "updatedAtMs": 1794085920000,
+  "demo": true,
+  "messages": [
+   {
+    "authorId": "demo-user-095",
+    "text": "Bonjour, est-ce accessible en fauteuil roulant ?",
+    "sentAtMs": 1794081600000,
+    "demo": true
+   },
+   {
+    "authorId": "demo-user-061",
+    "text": "Oui, le lieu est de plain-pied et l’entrée est accessible.",
+    "sentAtMs": 1794085920000,
+    "demo": true
+   }
+  ]
+ },
+ {
+  "id": "demo-user-102__demo-user-106",
+  "memberIds": [
+   "demo-user-102",
+   "demo-user-106"
+  ],
+  "activityId": "demo-act-192",
+  "activityTitle": "Ciné-débat court métrage",
+  "lastMessage": {
+   "text": "Oui, des arceaux juste devant l’entrée.",
+   "authorId": "demo-user-106",
+   "sentAtMs": 1794182460000
+  },
+  "readAtMs": {
+   "demo-user-102": 1794171600000,
+   "demo-user-106": 1794182460000
+  },
+  "updatedAtMs": 1794182460000,
+  "demo": true,
+  "messages": [
+   {
+    "authorId": "demo-user-102",
+    "text": "Bonjour, il y a un endroit pour garer un vélo ?",
+    "sentAtMs": 1794171600000,
+    "demo": true
+   },
+   {
+    "authorId": "demo-user-106",
+    "text": "Oui, des arceaux juste devant l’entrée.",
+    "sentAtMs": 1794182460000,
+    "demo": true
+   }
+  ]
+ }
+]

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
-import { BellRing, CalendarDays, ChevronLeft, ChevronRight, Clock3, Cloud, CloudFog, CloudLightning, CloudRain, CloudSun, LogOut, MapPin, MessageCircleMore, Pencil, Share2, SignalHigh, Snowflake, Sun, Users, Wrench } from '@lucide/vue'
+import { BellRing, CalendarDays, MessageCircle, ChevronLeft, ChevronRight, Clock3, Cloud, CloudFog, CloudLightning, CloudRain, CloudSun, LogOut, MapPin, MessageCircleMore, Pencil, Share2, SignalHigh, Snowflake, Sun, Users, Wrench } from '@lucide/vue'
 import ActivityMap from '@/components/ActivityMap.vue'
 import ConfirmDialog from '@/components/ConfirmDialog.vue'
 import DisciplineBadge from '@/components/DisciplineBadge.vue'
@@ -139,8 +139,10 @@ async function share() { if (activity.value) { const message = await shareActivi
 
       <section class="organizer-card" aria-label="Organisation">
         <UserAvatar :name="activity.organizerName" :photo="activity.organizerPhoto || organizerProfile?.photoUrl" size="lg" />
-        <div><p class="muted">Organisé par</p><p class="organizer-card__name">{{ organizer ? 'Toi' : activity.organizerName }}</p><p v-if="organizerProfile?.bio" class="muted">{{ organizerProfile.bio }}</p></div>
+        <div class="organizer-card__text"><p class="muted">Organisé par</p><p class="organizer-card__name">{{ organizer ? 'Toi' : activity.organizerName }}</p><p v-if="organizerProfile?.bio" class="muted">{{ organizerProfile.bio }}</p></div>
       </section>
+      <!-- Contact : une question à l'organisateur avant de réserver, en message privé. -->
+      <a v-if="!organizer" :href="`#/messages/${encodeURIComponent(activity.organizerId)}?activite=${encodeURIComponent(activity.id)}`" class="btn btn--outline btn--wide contact-organizer"><MessageCircle aria-hidden="true" />Contacter {{ activity.organizerName.split(' ')[0] }}</a>
 
       <div v-if="activity.lat !== null" class="detail__map"><ActivityMap :points="point" :zoom="15" label="Lieu de l’activité" /></div>
 
@@ -151,6 +153,7 @@ async function share() { if (activity.value) { const message = await shareActivi
             <UserAvatar :name="index === 0 ? activity.organizerName : memberName(id)" :photo="store.members[id]?.photoUrl" />
             <span class="person-row__name">{{ id === uid ? 'Toi' : index === 0 ? activity.organizerName : memberName(id) }}</span>
             <span v-if="index === 0" class="soft-tag">Organisation</span>
+            <a v-if="id !== uid && index !== 0" :href="`#/messages/${encodeURIComponent(id)}?activite=${encodeURIComponent(activity.id)}`" class="icon-button icon-button--plain person-row__write" :aria-label="`Écrire à ${memberName(id)} en privé`"><MessageCircle aria-hidden="true" /></a>
           </li>
         </ul>
       </section>

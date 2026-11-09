@@ -2,7 +2,7 @@ import { computed, ref } from 'vue'
 
 // Navigation par ancre (#/…) : aucun paramétrage d'hébergement supplémentaire
 // et compatible avec le retour du lien magique sur /login.html.
-export type RouteName = 'decouvrir' | 'rechercher' | 'activite' | 'participation' | 'modifier' | 'creer' | 'conversations' | 'conversation' | 'mes-activites' | 'profil' | 'profil-modifier' | 'favoris' | 'communaute' | 'notifications'
+export type RouteName = 'decouvrir' | 'rechercher' | 'activite' | 'participation' | 'modifier' | 'creer' | 'conversations' | 'conversation' | 'mes-activites' | 'profil' | 'profil-modifier' | 'favoris' | 'communaute' | 'notifications' | 'message'
 export interface Route { name: RouteName; id?: string; query: Record<string, string> }
 
 export function parseRoute(hash: string): Route {
@@ -11,6 +11,8 @@ export function parseRoute(hash: string): Route {
   const [first = '', id, extra] = path.split('/').filter(Boolean).map(decodeURIComponent)
   if (first === 'activite' && id) return { name: extra === 'participation' ? 'participation' : extra === 'modifier' ? 'modifier' : 'activite', id, query }
   if (first === 'conversations' && id) return { name: 'conversation', id, query }
+  // Conversation privée avec un membre : #/messages/<uid du membre>?activite=<id>
+  if (first === 'messages' && id) return { name: 'message', id, query }
   if (first === 'profil' && id === 'modifier') return { name: 'profil-modifier', query }
   const simple: RouteName[] = ['rechercher', 'creer', 'conversations', 'mes-activites', 'profil', 'favoris', 'communaute', 'notifications']
   return { name: simple.includes(first as RouteName) ? first as RouteName : 'decouvrir', query }
@@ -40,4 +42,4 @@ export function goBack(fallback = 'decouvrir') {
   else navigate(fallback)
 }
 // Onglet actif de la barre de navigation pour chaque écran.
-export const tabOf = (name: RouteName) => ({ rechercher: 'rechercher', creer: 'creer', conversations: 'conversations', conversation: 'conversations', profil: 'profil', 'profil-modifier': 'profil', 'mes-activites': 'profil', favoris: 'profil', communaute: 'profil' } as Record<string, string>)[name] ?? 'decouvrir'
+export const tabOf = (name: RouteName) => ({ rechercher: 'rechercher', creer: 'creer', conversations: 'conversations', conversation: 'conversations', message: 'conversations', profil: 'profil', 'profil-modifier': 'profil', 'mes-activites': 'profil', favoris: 'profil', communaute: 'profil' } as Record<string, string>)[name] ?? 'decouvrir'

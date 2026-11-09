@@ -19,7 +19,7 @@
 | US-13 | Consulter son profil | Livré | Profil |
 | US-14 | Modifier ses informations | Livré | Mes informations |
 
-En plus : liste d'attente avec confirmation (sujet ART), notifications (13), favoris, communauté, rappel agenda `.ics`, partage. Application mobile-first (colonne de téléphone sur grand écran).
+En plus : liste d'attente avec confirmation (sujet ART), messagerie privée pour contacter l'organisateur (sujet ART), notifications (13), favoris, communauté, rappel agenda `.ics`, partage. Application mobile-first (colonne de téléphone sur grand écran).
 
 Site vitrine : `landing/` (accueil, fonctionnement, FAQ, contact, pages légales), voir `landing/README.md`. Reste la vidéo d'animation.
 

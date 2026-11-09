@@ -325,7 +325,44 @@ export function buildDataset(baseDate = new Date()) {
     }
     activities.push(activity)
   }
-  return { venues, users, activities, messages }
+  const privateChats = buildPrivateChats(activities, users, base)
+  return { venues, users, activities, messages, privateChats }
+}
+
+// Messagerie privée : des participants posent une question à l'organisateur avant de s'inscrire.
+const privateQuestions = [
+  ['Bonjour ! Est-ce que l’atelier convient à quelqu’un qui débute complètement ?', 'Oui, bien sûr ! On commence par les bases, tu seras à l’aise.'],
+  ['Salut, faut-il apporter son propre matériel ?', 'Non, tout est fourni sur place. Prends juste une tenue confortable.'],
+  ['Bonjour, est-ce accessible en fauteuil roulant ?', 'Oui, le lieu est de plain-pied et l’entrée est accessible.'],
+  ['Hello ! Je risque d’arriver avec 10 minutes de retard, c’est gênant ?', 'Pas de souci, on commence doucement. Préviens-moi juste par message.'],
+  ['Bonjour, il y a un endroit pour garer un vélo ?', 'Oui, des arceaux juste devant l’entrée.'],
+  ['Est-ce que je peux venir avec une amie qui n’est pas inscrite ?', 'Le nombre de places est limité, le mieux est qu’elle s’inscrive aussi (ou en liste d’attente).'],
+]
+function buildPrivateChats(activities, users, base) {
+  const rand = prng(20261111)
+  const upcoming = activities.filter(a => a.date >= isoDay(base))
+  const chats = []
+  for (let i = 0; i < 40 && upcoming.length; i++) {
+    const activity = upcoming[Math.floor(rand() * upcoming.length)]
+    const asker = users[Math.floor(rand() * users.length)]
+    if (asker.uid === activity.organizerId) continue
+    const memberIds = [asker.uid, activity.organizerId].sort()
+    const id = memberIds.join('__')
+    if (chats.some(c => c.id === id)) continue
+    const [question, answer] = privateQuestions[Math.floor(rand() * privateQuestions.length)]
+    const askedAt = base.getTime() - Math.floor(rand() * 72) * 3600000
+    const answeredAt = askedAt + (10 + Math.floor(rand() * 240)) * 60000
+    const messages = [{ authorId: asker.uid, text: question, sentAtMs: askedAt, demo: true }]
+    if (rand() < 0.8) messages.push({ authorId: activity.organizerId, text: answer, sentAtMs: answeredAt, demo: true })
+    const last = messages[messages.length - 1]
+    chats.push({
+      id, memberIds, activityId: activity.id, activityTitle: activity.title,
+      lastMessage: { text: last.text, authorId: last.authorId, sentAtMs: last.sentAtMs },
+      readAtMs: { [asker.uid]: askedAt, [activity.organizerId]: messages.length > 1 ? answeredAt : 0 },
+      updatedAtMs: last.sentAtMs, demo: true, messages,
+    })
+  }
+  return chats
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
@@ -343,5 +380,6 @@ function writeFiles(data) {
   // Les lieux suggérés à l'organisateur sont embarqués dans l'application.
   writeFileSync(resolve(root, 'frontend/src/data/venues.json'), JSON.stringify(data.venues.map(({ id, name, type, district, address, lat, lng }) => ({ id, name, type, district, address, lat, lng }))) + '\n')
   const reservations = data.activities.reduce((n, a) => n + a.participantIds.length, 0)
-  console.log(`${data.users.length} membres, ${data.activities.length} activités, ${reservations} participations, ${data.messages.length} messages, ${data.venues.length} lieux → specs/data/`)
+  const waiting = data.activities.reduce((n, a) => n + (a.waitlistIds?.length ?? 0), 0)
+  console.log(`${data.users.length} membres, ${data.activities.length} activités, ${reservations} participations, ${waiting} en liste d’attente, ${data.messages.length} messages, ${data.privateChats.length} conversations privées, ${data.venues.length} lieux → specs/data/`)
 }

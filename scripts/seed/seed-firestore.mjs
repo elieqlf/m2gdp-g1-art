@@ -41,21 +41,31 @@ async function removeDemoData() {
     msgs.docs.forEach(m => ops.push(b => b.delete(m.ref)))
     ops.push(b => b.delete(activity.ref))
   }
+  const chats = await db.collection('privateChats').where('demo', '==', true).get()
+  for (const chat of chats.docs) {
+    const msgs = await chat.ref.collection('messages').get()
+    msgs.docs.forEach(m => ops.push(b => b.delete(m.ref)))
+    ops.push(b => b.delete(chat.ref))
+  }
   const users = await db.collection('users').where('demo', '==', true).get()
   users.docs.forEach(u => ops.push(b => b.delete(u.ref)))
   await commitInChunks(ops)
-  console.log(`\nSupprimé : ${activities.size} activités et ${users.size} membres de démonstration.`)
+  console.log(`\nSupprimé : ${activities.size} activités, ${chats.size} conversations privées et ${users.size} membres de démonstration.`)
 }
 
 async function main() {
   if (reset) await removeDemoData()
-  const { users, activities, messages } = buildDataset(baseDate)
+  const { users, activities, messages, privateChats } = buildDataset(baseDate)
   const ops = []
   for (const { uid, ...profile } of users) ops.push(b => b.set(db.collection('users').doc(uid), profile))
   for (const { id, ...activity } of activities) ops.push(b => b.set(db.collection('activities').doc(id), activity))
   for (const { activityId, ...message } of messages) ops.push(b => b.set(db.collection('activities').doc(activityId).collection('messages').doc(), message))
+  for (const { id, messages: chatMessages, ...chat } of privateChats) {
+    ops.push(b => b.set(db.collection('privateChats').doc(id), chat))
+    for (const message of chatMessages) ops.push(b => b.set(db.collection('privateChats').doc(id).collection('messages').doc(), message))
+  }
   await commitInChunks(ops)
-  console.log(`\nChargé : ${users.length} membres, ${activities.length} activités, ${messages.length} messages (date de référence ${baseDate.toISOString().slice(0, 10)}).`)
+  console.log(`\nChargé : ${users.length} membres, ${activities.length} activités, ${messages.length} messages, ${privateChats.length} conversations privées (date de référence ${baseDate.toISOString().slice(0, 10)}).`)
 }
 
 main().catch(error => { console.error('\nÉchec du chargement :', error.message); process.exit(1) })

@@ -1,6 +1,7 @@
 import { computed, reactive } from 'vue'
 import { listMembers, setFavorite, type Account, type Member, type Profile } from '@/services/firebase'
 import { getActivity, listActivities, watchMyOffers } from '@/services/activities'
+import { isUnread, otherMember, watchMyChats, type PrivateChat } from '@/services/messages'
 import { LYON_CENTER, activeOffer, isMember, isPast, startsAt, waitlistOf, type Activity, type Point } from '@/lib/activity'
 
 // État partagé entre les écrans de l'application connectée.
@@ -16,6 +17,9 @@ export const store = reactive({
   notice: '' as string,
   /** Activités où une place m'est proposée (temps réel). */
   offers: [] as Activity[],
+  /** Conversations privées (temps réel) ; 'idle' tant que l'écoute n'a rien reçu. */
+  chats: [] as PrivateChat[],
+  chatsStatus: 'idle' as 'idle' | 'ready' | 'error',
   /** Notifications déjà vues (mémorisées sur cet appareil). */
   seenNotifications: [] as string[],
 })
@@ -32,7 +36,7 @@ export const originLabel = computed(() => store.gps ? 'ta position' : typeof sto
 export function resetStore() {
   stopWatchers()
   pending = []
-  Object.assign(store, { account: null, profile: {}, activities: [], activitiesStatus: 'idle', members: {}, membersStatus: 'idle', gps: null, gpsStatus: 'idle', notice: '', offers: [], seenNotifications: [] })
+  Object.assign(store, { account: null, profile: {}, activities: [], activitiesStatus: 'idle', members: {}, membersStatus: 'idle', gps: null, gpsStatus: 'idle', notice: '', offers: [], chats: [], chatsStatus: 'idle', seenNotifications: [] })
 }
 let noticeTimer: ReturnType<typeof setTimeout> | undefined
 let pending: { text: string; duration: number }[] = []
@@ -143,10 +147,26 @@ export function startWatchers() {
     first = false
   }, () => { /* hors ligne : les notifications se mettront à jour au retour du réseau */ })
   unsubscribers.push(stop)
+  let firstChats = true
+  unsubscribers.push(watchMyChats(uid.value, chats => {
+    const before = new Map(store.chats.map(c => [c.id, c.lastMessage?.sentAtMs ?? 0]))
+    store.chats = chats
+    store.chatsStatus = 'ready'
+    // Nouveau message privé reçu pendant que l'appli est ouverte (hors de cette conversation).
+    const fresh = chats.find(c => isUnread(c, uid.value) && (c.lastMessage?.sentAtMs ?? 0) > (before.get(c.id) ?? 0) && openChatId !== c.id)
+    if (fresh && !firstChats) notify(`Nouveau message de ${memberName(otherMember(fresh, uid.value))}`, 4000, true)
+    firstChats = false
+  }, () => { store.chatsStatus = 'error' }))
 }
+/** Conversation affichée à l'écran : ses nouveaux messages ne déclenchent pas de message flottant. */
+let openChatId = ''
+export function setOpenChat(id: string) { openChatId = id }
+export const unreadChats = computed(() => store.chats.filter(c => isUnread(c, uid.value)).length)
 
-export type NotificationKind = 'offer' | 'waitlist' | 'reminder' | 'message'
-export interface AppNotification { id: string; kind: NotificationKind; activity: Activity; atMs: number; group: 'activites' | 'messages' }
+export type NotificationKind = 'offer' | 'waitlist' | 'reminder' | 'message' | 'private'
+export type AppNotification =
+  | { id: string; kind: Exclude<NotificationKind, 'private'>; activity: Activity; atMs: number; group: 'activites' | 'messages' }
+  | { id: string; kind: 'private'; chat: PrivateChat; atMs: number; group: 'messages' }
 const offerKey = (a: Activity) => `offer:${a.id}:${a.offer?.expiresAtMs ?? 0}`
 const REMINDER_MS = 48 * 3600 * 1000
 const MESSAGE_WINDOW_MS = 7 * 24 * 3600 * 1000
@@ -167,6 +187,9 @@ export const notifications = computed<AppNotification[]>(() => {
     const start = startsAt(a).getTime()
     if ((a.participantIds.includes(uid.value) || a.organizerId === uid.value) && !isPast(a) && start - now < REMINDER_MS)
       list.push({ id: `reminder:${a.id}`, kind: 'reminder', activity: a, atMs: start - REMINDER_MS, group: 'activites' })
+  }
+  for (const chat of store.chats) {
+    if (isUnread(chat, uid.value)) list.push({ id: `private:${chat.id}:${chat.lastMessage?.sentAtMs ?? 0}`, kind: 'private', chat, atMs: chat.lastMessage?.sentAtMs ?? 0, group: 'messages' })
   }
   // Places à confirmer d'abord, puis du plus récent au plus ancien ; les rangs en file d'attente à la fin.
   return list.sort((x, y) => Number(y.kind === 'offer') - Number(x.kind === 'offer') || y.atMs - x.atMs)

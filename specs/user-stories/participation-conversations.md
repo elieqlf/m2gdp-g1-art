@@ -46,6 +46,17 @@ Les notifications vues sont mémorisées sur l'appareil. Pas de notification pus
 | CA3 | Envoi d'un message (1000 caractères max) ; le dernier message alimente la liste | idem |
 | CA4 | Non-membre : « Groupe réservé aux participants » ; les règles Firestore refusent la lecture | `docs/firestore.rules` |
 
+## Contact : messagerie privée (sujet ART : « contacter l'organisateur avant de réserver »)
+
+| # | Critère d'acceptation | Test |
+|---|---|---|
+| CA1 | Fiche activité : « Contacter <prénom> » ouvre une conversation privée avec l'organisateur, sans être inscrit | `scenario.spec.ts` |
+| CA2 | Bouton « Écrire » sur chaque participant de la fiche et sur chaque membre de la communauté | idem |
+| CA3 | Une seule conversation par paire de membres ; l'activité d'origine est rappelée (« À propos de… ») | idem |
+| CA4 | Conversations : onglets Groupes / Privées / Archivés ; non-lus signalés (point, pastille sur l'onglet de navigation, Notifications) | idem |
+| CA5 | Seuls les deux membres lisent et écrivent ; chacun ne met à jour que sa propre lecture | `docs/firestore.rules` |
+| CA6 | Mention à l'écran : « seuls X et toi pouvez la lire » ; politique de confidentialité : pas de chiffrement de bout en bout | landing `legal.html` |
+
 ## Spécifications techniques
 
 ```mermaid
@@ -83,3 +94,4 @@ Choix : la messagerie utilise Firestore (sous-collection) plutôt que Realtime D
 ## Exclusions
 
 - Pièces jointes, réactions, notifications push.
+- Blocage et signalement d'un membre en messagerie privée (à prévoir avant une ouverture au public).

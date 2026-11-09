@@ -22,6 +22,7 @@ import ProfileEditView from '@/views/ProfileEditView.vue'
 import FavoritesView from '@/views/FavoritesView.vue'
 import CommunityView from '@/views/CommunityView.vue'
 import NotificationsView from '@/views/NotificationsView.vue'
+import PrivateChatView from '@/views/PrivateChatView.vue'
 import { isValidEmail, hasSignInLink, pendingEmail, requestSignInLink, completeSignIn, observeAccount, getProfile, saveProfile, logout, type Account, type Profile } from '@/services/firebase'
 import type { AddressSelection } from '@/services/places'
 import { loadActivities, loadMembers, notifyPositionFallback, requestPosition, resetStore, startWatchers, store } from '@/lib/store'
@@ -36,10 +37,10 @@ const account = ref<Account | null>(null)
 const cooldown = ref(0)
 const route = useRoute()
 // Écrans de l'application connectée, choisis selon l'ancre (#/…).
-const views = { decouvrir: DiscoverView, rechercher: SearchView, activite: ActivityView, participation: ParticipationView, creer: CreateActivityView, modifier: EditActivityView, conversations: ConversationsView, conversation: ConversationView, 'mes-activites': MyActivitiesView, profil: ProfileView, 'profil-modifier': ProfileEditView, favoris: FavoritesView, communaute: CommunityView, notifications: NotificationsView }
+const views = { decouvrir: DiscoverView, rechercher: SearchView, activite: ActivityView, participation: ParticipationView, creer: CreateActivityView, modifier: EditActivityView, conversations: ConversationsView, conversation: ConversationView, 'mes-activites': MyActivitiesView, profil: ProfileView, 'profil-modifier': ProfileEditView, favoris: FavoritesView, communaute: CommunityView, notifications: NotificationsView, message: PrivateChatView }
 const currentView = computed(() => views[route.value.name])
 const viewKey = computed(() => `${route.value.name}:${route.value.id ?? ''}`)
-const showNav = computed(() => !['participation', 'conversation'].includes(route.value.name))
+const showNav = computed(() => !['participation', 'conversation', 'message'].includes(route.value.name))
 const selection = ref<AddressSelection | null>(null)
 const blankProfile = (): Profile => ({ firstName: '', lastName: '', userType: 'participant', address: '', addressLat: null, addressLng: null, photoUrl: '' })
 const profile = reactive<Profile>(blankProfile())

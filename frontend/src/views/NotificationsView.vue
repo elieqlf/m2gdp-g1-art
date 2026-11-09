@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { BellRing, CalendarClock, ChevronLeft, ChevronRight, Clock3, MessageCircleMore } from '@lucide/vue'
+import { BellRing, CalendarClock, ChevronLeft, ChevronRight, Clock3, LockKeyhole, MessageCircleMore } from '@lucide/vue'
 import MascotState from '@/components/MascotState.vue'
 import { activeOffer, agoLabel, deadlineLabel, startsInLabel, waitlistPosition } from '@/lib/activity'
-import { markNotificationsSeen, notifications, store, uid, type AppNotification } from '@/lib/store'
+import { markNotificationsSeen, memberName, notifications, store, uid, type AppNotification } from '@/lib/store'
+import { otherMember } from '@/services/messages'
 import { goBack } from '@/lib/router'
 
 // Maquette 13 : places libérées (liste d'attente), rappels d'activité et nouveaux messages.
@@ -18,19 +19,21 @@ watch(notifications, list => {
   markNotificationsSeen()
 }, { immediate: true })
 const visible = computed(() => notifications.value.filter(n => tab.value === 'toutes' || n.group === tab.value))
-const icons = { offer: BellRing, waitlist: Clock3, reminder: CalendarClock, message: MessageCircleMore }
+const icons = { offer: BellRing, waitlist: Clock3, reminder: CalendarClock, message: MessageCircleMore, private: LockKeyhole }
 
 function title(n: AppNotification) {
-  return { offer: 'Une place s’est libérée', waitlist: 'Liste d’attente', reminder: 'Rappel d’activité', message: 'Nouveau message' }[n.kind]
+  return { offer: 'Une place s’est libérée', waitlist: 'Liste d’attente', reminder: 'Rappel d’activité', message: 'Nouveau message', private: 'Message privé' }[n.kind]
 }
 function text(n: AppNotification) {
+  if (n.kind === 'private') return `${memberName(otherMember(n.chat, uid.value))} : ${n.chat.lastMessage?.text ?? ''}`
   const a = n.activity
   if (n.kind === 'offer') return `«\u00a0${a.title}\u00a0» : confirme ta place avant ${deadlineLabel(activeOffer(a)?.expiresAtMs ?? 0)}.`
   if (n.kind === 'waitlist') return `Tu es n°${waitlistPosition(a, uid.value)} pour «\u00a0${a.title}\u00a0». On te prévient si une place se libère.`
   if (n.kind === 'reminder') return `Ton activité «\u00a0${a.title}\u00a0» ${startsInLabel(a)}.`
   return `${a.lastMessage?.authorName ?? 'Quelqu’un'} a écrit dans «\u00a0${a.title}\u00a0» : ${a.lastMessage?.text ?? ''}`
 }
-const href = (n: AppNotification) => n.kind === 'message' ? `#/conversations/${encodeURIComponent(n.activity.id)}` : `#/activite/${encodeURIComponent(n.activity.id)}`
+const href = (n: AppNotification) => n.kind === 'private' ? `#/messages/${encodeURIComponent(otherMember(n.chat, uid.value))}`
+  : n.kind === 'message' ? `#/conversations/${encodeURIComponent(n.activity.id)}` : `#/activite/${encodeURIComponent(n.activity.id)}`
 </script>
 
 <template>
@@ -43,7 +46,7 @@ const href = (n: AppNotification) => n.kind === 'message' ? `#/conversations/${e
       <button type="button" role="tab" :aria-selected="tab === 'messages'" :class="{ 'is-selected': tab === 'messages' }" @click="tab = 'messages'">Messages</button>
     </div>
     <p v-if="store.activitiesStatus === 'loading' && !visible.length" class="loading-line" role="status"><span class="spinner" aria-hidden="true"></span>Chargement des notifications…</p>
-    <MascotState v-else-if="!visible.length" title="Rien de neuf pour l’instant" text="Tu seras prévenu ici quand une place se libère, avant tes activités et quand on t’écrit." />
+    <MascotState v-else-if="!visible.length" title="Rien de neuf pour l’instant" text="Ici s’affichent les places libérées, les rappels avant tes activités et les messages reçus." />
     <ul v-else class="notification-list">
       <li v-for="n in visible" :key="n.id">
         <a :href="href(n)" class="notification" :class="{ 'is-unread': unseen.has(n.id) && n.kind !== 'waitlist' }">

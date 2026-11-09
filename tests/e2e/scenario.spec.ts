@@ -152,6 +152,47 @@ test('Liste d’attente : la place libérée est notifiée puis confirmée', asy
   await expect(page.getByRole('link', { name: new RegExp(`Nouveau message.*${offered.title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`) })).toBeVisible()
 })
 
+test('Contact : écrire en privé à l’organisateur avant de s’inscrire', async ({ page }, testInfo) => {
+  const target = pickActivity(a => a.participantIds.length < a.capacity && !a.participantIds.includes(ME.uid) && a.organizerId !== ME.uid)
+  const { users } = demoData()
+  const organizer = users.find(u => u.uid === target.organizerId)!
+  await openApp(page, 'app', `#/activite/${target.id}`)
+  await page.getByRole('link', { name: `Contacter ${organizer.firstName}` }).click()
+  await expect(page.getByRole('heading', { name: `${organizer.firstName} ${organizer.lastName}` })).toBeVisible()
+  await expect(page.getByText(`seuls ${organizer.firstName} et toi pouvez la lire`)).toBeVisible()
+  await expect(page.getByRole('link', { name: `À propos de « ${target.title} »` })).toBeVisible()
+  await expect(page.getByRole('navigation', { name: 'Navigation principale' })).toBeHidden()
+  await page.getByLabel(`Écrire à ${organizer.firstName} ${organizer.lastName}`).fill('Bonjour ! C’est ouvert aux débutants ?')
+  await page.getByRole('button', { name: 'Envoyer le message' }).click()
+  await expect(page.getByRole('list', { name: `Messages avec ${organizer.firstName} ${organizer.lastName}` }).getByText('Bonjour ! C’est ouvert aux débutants ?')).toBeVisible()
+  await capture(page, testInfo, 'message-prive')
+  // La conversation apparaît dans l'onglet « Privées », avec l'activité en contexte.
+  await page.goto('/#/conversations?onglet=privees')
+  const item = page.getByRole('link', { name: new RegExp(`${organizer.firstName} ${organizer.lastName}.*Toi : Bonjour`) })
+  await expect(item).toBeVisible()
+  await expect(item.getByText(`À propos de « ${target.title} »`)).toBeVisible()
+})
+
+test('Contact : message privé reçu, non lu puis lu', async ({ page }, testInfo) => {
+  const { users, chats } = demoData()
+  const sender = users.find(u => u.uid === chats[0]!.other)!
+  await openApp(page, 'app', '#/decouvrir')
+  await expect(page.getByRole('link', { name: /Conversations.*1 message privé non lu/ })).toBeVisible()
+  await page.getByRole('link', { name: /Notifications, \d+ nouvelles?/ }).click()
+  await page.getByRole('tab', { name: 'Messages' }).click()
+  await expect(page.getByRole('link', { name: new RegExp(`Message privé.*${sender.firstName} ${sender.lastName} : Non, tout est fourni`) })).toBeVisible()
+  await page.goto('/#/conversations')
+  await page.getByRole('tab', { name: 'Privées (1)' }).click()
+  await capture(page, testInfo, 'conversations-privees')
+  await page.getByRole('link', { name: new RegExp(`${sender.firstName} ${sender.lastName}.*Non lu`) }).click()
+  await expect(page.getByText('Non, tout est fourni, viens comme tu es !')).toBeVisible()
+  await expect(page.getByText('Faut-il apporter son matériel ?')).toBeVisible()
+  // Lu : plus de pastille sur l'onglet Conversations.
+  await page.getByRole('button', { name: 'Retour' }).click()
+  await expect(page.getByRole('tab', { name: 'Privées', exact: true })).toBeVisible()
+  await expect(page.getByRole('link', { name: 'Conversations', exact: true })).toBeVisible()
+})
+
 test('US-08 : modifier son activité sans descendre sous le nombre d’inscrits, puis la supprimer', async ({ page }, testInfo) => {
   const mine = demoData().activities.find(a => a.organizerId === ME.uid)!
   await openApp(page, 'app', `#/activite/${mine.id}/modifier`)

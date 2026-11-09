@@ -28,7 +28,14 @@ export function demoData() {
   if (full[0]) Object.assign(full[0], { participantIds: full[0].participantIds.slice(1), offer: { uid: ME.uid, expiresAtMs: offerEnd, offeredAtMs: Date.now() - 2 * 3600 * 1000 } })
   if (full[1]) full[1].waitlistIds = [full[1].waitlistIds?.[0] ?? 'demo-user-001', ME.uid]
   const ids = new Set(activities.map(a => a.id))
-  return { users: data.users, activities, messages: data.messages.filter(m => ids.has(m.activityId)) }
+  // Messagerie privée : une conversation non lue (un organisateur lui a écrit) et une conversation lue.
+  const [first, second] = data.users.filter(u => u.uid !== ME.uid)
+  const now = Date.now()
+  const chats = [
+    { other: first!.uid, activityTitle: upcoming[1]?.title, activityId: upcoming[1]?.id, read: false, messages: [{ from: ME.uid, text: 'Bonjour ! Faut-il apporter son matériel ?', at: now - 5 * 3600 * 1000 }, { from: first!.uid, text: 'Non, tout est fourni, viens comme tu es !', at: now - 40 * 60 * 1000 }] },
+    { other: second!.uid, read: true, messages: [{ from: second!.uid, text: 'Merci pour l’atelier de samedi !', at: now - 2 * 86400 * 1000 }, { from: ME.uid, text: 'Avec plaisir, à bientôt !', at: now - 2 * 86400 * 1000 + 600000 }] },
+  ]
+  return { users: data.users, activities, messages: data.messages.filter(m => ids.has(m.activityId)), chats }
 }
 
 const firebaseModule = (mode: Mode, users: DemoUser[]) => `
@@ -97,16 +104,52 @@ export const sendMessage = async (id, author, text) => {
 };
 `
 
+type DemoChat = ReturnType<typeof demoData>['chats'][number]
+const messagesModule = (chats: DemoChat[]) => `
+const me = ${JSON.stringify(ME.uid)};
+export const chatIdFor = (a, b) => [a, b].sort().join('__');
+export const otherMember = (chat, uid) => chat.memberIds.find(id => id !== uid) ?? uid;
+export const isUnread = (chat, uid) => !!chat.lastMessage && chat.lastMessage.authorId !== uid && chat.lastMessage.sentAtMs > (chat.readAtMs?.[uid] ?? 0);
+const chats = ${JSON.stringify(chats)}.map(c => {
+  const last = c.messages[c.messages.length - 1];
+  return { id: chatIdFor(me, c.other), memberIds: [me, c.other].sort(), activityId: c.activityId, activityTitle: c.activityTitle,
+    lastMessage: { text: last.text, authorId: last.from, sentAtMs: last.at }, readAtMs: { [me]: c.read ? last.at + 1 : 0 }, updatedAtMs: last.at,
+    messages: c.messages.map((m, i) => ({ id: 'm' + i, authorId: m.from, text: m.text, sentAtMs: m.at })) };
+});
+const clone = value => JSON.parse(JSON.stringify(value));
+const chatWatchers = new Set();
+const messageWatchers = new Map();
+const publish = () => {
+  const list = clone(chats.map(({ messages, ...c }) => c)).sort((a, b) => b.updatedAtMs - a.updatedAtMs);
+  chatWatchers.forEach(cb => cb(list));
+  messageWatchers.forEach((cb, id) => cb(clone(chats.find(c => c.id === id)?.messages ?? [])));
+};
+export const watchMyChats = (uid, cb) => { chatWatchers.add(cb); queueMicrotask(publish); return () => chatWatchers.delete(cb); };
+export const watchPrivateMessages = (id, cb) => { messageWatchers.set(id, cb); queueMicrotask(publish); return () => messageWatchers.delete(id); };
+export const sendPrivateMessage = async (from, to, text, context) => {
+  const id = chatIdFor(from, to);
+  let chat = chats.find(c => c.id === id);
+  if (!chat) { chat = { id, memberIds: [from, to].sort(), readAtMs: {}, messages: [] }; chats.push(chat); }
+  const sentAtMs = Date.now();
+  chat.messages.push({ id: 'm' + chat.messages.length, authorId: from, text: text.trim(), sentAtMs });
+  Object.assign(chat, { lastMessage: { text: text.trim(), authorId: from, sentAtMs }, updatedAtMs: sentAtMs, readAtMs: { ...chat.readAtMs, [from]: sentAtMs } }, context ?? {});
+  publish();
+  return id;
+};
+export const markChatRead = async (id, uid) => { const chat = chats.find(c => c.id === id); if (chat) { chat.readAtMs = { ...chat.readAtMs, [uid]: Date.now() }; publish(); } };
+`
+
 export async function openApp(page: Page, mode: Mode, hash = '') {
-  const { users, activities, messages } = demoData()
+  const { users, activities, messages, chats } = demoData()
   await page.route('**/src/services/firebase.ts*', route => route.fulfill({ contentType: 'application/javascript', body: firebaseModule(mode, users) }))
   await page.route('**/src/services/activities.ts*', route => route.fulfill({ contentType: 'application/javascript', body: activitiesModule(activities, messages) }))
+  await page.route('**/src/services/messages.ts*', route => route.fulfill({ contentType: 'application/javascript', body: messagesModule(chats) }))
   await page.route('**/src/services/places.ts*', route => route.fulfill({ contentType: 'application/javascript', body: 'export const suggestAddresses = async () => []; export const resolveAddress = async () => null;' }))
   await page.route('**/src/services/weather.ts*', route => route.fulfill({ contentType: 'application/javascript', body: "export const dayForecast = async () => ({ label: 'Éclaircies', icon: 'cloud-sun', min: 8, max: 14, rain: 10 });" }))
   // Le fond de carte OpenStreetMap n'est pas nécessaire aux vérifications.
   await page.route('https://tile.openstreetmap.org/**', route => route.fulfill({ status: 204, body: '' }))
   await page.goto(`/${hash}`)
-  return { users, activities, messages }
+  return { users, activities, messages, chats }
 }
 
 /** Vérifie polices et visuels réellement chargés, l'absence de défilement horizontal, puis enregistre une capture. */

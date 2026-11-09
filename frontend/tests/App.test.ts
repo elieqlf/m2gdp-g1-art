@@ -12,6 +12,10 @@ vi.mock('../src/services/firebase', () => ({
   getProfile: vi.fn(), saveProfile: vi.fn(), listMembers: vi.fn(), logout: vi.fn(), updateProfile: vi.fn(), setFavorite: vi.fn(),
 }))
 vi.mock('../src/services/activities', () => ({ listActivities: vi.fn(async () => []), getActivity: vi.fn(async () => null), ActivityFullError: class extends Error {}, watchMyOffers: vi.fn(() => () => {}) }))
+vi.mock('../src/services/messages', () => ({
+  watchMyChats: vi.fn(() => () => {}), watchPrivateMessages: vi.fn(() => () => {}), sendPrivateMessage: vi.fn(), markChatRead: vi.fn(async () => {}),
+  chatIdFor: (a: string, b: string) => [a, b].sort().join('__'), otherMember: () => '', isUnread: () => false,
+}))
 vi.mock('../src/services/places', () => ({ suggestAddresses: vi.fn(async () => []), resolveAddress: vi.fn() }))
 let wrapper: VueWrapper
 let observer: (user: api.Account | null) => void

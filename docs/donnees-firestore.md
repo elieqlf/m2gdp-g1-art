@@ -26,10 +26,26 @@ classDiagram
   class Message {
     authorId, authorName, text, sentAtMs
   }
+  class PrivateChat {
+    id = uidA__uidB (uid triés)
+    memberIds[2]
+    activityId, activityTitle (contexte)
+    lastMessage (text, authorId, sentAtMs)
+    readAtMs (uid → ms), updatedAtMs
+  }
+  class PrivateMessage {
+    authorId, text, sentAtMs
+  }
   User "1" --> "*" Activity : organise
   User "*" --> "*" Activity : participantIds
   Activity "1" --> "*" Message : activities/{id}/messages
+  User "2" --> "*" PrivateChat : memberIds
+  PrivateChat "1" --> "*" PrivateMessage : privateChats/{id}/messages
 ```
+
+Liste d'attente : `waitlistIds` est la file (ordre d'arrivée) ; `offer` est la place libérée proposée au premier de la file, réservée jusqu'à `expiresAtMs` (voir `specs/user-stories/participation-conversations.md`).
+
+Messagerie privée : lisible uniquement par les deux membres (règles Firestore). Chiffrée en transit et au repos par Google, **pas de bout en bout** : un administrateur du projet Firebase peut techniquement la lire depuis la console. C'est indiqué dans la politique de confidentialité du site vitrine.
 
 Les listes métier sont dans `frontend/src/data/` : `catalog.json` (12 disciplines × 5 sous-disciplines, 4 niveaux, 12 types de lieux, 12 modèles d'activités) et `venues.json` (127 lieux de la Métropole de Lyon, coordonnées approximatives, générés par le script ci-dessous).
 
@@ -41,8 +57,10 @@ Les listes métier sont dans `frontend/src/data/` : `catalog.json` (12 disciplin
 | --- | --- |
 | Membres de démonstration | 120 |
 | Activités (de J-30 à J+60) | 220, dont environ 140 à venir |
-| Participations (réservations) | environ 1 400 |
+| Participations (réservations) | environ 1 500 (et une quarantaine de places en liste d’attente) |
 | Conversations de groupe / messages | 220 / environ 970 |
+| Activités complètes avec liste d'attente | une quinzaine (1 à 4 personnes chacune) |
+| Conversations privées (question à l'organisateur) | 40 |
 | Lieux suggérés | 127 |
 | Illustrations de couverture | 24 (`frontend/public/images/activities/`, `scripts/design/generate-covers.mjs`) |
 

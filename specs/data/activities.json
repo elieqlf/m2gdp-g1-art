@@ -13,7 +13,7 @@
   "district": "Vénissieux",
   "lat": 45.70151,
   "lng": 4.88547,
-  "date": "2026-11-05",
+  "date": "2026-11-06",
   "startTime": "18:00",
   "endTime": "19:00",
   "capacity": 8,
@@ -29,13 +29,16 @@
   "organizerName": "Arthur Bonnet",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792623600000,
+  "createdAtMs": 1792710000000,
   "demo": true,
   "lastMessage": {
    "text": "Bienvenue à toutes et à tous dans le groupe !",
    "authorName": "Arthur",
-   "sentAtMs": 1792814404387
-  }
+   "authorId": "demo-user-094",
+   "sentAtMs": 1792900804387
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-002",
@@ -51,9 +54,9 @@
   "district": "Tête d’Or, Lyon 6e",
   "lat": 45.7772,
   "lng": 4.8558,
-  "date": "2026-10-09",
-  "startTime": "20:00",
-  "endTime": "22:30",
+  "date": "2026-10-10",
+  "startTime": "16:00",
+  "endTime": "18:30",
   "capacity": 8,
   "participantIds": [
    "demo-user-026",
@@ -66,13 +69,16 @@
   "organizerName": "Omar Morel",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1791064800000,
+  "createdAtMs": 1791151200000,
   "demo": true,
   "lastMessage": {
    "text": "J’ai mis mes photos dans l’album, allez voir !",
    "authorName": "Sophie",
-   "sentAtMs": 1791518144223
-  }
+   "authorId": "demo-user-004",
+   "sentAtMs": 1791604544223
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-003",
@@ -88,7 +94,7 @@
   "district": "Jean Macé, Lyon 7e",
   "lat": 45.74931,
   "lng": 4.84338,
-  "date": "2026-11-03",
+  "date": "2026-11-04",
   "startTime": "12:00",
   "endTime": "13:00",
   "capacity": 8,
@@ -104,13 +110,16 @@
   "organizerName": "Omar Morel",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1791932400000,
+  "createdAtMs": 1792018800000,
   "demo": true,
   "lastMessage": {
    "text": "Le point de rendez-vous est bien à l’entrée principale ?",
    "authorName": "Capucine",
-   "sentAtMs": 1792394748535
-  }
+   "authorId": "demo-user-059",
+   "sentAtMs": 1792481148535
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-004",
@@ -126,9 +135,9 @@
   "district": "Vaise, Lyon 9e",
   "lat": 45.7748,
   "lng": 4.8048,
-  "date": "2026-10-16",
-  "startTime": "19:00",
-  "endTime": "20:00",
+  "date": "2026-10-17",
+  "startTime": "15:00",
+  "endTime": "16:00",
   "capacity": 6,
   "participantIds": [
    "demo-user-108",
@@ -139,13 +148,16 @@
   "organizerName": "Pauline Girard",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1790460000000,
+  "createdAtMs": 1790546400000,
   "demo": true,
   "lastMessage": {
    "text": "Parfait ! Je viendrai avec une amie si c’est possible.",
    "authorName": "Malik",
-   "sentAtMs": 1790845910925
-  }
+   "authorId": "demo-user-108",
+   "sentAtMs": 1790932310925
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-005",
@@ -161,7 +173,7 @@
   "district": "Vaise, Lyon 9e",
   "lat": 45.788,
   "lng": 4.796,
-  "date": "2026-12-05",
+  "date": "2026-12-06",
   "startTime": "15:00",
   "endTime": "17:00",
   "capacity": 10,
@@ -175,13 +187,16 @@
   "organizerName": "Elsa Guerin",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792537200000,
+  "createdAtMs": 1792623600000,
   "demo": true,
   "lastMessage": {
    "text": "Hâte de voir ce qu’on va créer ensemble.",
    "authorName": "Nathan",
-   "sentAtMs": 1792655339697
-  }
+   "authorId": "demo-user-072",
+   "sentAtMs": 1792741739697
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-006",
@@ -197,7 +212,7 @@
   "district": "Monplaisir, Lyon 8e",
   "lat": 45.74699,
   "lng": 4.86713,
-  "date": "2026-11-07",
+  "date": "2026-11-08",
   "startTime": "15:00",
   "endTime": "17:00",
   "capacity": 12,
@@ -215,13 +230,16 @@
   "organizerName": "Louis Muller",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1793314800000,
+  "createdAtMs": 1793401200000,
   "demo": true,
   "lastMessage": {
    "text": "C’est ma première fois, un peu stressée mais motivée !",
    "authorName": "Victor",
-   "sentAtMs": 1793623240151
-  }
+   "authorId": "demo-user-102",
+   "sentAtMs": 1793709640151
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-007",
@@ -237,7 +255,7 @@
   "district": "Gratte-Ciel, Villeurbanne",
   "lat": 45.7666,
   "lng": 4.8798,
-  "date": "2026-12-28",
+  "date": "2026-12-29",
   "startTime": "18:00",
   "endTime": "21:00",
   "capacity": 12,
@@ -250,13 +268,16 @@
   "organizerName": "Bastien Nguyen",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1793142000000,
+  "createdAtMs": 1793228400000,
   "demo": true,
   "lastMessage": {
    "text": "On se retrouve directement sur place ?",
    "authorName": "Rose",
-   "sentAtMs": 1793248183566
-  }
+   "authorId": "demo-user-041",
+   "sentAtMs": 1793334583566
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-008",
@@ -272,9 +293,9 @@
   "district": "Terreaux, Lyon 1er",
   "lat": 45.7697,
   "lng": 4.8302,
-  "date": "2026-11-20",
-  "startTime": "19:00",
-  "endTime": "20:30",
+  "date": "2026-11-21",
+  "startTime": "15:00",
+  "endTime": "16:30",
   "capacity": 12,
   "participantIds": [
    "demo-user-035"
@@ -283,13 +304,16 @@
   "organizerName": "Hugo Moreau",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792882800000,
+  "createdAtMs": 1792969200000,
   "demo": true,
   "lastMessage": {
    "text": "Pas besoin d’apporter de matériel, tout est prévu.",
    "authorName": "Hugo",
-   "sentAtMs": 1793221106215
-  }
+   "authorId": "demo-user-070",
+   "sentAtMs": 1793307506215
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-009",
@@ -305,7 +329,7 @@
   "district": "Confluence, Lyon 2e",
   "lat": 45.74402,
   "lng": 4.81965,
-  "date": "2026-12-09",
+  "date": "2026-12-10",
   "startTime": "20:00",
   "endTime": "23:30",
   "capacity": 15,
@@ -324,13 +348,16 @@
   "organizerName": "Nina Rossi",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1793142000000,
+  "createdAtMs": 1793228400000,
   "demo": true,
   "lastMessage": {
    "text": "Merci d’être venus aussi nombreux, c’était génial !",
    "authorName": "Nina",
-   "sentAtMs": 1793587683692
-  }
+   "authorId": "demo-user-025",
+   "sentAtMs": 1793674083692
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-010",
@@ -346,7 +373,7 @@
   "district": "Gerland, Lyon 7e",
   "lat": 45.7283,
   "lng": 4.83807,
-  "date": "2026-12-31",
+  "date": "2027-01-01",
   "startTime": "20:00",
   "endTime": "21:00",
   "capacity": 10,
@@ -363,13 +390,16 @@
   "organizerName": "Julie Bernard",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792882800000,
+  "createdAtMs": 1792969200000,
   "demo": true,
   "lastMessage": {
    "text": "Est-ce que quelqu’un sait s’il faut apporter son propre matériel ?",
    "authorName": "Capucine",
-   "sentAtMs": 1793230526482
-  }
+   "authorId": "demo-user-059",
+   "sentAtMs": 1793316926482
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-011",
@@ -385,7 +415,7 @@
   "district": "Part-Dieu, Lyon 3e",
   "lat": 45.76089,
   "lng": 4.85544,
-  "date": "2026-11-19",
+  "date": "2026-11-20",
   "startTime": "12:00",
   "endTime": "13:00",
   "capacity": 6,
@@ -397,13 +427,16 @@
   "organizerName": "Pauline Roux",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792969200000,
+  "createdAtMs": 1793055600000,
   "demo": true,
   "lastMessage": {
    "text": "Trop bien, ça va être top.",
    "authorName": "Omar",
-   "sentAtMs": 1793105739891
-  }
+   "authorId": "demo-user-118",
+   "sentAtMs": 1793192139891
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-012",
@@ -419,9 +452,9 @@
   "district": "Oullins-Pierre-Bénite",
   "lat": 45.7156,
   "lng": 4.80869,
-  "date": "2027-01-03",
-  "startTime": "15:00",
-  "endTime": "17:00",
+  "date": "2027-01-04",
+  "startTime": "19:00",
+  "endTime": "21:00",
   "capacity": 10,
   "participantIds": [
    "demo-user-053",
@@ -431,19 +464,29 @@
    "demo-user-042",
    "demo-user-009",
    "demo-user-108",
-   "demo-user-068"
+   "demo-user-068",
+   "demo-user-083",
+   "demo-user-116"
   ],
   "organizerId": "demo-user-007",
   "organizerName": "Max Guerin",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1793314800000,
+  "createdAtMs": 1793401200000,
   "demo": true,
   "lastMessage": {
    "text": "Quelqu’un vient depuis Villeurbanne ? On pourrait faire le trajet ensemble.",
-   "authorName": "Alex",
-   "sentAtMs": 1793785205390
-  }
+   "authorName": "Victor",
+   "authorId": "demo-user-042",
+   "sentAtMs": 1793871605390
+  },
+  "waitlistIds": [
+   "demo-user-041",
+   "demo-user-019",
+   "demo-user-010",
+   "demo-user-011"
+  ],
+  "offer": null
  },
  {
   "id": "demo-act-013",
@@ -459,9 +502,9 @@
   "district": "Bellecour, Lyon 2e",
   "lat": 45.7632,
   "lng": 4.8312,
-  "date": "2026-12-18",
-  "startTime": "12:00",
-  "endTime": "15:30",
+  "date": "2026-12-19",
+  "startTime": "10:00",
+  "endTime": "13:30",
   "capacity": 10,
   "participantIds": [
    "demo-user-028",
@@ -479,13 +522,16 @@
   "organizerName": "Anaïs Bernard",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792278000000,
+  "createdAtMs": 1792364400000,
   "demo": true,
   "lastMessage": {
    "text": "Merci pour l’organisation !",
    "authorName": "Mathilde",
-   "sentAtMs": 1792519407683
-  }
+   "authorId": "demo-user-033",
+   "sentAtMs": 1792605807683
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-014",
@@ -501,9 +547,9 @@
   "district": "Tête d’Or, Lyon 6e",
   "lat": 45.7772,
   "lng": 4.8558,
-  "date": "2026-11-22",
-  "startTime": "15:00",
-  "endTime": "17:00",
+  "date": "2026-11-23",
+  "startTime": "19:00",
+  "endTime": "21:00",
   "capacity": 15,
   "participantIds": [
    "demo-user-119",
@@ -514,13 +560,16 @@
   "organizerName": "Hugo Petit",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1793401200000,
+  "createdAtMs": 1793487600000,
   "demo": true,
   "lastMessage": {
    "text": "Parfait ! Je viendrai avec une amie si c’est possible.",
    "authorName": "Capucine",
-   "sentAtMs": 1793791752367
-  }
+   "authorId": "demo-user-119",
+   "sentAtMs": 1793878152367
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-015",
@@ -536,7 +585,7 @@
   "district": "Tête d’Or, Lyon 6e",
   "lat": 45.7772,
   "lng": 4.8558,
-  "date": "2026-10-28",
+  "date": "2026-10-29",
   "startTime": "20:00",
   "endTime": "23:30",
   "capacity": 10,
@@ -552,13 +601,16 @@
   "organizerName": "Omar Mercier",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792710000000,
+  "createdAtMs": 1792796400000,
   "demo": true,
   "lastMessage": {
    "text": "En cas de pluie, on se replie à l’intérieur juste à côté.",
    "authorName": "Omar",
-   "sentAtMs": 1793144238739
-  }
+   "authorId": "demo-user-118",
+   "sentAtMs": 1793230638739
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-016",
@@ -574,9 +626,9 @@
   "district": "Croix-Rousse, Lyon 4e",
   "lat": 45.77858,
   "lng": 4.83472,
-  "date": "2026-12-20",
-  "startTime": "16:00",
-  "endTime": "18:00",
+  "date": "2026-12-21",
+  "startTime": "20:00",
+  "endTime": "22:00",
   "capacity": 15,
   "participantIds": [
    "demo-user-030",
@@ -586,13 +638,16 @@
   "organizerName": "Romain Muller",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792537200000,
+  "createdAtMs": 1792623600000,
   "demo": true,
   "lastMessage": {
    "text": "Quelqu’un vient depuis Villeurbanne ? On pourrait faire le trajet ensemble.",
    "authorName": "Elsa",
-   "sentAtMs": 1792926155523
-  }
+   "authorId": "demo-user-097",
+   "sentAtMs": 1793012555523
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-017",
@@ -608,7 +663,7 @@
   "district": "Guillotière, Lyon 7e",
   "lat": 45.7548,
   "lng": 4.8418,
-  "date": "2026-12-23",
+  "date": "2026-12-24",
   "startTime": "19:00",
   "endTime": "20:00",
   "capacity": 8,
@@ -620,13 +675,16 @@
   "organizerName": "Yanis Nguyen",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1793142000000,
+  "createdAtMs": 1793228400000,
   "demo": true,
   "lastMessage": {
    "text": "Merci pour l’organisation !",
    "authorName": "Antoine",
-   "sentAtMs": 1793545375791
-  }
+   "authorId": "demo-user-005",
+   "sentAtMs": 1793631775791
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-018",
@@ -642,9 +700,9 @@
   "district": "Pentes de la Croix-Rousse, Lyon 1er",
   "lat": 45.77027,
   "lng": 4.83513,
-  "date": "2026-11-29",
-  "startTime": "14:00",
-  "endTime": "15:00",
+  "date": "2026-11-30",
+  "startTime": "18:00",
+  "endTime": "19:00",
   "capacity": 10,
   "participantIds": [
    "demo-user-106"
@@ -653,13 +711,16 @@
   "organizerName": "Nina Rossi",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792537200000,
+  "createdAtMs": 1792623600000,
   "demo": true,
   "lastMessage": {
    "text": "Merci pour ce super moment, on remet ça quand ?",
    "authorName": "Bastien",
-   "sentAtMs": 1792853180530
-  }
+   "authorId": "demo-user-106",
+   "sentAtMs": 1792939580530
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-019",
@@ -675,7 +736,7 @@
   "district": "Monplaisir, Lyon 8e",
   "lat": 45.7448,
   "lng": 4.8708,
-  "date": "2026-12-05",
+  "date": "2026-12-06",
   "startTime": "14:00",
   "endTime": "17:00",
   "capacity": 20,
@@ -688,13 +749,16 @@
   "organizerName": "Sophie Perrin",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792105200000,
+  "createdAtMs": 1792191600000,
   "demo": true,
   "lastMessage": {
    "text": "Est-ce qu’il reste de la place pour une personne de plus ?",
    "authorName": "Julie",
-   "sentAtMs": 1792258343666
-  }
+   "authorId": "demo-user-061",
+   "sentAtMs": 1792344743666
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-020",
@@ -710,7 +774,7 @@
   "district": "Jean Macé, Lyon 7e",
   "lat": 45.7457,
   "lng": 4.8423,
-  "date": "2026-11-28",
+  "date": "2026-11-29",
   "startTime": "16:00",
   "endTime": "19:00",
   "capacity": 15,
@@ -728,13 +792,16 @@
   "organizerName": "Hugo Petit",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792623600000,
+  "createdAtMs": 1792710000000,
   "demo": true,
   "lastMessage": {
    "text": "Bonne idée le thème de cette fois !",
    "authorName": "Adam",
-   "sentAtMs": 1792881058691
-  }
+   "authorId": "demo-user-026",
+   "sentAtMs": 1792967458691
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-021",
@@ -750,7 +817,7 @@
   "district": "Croix-Rousse, Lyon 4e",
   "lat": 45.77402,
   "lng": 4.82841,
-  "date": "2026-11-02",
+  "date": "2026-11-03",
   "startTime": "19:00",
   "endTime": "20:30",
   "capacity": 6,
@@ -766,13 +833,16 @@
   "organizerName": "Louis Vincent",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792278000000,
+  "createdAtMs": 1792364400000,
   "demo": true,
   "lastMessage": {
    "text": "Est-ce qu’il reste de la place pour une personne de plus ?",
    "authorName": "Antoine",
-   "sentAtMs": 1792620444207
-  }
+   "authorId": "demo-user-005",
+   "sentAtMs": 1792706844207
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-022",
@@ -788,7 +858,7 @@
   "district": "Saxe-Guichard, Lyon 3e",
   "lat": 45.75518,
   "lng": 4.84476,
-  "date": "2026-10-29",
+  "date": "2026-10-30",
   "startTime": "20:00",
   "endTime": "21:30",
   "capacity": 15,
@@ -811,13 +881,16 @@
   "organizerName": "Agathe Garcia",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1791846000000,
+  "createdAtMs": 1791932400000,
   "demo": true,
   "lastMessage": {
    "text": "Hâte de voir ce qu’on va créer ensemble.",
    "authorName": "Samuel",
-   "sentAtMs": 1792192004538
-  }
+   "authorId": "demo-user-098",
+   "sentAtMs": 1792278404538
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-023",
@@ -833,7 +906,7 @@
   "district": "Gratte-Ciel, Villeurbanne",
   "lat": 45.76766,
   "lng": 4.87552,
-  "date": "2026-11-23",
+  "date": "2026-11-24",
   "startTime": "18:00",
   "endTime": "19:00",
   "capacity": 10,
@@ -844,13 +917,16 @@
   "organizerName": "Rayan Mercier",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792450800000,
+  "createdAtMs": 1792537200000,
   "demo": true,
   "lastMessage": {
    "text": "J’ai partagé l’activité avec mon colocataire, il s’est inscrit.",
    "authorName": "Pauline",
-   "sentAtMs": 1792982149349
-  }
+   "authorId": "demo-user-049",
+   "sentAtMs": 1793068549349
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-024",
@@ -866,9 +942,9 @@
   "district": "Point du Jour, Lyon 5e",
   "lat": 45.75496,
   "lng": 4.79493,
-  "date": "2026-12-13",
-  "startTime": "16:00",
-  "endTime": "19:00",
+  "date": "2026-12-14",
+  "startTime": "20:00",
+  "endTime": "23:00",
   "capacity": 12,
   "participantIds": [
    "demo-user-028",
@@ -880,13 +956,16 @@
   "organizerName": "Rayan Mercier",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1793142000000,
+  "createdAtMs": 1793228400000,
   "demo": true,
   "lastMessage": {
    "text": "Je serai peut-être 5 minutes en retard, désolé d’avance.",
    "authorName": "Julie",
-   "sentAtMs": 1793360867520
-  }
+   "authorId": "demo-user-001",
+   "sentAtMs": 1793447267520
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-025",
@@ -902,7 +981,7 @@
   "district": "Confluence, Lyon 2e",
   "lat": 45.74297,
   "lng": 4.8204,
-  "date": "2027-01-06",
+  "date": "2027-01-07",
   "startTime": "20:00",
   "endTime": "22:30",
   "capacity": 8,
@@ -918,13 +997,16 @@
   "organizerName": "Manon Fontaine",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792278000000,
+  "createdAtMs": 1792364400000,
   "demo": true,
   "lastMessage": {
    "text": "Quelqu’un vient depuis Villeurbanne ? On pourrait faire le trajet ensemble.",
    "authorName": "Capucine",
-   "sentAtMs": 1792386782669
-  }
+   "authorId": "demo-user-059",
+   "sentAtMs": 1792473182669
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-026",
@@ -940,9 +1022,9 @@
   "district": "Terreaux, Lyon 1er",
   "lat": 45.7676,
   "lng": 4.8336,
-  "date": "2026-12-20",
-  "startTime": "16:00",
-  "endTime": "17:00",
+  "date": "2026-12-21",
+  "startTime": "20:00",
+  "endTime": "21:00",
   "capacity": 10,
   "participantIds": [
    "demo-user-099",
@@ -957,13 +1039,16 @@
   "organizerName": "Rayan Mercier",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792537200000,
+  "createdAtMs": 1792623600000,
   "demo": true,
   "lastMessage": {
    "text": "Hâte de voir ce qu’on va créer ensemble.",
    "authorName": "Ethan",
-   "sentAtMs": 1792917453779
-  }
+   "authorId": "demo-user-050",
+   "sentAtMs": 1793003853779
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-027",
@@ -979,9 +1064,9 @@
   "district": "Point du Jour, Lyon 5e",
   "lat": 45.76162,
   "lng": 4.7978,
-  "date": "2026-11-06",
-  "startTime": "18:00",
-  "endTime": "19:00",
+  "date": "2026-11-07",
+  "startTime": "14:00",
+  "endTime": "15:00",
   "capacity": 6,
   "participantIds": [
    "demo-user-083",
@@ -994,13 +1079,16 @@
   "organizerName": "Romain Vincent",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792882800000,
+  "createdAtMs": 1792969200000,
   "demo": true,
   "lastMessage": {
    "text": "En cas de pluie, on se replie à l’intérieur juste à côté.",
    "authorName": "Romain",
-   "sentAtMs": 1793206767145
-  }
+   "authorId": "demo-user-052",
+   "sentAtMs": 1793293167145
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-028",
@@ -1016,7 +1104,7 @@
   "district": "Bron",
   "lat": 45.73435,
   "lng": 4.9085,
-  "date": "2026-11-14",
+  "date": "2026-11-15",
   "startTime": "15:00",
   "endTime": "17:00",
   "capacity": 10,
@@ -1031,13 +1119,16 @@
   "organizerName": "Elsa Guerin",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792882800000,
+  "createdAtMs": 1792969200000,
   "demo": true,
   "lastMessage": {
    "text": "Merci pour l’organisation !",
    "authorName": "Mehdi",
-   "sentAtMs": 1793265229603
-  }
+   "authorId": "demo-user-078",
+   "sentAtMs": 1793351629603
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-029",
@@ -1053,9 +1144,9 @@
   "district": "Monplaisir, Lyon 8e",
   "lat": 45.7475,
   "lng": 4.868,
-  "date": "2026-11-27",
-  "startTime": "20:00",
-  "endTime": "21:00",
+  "date": "2026-11-28",
+  "startTime": "16:00",
+  "endTime": "17:00",
   "capacity": 8,
   "participantIds": [
    "demo-user-070",
@@ -1068,13 +1159,16 @@
   "organizerName": "Salomé Fontaine",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792018800000,
+  "createdAtMs": 1792105200000,
   "demo": true,
   "lastMessage": {
    "text": "Trop bien, ça va être top.",
    "authorName": "Clara",
-   "sentAtMs": 1792199484579
-  }
+   "authorId": "demo-user-027",
+   "sentAtMs": 1792285884579
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-030",
@@ -1090,9 +1184,9 @@
   "district": "Montchat, Lyon 3e",
   "lat": 45.75635,
   "lng": 4.88893,
-  "date": "2026-12-11",
-  "startTime": "19:00",
-  "endTime": "21:00",
+  "date": "2026-12-12",
+  "startTime": "15:00",
+  "endTime": "17:00",
   "capacity": 8,
   "participantIds": [
    "demo-user-012",
@@ -1103,13 +1197,16 @@
   "organizerName": "Sophie Bonnet",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792882800000,
+  "createdAtMs": 1792969200000,
   "demo": true,
   "lastMessage": {
    "text": "J’ai partagé l’activité avec mon colocataire, il s’est inscrit.",
    "authorName": "Lucas",
-   "sentAtMs": 1792948448167
-  }
+   "authorId": "demo-user-014",
+   "sentAtMs": 1793034848167
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-031",
@@ -1125,9 +1222,9 @@
   "district": "Monplaisir, Lyon 8e",
   "lat": 45.7448,
   "lng": 4.8708,
-  "date": "2026-11-15",
-  "startTime": "10:00",
-  "endTime": "12:30",
+  "date": "2026-11-16",
+  "startTime": "12:00",
+  "endTime": "14:30",
   "capacity": 6,
   "participantIds": [
    "demo-user-007",
@@ -1140,13 +1237,16 @@
   "organizerName": "Arthur Bonnet",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792623600000,
+  "createdAtMs": 1792710000000,
   "demo": true,
   "lastMessage": {
    "text": "Est-ce qu’il reste de la place pour une personne de plus ?",
    "authorName": "Camille",
-   "sentAtMs": 1792860238957
-  }
+   "authorId": "demo-user-066",
+   "sentAtMs": 1792946638957
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-032",
@@ -1162,7 +1262,7 @@
   "district": "Ainay, Lyon 2e",
   "lat": 45.7482,
   "lng": 4.8268,
-  "date": "2026-10-29",
+  "date": "2026-10-30",
   "startTime": "20:00",
   "endTime": "21:00",
   "capacity": 10,
@@ -1180,13 +1280,16 @@
   "organizerName": "Bastien Nguyen",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1791759600000,
+  "createdAtMs": 1791846000000,
   "demo": true,
   "lastMessage": {
    "text": "Je confirme ma présence 👍",
    "authorName": "Emma",
-   "sentAtMs": 1792177382579
-  }
+   "authorId": "demo-user-075",
+   "sentAtMs": 1792263782579
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-033",
@@ -1202,9 +1305,9 @@
   "district": "États-Unis, Lyon 8e",
   "lat": 45.7324,
   "lng": 4.86028,
-  "date": "2026-12-20",
-  "startTime": "14:00",
-  "endTime": "17:00",
+  "date": "2026-12-21",
+  "startTime": "18:00",
+  "endTime": "21:00",
   "capacity": 20,
   "participantIds": [
    "demo-user-087",
@@ -1224,13 +1327,16 @@
   "organizerName": "Nina Garcia",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792105200000,
+  "createdAtMs": 1792191600000,
   "demo": true,
   "lastMessage": {
    "text": "On se retrouve directement sur place ?",
    "authorName": "Hugo",
-   "sentAtMs": 1792589459013
-  }
+   "authorId": "demo-user-010",
+   "sentAtMs": 1792675859013
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-034",
@@ -1246,7 +1352,7 @@
   "district": "Tête d’Or, Lyon 6e",
   "lat": 45.77231,
   "lng": 4.85218,
-  "date": "2026-12-14",
+  "date": "2026-12-15",
   "startTime": "19:00",
   "endTime": "21:00",
   "capacity": 12,
@@ -1264,13 +1370,16 @@
   "organizerName": "Romain Muller",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792882800000,
+  "createdAtMs": 1792969200000,
   "demo": true,
   "lastMessage": {
    "text": "Quelqu’un vient depuis Villeurbanne ? On pourrait faire le trajet ensemble.",
    "authorName": "Paul",
-   "sentAtMs": 1793040696264
-  }
+   "authorId": "demo-user-090",
+   "sentAtMs": 1793127096264
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-035",
@@ -1286,9 +1395,9 @@
   "district": "Monplaisir, Lyon 8e",
   "lat": 45.74682,
   "lng": 4.87302,
-  "date": "2026-10-25",
-  "startTime": "15:00",
-  "endTime": "16:30",
+  "date": "2026-10-26",
+  "startTime": "19:00",
+  "endTime": "20:30",
   "capacity": 8,
   "participantIds": [
    "demo-user-011",
@@ -1301,13 +1410,16 @@
   "organizerName": "Julie Bernard",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792015200000,
+  "createdAtMs": 1792105200000,
   "demo": true,
   "lastMessage": {
    "text": "C’est ma première fois, un peu stressée mais motivée !",
    "authorName": "Gabriel",
-   "sentAtMs": 1792284828158
-  }
+   "authorId": "demo-user-024",
+   "sentAtMs": 1792374828158
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-036",
@@ -1323,9 +1435,9 @@
   "district": "Bron",
   "lat": 45.73435,
   "lng": 4.9085,
-  "date": "2026-11-29",
-  "startTime": "10:00",
-  "endTime": "13:00",
+  "date": "2026-11-30",
+  "startTime": "12:00",
+  "endTime": "15:00",
   "capacity": 8,
   "participantIds": [
    "demo-user-068",
@@ -1337,13 +1449,16 @@
   "organizerName": "Lina Roux",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1793055600000,
+  "createdAtMs": 1793142000000,
   "demo": true,
   "lastMessage": {
    "text": "Quelqu’un vient depuis Villeurbanne ? On pourrait faire le trajet ensemble.",
    "authorName": "Jules",
-   "sentAtMs": 1793373581534
-  }
+   "authorId": "demo-user-096",
+   "sentAtMs": 1793459981534
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-037",
@@ -1359,9 +1474,9 @@
   "district": "Monplaisir, Lyon 8e",
   "lat": 45.7475,
   "lng": 4.868,
-  "date": "2027-01-03",
-  "startTime": "10:00",
-  "endTime": "13:00",
+  "date": "2027-01-04",
+  "startTime": "12:00",
+  "endTime": "15:00",
   "capacity": 6,
   "participantIds": [
    "demo-user-102",
@@ -1371,13 +1486,16 @@
   "organizerName": "Nina Rossi",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1793574000000,
+  "createdAtMs": 1793660400000,
   "demo": true,
   "lastMessage": {
    "text": "Pas besoin d’apporter de matériel, tout est prévu.",
    "authorName": "Nina",
-   "sentAtMs": 1793943494584
-  }
+   "authorId": "demo-user-025",
+   "sentAtMs": 1794029894584
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-038",
@@ -1393,7 +1511,7 @@
   "district": "Croix-Rousse, Lyon 4e",
   "lat": 45.77374,
   "lng": 4.82576,
-  "date": "2026-12-08",
+  "date": "2026-12-09",
   "startTime": "19:00",
   "endTime": "20:00",
   "capacity": 15,
@@ -1405,13 +1523,16 @@
   "organizerName": "Julie Martin",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792105200000,
+  "createdAtMs": 1792191600000,
   "demo": true,
   "lastMessage": {
    "text": "Hâte de voir ce qu’on va créer ensemble.",
    "authorName": "Inès",
-   "sentAtMs": 1792228465686
-  }
+   "authorId": "demo-user-009",
+   "sentAtMs": 1792314865686
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-039",
@@ -1427,7 +1548,7 @@
   "district": "Brotteaux, Lyon 6e",
   "lat": 45.76529,
   "lng": 4.84935,
-  "date": "2026-12-09",
+  "date": "2026-12-10",
   "startTime": "18:00",
   "endTime": "20:00",
   "capacity": 6,
@@ -1439,13 +1560,16 @@
   "organizerName": "Ibrahim Moreau",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1793660400000,
+  "createdAtMs": 1793746800000,
   "demo": true,
   "lastMessage": {
    "text": "Le point de rendez-vous est bien à l’entrée principale ?",
    "authorName": "Rose",
-   "sentAtMs": 1794105094123
-  }
+   "authorId": "demo-user-041",
+   "sentAtMs": 1794191494123
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-040",
@@ -1461,9 +1585,9 @@
   "district": "Bron",
   "lat": 45.73393,
   "lng": 4.9118,
-  "date": "2026-10-30",
-  "startTime": "20:00",
-  "endTime": "21:00",
+  "date": "2026-10-31",
+  "startTime": "16:00",
+  "endTime": "17:00",
   "capacity": 10,
   "participantIds": [
    "demo-user-091",
@@ -1480,13 +1604,16 @@
   "organizerName": "Salomé Fontaine",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792450800000,
+  "createdAtMs": 1792537200000,
   "demo": true,
   "lastMessage": {
    "text": "Merci d’être venus aussi nombreux, c’était génial !",
    "authorName": "Salomé",
-   "sentAtMs": 1792682876694
-  }
+   "authorId": "demo-user-103",
+   "sentAtMs": 1792769276694
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-041",
@@ -1502,7 +1629,7 @@
   "district": "Montchat, Lyon 3e",
   "lat": 45.7556,
   "lng": 4.8875,
-  "date": "2026-11-09",
+  "date": "2026-11-10",
   "startTime": "18:00",
   "endTime": "21:00",
   "capacity": 8,
@@ -1520,13 +1647,19 @@
   "organizerName": "Sophie Bonnet",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1793660400000,
+  "createdAtMs": 1793746800000,
   "demo": true,
   "lastMessage": {
    "text": "Super, j’ai hâte !",
    "authorName": "Gabriel",
-   "sentAtMs": 1793732330536
-  }
+   "authorId": "demo-user-084",
+   "sentAtMs": 1793818730536
+  },
+  "waitlistIds": [
+   "demo-user-006",
+   "demo-user-105"
+  ],
+  "offer": null
  },
  {
   "id": "demo-act-042",
@@ -1542,9 +1675,9 @@
   "district": "Vieux Lyon, Lyon 5e",
   "lat": 45.7588,
   "lng": 4.82134,
-  "date": "2026-10-30",
-  "startTime": "12:00",
-  "endTime": "14:00",
+  "date": "2026-10-31",
+  "startTime": "10:00",
+  "endTime": "12:00",
   "capacity": 6,
   "participantIds": [
    "demo-user-118",
@@ -1556,13 +1689,16 @@
   "organizerName": "Pauline Roux",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1791241200000,
+  "createdAtMs": 1791327600000,
   "demo": true,
   "lastMessage": {
    "text": "Est-ce qu’il reste de la place pour une personne de plus ?",
    "authorName": "Sophie",
-   "sentAtMs": 1791591990203
-  }
+   "authorId": "demo-user-064",
+   "sentAtMs": 1791678390203
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-043",
@@ -1578,7 +1714,7 @@
   "district": "Bellecour, Lyon 2e",
   "lat": 45.7632,
   "lng": 4.8312,
-  "date": "2026-12-26",
+  "date": "2026-12-27",
   "startTime": "10:00",
   "endTime": "12:30",
   "capacity": 6,
@@ -1589,13 +1725,16 @@
   "organizerName": "Romain Muller",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792450800000,
+  "createdAtMs": 1792537200000,
   "demo": true,
   "lastMessage": {
    "text": "C’est ma première fois, un peu stressée mais motivée !",
    "authorName": "Chloé",
-   "sentAtMs": 1792628968513
-  }
+   "authorId": "demo-user-011",
+   "sentAtMs": 1792715368513
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-044",
@@ -1611,24 +1750,38 @@
   "district": "Vieux Lyon, Lyon 5e",
   "lat": 45.7603,
   "lng": 4.8275,
-  "date": "2026-12-08",
+  "date": "2026-12-09",
   "startTime": "20:00",
   "endTime": "23:00",
   "capacity": 10,
   "participantIds": [
-   "demo-user-049"
+   "demo-user-049",
+   "demo-user-100",
+   "demo-user-065",
+   "demo-user-105",
+   "demo-user-038",
+   "demo-user-028",
+   "demo-user-073",
+   "demo-user-024",
+   "demo-user-006",
+   "demo-user-042"
   ],
   "organizerId": "demo-user-043",
   "organizerName": "Salomé Lambert",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792882800000,
+  "createdAtMs": 1792969200000,
   "demo": true,
   "lastMessage": {
    "text": "J’ai mis mes photos dans l’album, allez voir !",
-   "authorName": "Pauline",
-   "sentAtMs": 1793085142109
-  }
+   "authorName": "Ibrahim",
+   "authorId": "demo-user-100",
+   "sentAtMs": 1793171542109
+  },
+  "waitlistIds": [
+   "demo-user-118"
+  ],
+  "offer": null
  },
  {
   "id": "demo-act-045",
@@ -1644,7 +1797,7 @@
   "district": "Terreaux, Lyon 1er",
   "lat": 45.76628,
   "lng": 4.83187,
-  "date": "2026-11-10",
+  "date": "2026-11-11",
   "startTime": "19:00",
   "endTime": "21:00",
   "capacity": 8,
@@ -1660,13 +1813,16 @@
   "organizerName": "Max Guerin",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792105200000,
+  "createdAtMs": 1792191600000,
   "demo": true,
   "lastMessage": {
    "text": "Est-ce qu’il reste de la place pour une personne de plus ?",
    "authorName": "Ethan",
-   "sentAtMs": 1792402002502
-  }
+   "authorId": "demo-user-050",
+   "sentAtMs": 1792488402502
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-046",
@@ -1682,9 +1838,9 @@
   "district": "Jean Macé, Lyon 7e",
   "lat": 45.7462,
   "lng": 4.841,
-  "date": "2026-12-25",
-  "startTime": "18:00",
-  "endTime": "21:30",
+  "date": "2026-12-26",
+  "startTime": "14:00",
+  "endTime": "17:30",
   "capacity": 10,
   "participantIds": [
    "demo-user-116"
@@ -1693,13 +1849,16 @@
   "organizerName": "Anaïs Bernard",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792623600000,
+  "createdAtMs": 1792710000000,
   "demo": true,
   "lastMessage": {
    "text": "C’est ma première fois, un peu stressée mais motivée !",
    "authorName": "Diego",
-   "sentAtMs": 1793211345611
-  }
+   "authorId": "demo-user-116",
+   "sentAtMs": 1793297745611
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-047",
@@ -1715,28 +1874,37 @@
   "district": "Vaise, Lyon 9e",
   "lat": 45.77379,
   "lng": 4.80719,
-  "date": "2026-12-04",
-  "startTime": "12:00",
-  "endTime": "14:00",
+  "date": "2026-12-05",
+  "startTime": "10:00",
+  "endTime": "12:00",
   "capacity": 6,
   "participantIds": [
    "demo-user-012",
    "demo-user-083",
    "demo-user-053",
    "demo-user-062",
-   "demo-user-094"
+   "demo-user-094",
+   "demo-user-074"
   ],
   "organizerId": "demo-user-097",
   "organizerName": "Elsa Faure",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792623600000,
+  "createdAtMs": 1792710000000,
   "demo": true,
   "lastMessage": {
    "text": "Bonne idée le thème de cette fois !",
    "authorName": "Nathan",
-   "sentAtMs": 1792989039833
-  }
+   "authorId": "demo-user-012",
+   "sentAtMs": 1793075439833
+  },
+  "waitlistIds": [
+   "demo-user-005",
+   "demo-user-092",
+   "demo-user-016",
+   "demo-user-017"
+  ],
+  "offer": null
  },
  {
   "id": "demo-act-048",
@@ -1752,7 +1920,7 @@
   "district": "Bron",
   "lat": 45.73435,
   "lng": 4.9085,
-  "date": "2026-10-20",
+  "date": "2026-10-21",
   "startTime": "12:00",
   "endTime": "15:30",
   "capacity": 20,
@@ -1774,13 +1942,16 @@
   "organizerName": "Julie Bernard",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1791324000000,
+  "createdAtMs": 1791410400000,
   "demo": true,
   "lastMessage": {
    "text": "Le point de rendez-vous est bien à l’entrée principale ?",
    "authorName": "Malik",
-   "sentAtMs": 1791597770232
-  }
+   "authorId": "demo-user-048",
+   "sentAtMs": 1791684170232
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-049",
@@ -1796,7 +1967,7 @@
   "district": "Jean Macé, Lyon 7e",
   "lat": 45.74931,
   "lng": 4.84338,
-  "date": "2026-11-19",
+  "date": "2026-11-20",
   "startTime": "18:00",
   "endTime": "19:00",
   "capacity": 12,
@@ -1812,13 +1983,16 @@
   "organizerName": "Julie Martin",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792623600000,
+  "createdAtMs": 1792710000000,
   "demo": true,
   "lastMessage": {
    "text": "C’est ma première fois, un peu stressée mais motivée !",
    "authorName": "Anaïs",
-   "sentAtMs": 1793036155434
-  }
+   "authorId": "demo-user-031",
+   "sentAtMs": 1793122555434
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-050",
@@ -1834,7 +2008,7 @@
   "district": "Bron",
   "lat": 45.7232,
   "lng": 4.8982,
-  "date": "2026-11-03",
+  "date": "2026-11-04",
   "startTime": "20:00",
   "endTime": "22:00",
   "capacity": 12,
@@ -1852,13 +2026,16 @@
   "organizerName": "Nina Garcia",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1791586800000,
+  "createdAtMs": 1791673200000,
   "demo": true,
   "lastMessage": {
    "text": "Super, j’ai hâte !",
    "authorName": "Mathilde",
-   "sentAtMs": 1791760107026
-  }
+   "authorId": "demo-user-033",
+   "sentAtMs": 1791846507026
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-051",
@@ -1874,7 +2051,7 @@
   "district": "Écully",
   "lat": 45.7862,
   "lng": 4.7442,
-  "date": "2026-11-10",
+  "date": "2026-11-11",
   "startTime": "18:00",
   "endTime": "21:00",
   "capacity": 10,
@@ -1889,13 +2066,16 @@
   "organizerName": "Rayan Morel",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1793228400000,
+  "createdAtMs": 1793314800000,
   "demo": true,
   "lastMessage": {
    "text": "Je peux apporter des boissons chaudes.",
    "authorName": "Juliette",
-   "sentAtMs": 1793348437383
-  }
+   "authorId": "demo-user-117",
+   "sentAtMs": 1793434837383
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-052",
@@ -1911,7 +2091,7 @@
   "district": "Bron",
   "lat": 45.73631,
   "lng": 4.91178,
-  "date": "2026-10-31",
+  "date": "2026-11-01",
   "startTime": "15:00",
   "endTime": "18:00",
   "capacity": 6,
@@ -1925,13 +2105,16 @@
   "organizerName": "Bastien Nguyen",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1791759600000,
+  "createdAtMs": 1791846000000,
   "demo": true,
   "lastMessage": {
    "text": "Bonne idée le thème de cette fois !",
    "authorName": "Jade",
-   "sentAtMs": 1792275486029
-  }
+   "authorId": "demo-user-083",
+   "sentAtMs": 1792361886029
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-053",
@@ -1947,7 +2130,7 @@
   "district": "Écully",
   "lat": 45.77514,
   "lng": 4.77534,
-  "date": "2026-11-04",
+  "date": "2026-11-05",
   "startTime": "12:00",
   "endTime": "15:00",
   "capacity": 6,
@@ -1962,13 +2145,16 @@
   "organizerName": "Max Guerin",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1791759600000,
+  "createdAtMs": 1791846000000,
   "demo": true,
   "lastMessage": {
    "text": "En cas de pluie, on se replie à l’intérieur juste à côté.",
    "authorName": "Max",
-   "sentAtMs": 1791966840673
-  }
+   "authorId": "demo-user-007",
+   "sentAtMs": 1792053240673
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-054",
@@ -1984,9 +2170,9 @@
   "district": "Monplaisir, Lyon 8e",
   "lat": 45.74321,
   "lng": 4.87616,
-  "date": "2026-11-22",
-  "startTime": "15:00",
-  "endTime": "17:00",
+  "date": "2026-11-23",
+  "startTime": "19:00",
+  "endTime": "21:00",
   "capacity": 10,
   "participantIds": [
    "demo-user-069",
@@ -2000,13 +2186,16 @@
   "organizerName": "Max Faure",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792537200000,
+  "createdAtMs": 1792623600000,
   "demo": true,
   "lastMessage": {
    "text": "Super, j’ai hâte !",
    "authorName": "Inès",
-   "sentAtMs": 1792734567089
-  }
+   "authorId": "demo-user-069",
+   "sentAtMs": 1792820967089
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-055",
@@ -2022,7 +2211,7 @@
   "district": "Montchat, Lyon 3e",
   "lat": 45.7556,
   "lng": 4.8875,
-  "date": "2026-10-12",
+  "date": "2026-10-13",
   "startTime": "12:00",
   "endTime": "15:30",
   "capacity": 8,
@@ -2038,13 +2227,16 @@
   "organizerName": "Agathe Rossi",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1791064800000,
+  "createdAtMs": 1791151200000,
   "demo": true,
   "lastMessage": {
    "text": "Je confirme ma présence 👍",
    "authorName": "Jade",
-   "sentAtMs": 1791188217172
-  }
+   "authorId": "demo-user-083",
+   "sentAtMs": 1791274617172
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-056",
@@ -2060,7 +2252,7 @@
   "district": "Oullins-Pierre-Bénite",
   "lat": 45.7156,
   "lng": 4.80869,
-  "date": "2026-12-01",
+  "date": "2026-12-02",
   "startTime": "20:00",
   "endTime": "21:30",
   "capacity": 8,
@@ -2072,13 +2264,16 @@
   "organizerName": "Bastien Benali",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792537200000,
+  "createdAtMs": 1792623600000,
   "demo": true,
   "lastMessage": {
    "text": "Je serai peut-être 5 minutes en retard, désolé d’avance.",
    "authorName": "Agathe",
-   "sentAtMs": 1792837240297
-  }
+   "authorId": "demo-user-115",
+   "sentAtMs": 1792923640297
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-057",
@@ -2094,7 +2289,7 @@
   "district": "Guillotière, Lyon 7e",
   "lat": 45.74962,
   "lng": 4.84764,
-  "date": "2026-10-12",
+  "date": "2026-10-13",
   "startTime": "12:00",
   "endTime": "13:30",
   "capacity": 8,
@@ -2109,13 +2304,16 @@
   "organizerName": "Max Faure",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1790805600000,
+  "createdAtMs": 1790892000000,
   "demo": true,
   "lastMessage": {
    "text": "Il annonce un peu de vent, pensez à une veste.",
    "authorName": "Bastien",
-   "sentAtMs": 1790929601785
-  }
+   "authorId": "demo-user-106",
+   "sentAtMs": 1791016001785
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-058",
@@ -2131,7 +2329,7 @@
   "district": "Gerland, Lyon 7e",
   "lat": 45.72801,
   "lng": 4.83024,
-  "date": "2026-12-19",
+  "date": "2026-12-20",
   "startTime": "10:00",
   "endTime": "12:00",
   "capacity": 12,
@@ -2148,13 +2346,16 @@
   "organizerName": "Pauline Girard",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1793314800000,
+  "createdAtMs": 1793401200000,
   "demo": true,
   "lastMessage": {
    "text": "Rendez-vous 10 minutes avant le début pour s’installer.",
    "authorName": "Pauline",
-   "sentAtMs": 1793375243939
-  }
+   "authorId": "demo-user-049",
+   "sentAtMs": 1793461643939
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-059",
@@ -2170,9 +2371,9 @@
   "district": "Oullins-Pierre-Bénite",
   "lat": 45.7106,
   "lng": 4.81259,
-  "date": "2026-10-23",
-  "startTime": "19:00",
-  "endTime": "20:00",
+  "date": "2026-10-24",
+  "startTime": "15:00",
+  "endTime": "16:00",
   "capacity": 6,
   "participantIds": [
    "demo-user-070",
@@ -2184,13 +2385,16 @@
   "organizerName": "Ibrahim Moreau",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1791324000000,
+  "createdAtMs": 1791410400000,
   "demo": true,
   "lastMessage": {
    "text": "Quelqu’un vient depuis Villeurbanne ? On pourrait faire le trajet ensemble.",
    "authorName": "Romain",
-   "sentAtMs": 1791655057939
-  }
+   "authorId": "demo-user-112",
+   "sentAtMs": 1791741457939
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-060",
@@ -2206,7 +2410,7 @@
   "district": "Vieux Lyon, Lyon 5e",
   "lat": 45.7588,
   "lng": 4.82134,
-  "date": "2027-01-06",
+  "date": "2027-01-07",
   "startTime": "12:00",
   "endTime": "13:00",
   "capacity": 10,
@@ -2225,13 +2429,16 @@
   "organizerName": "Hugo Moreau",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792623600000,
+  "createdAtMs": 1792710000000,
   "demo": true,
   "lastMessage": {
    "text": "J’ai mis mes photos dans l’album, allez voir !",
    "authorName": "Lou",
-   "sentAtMs": 1792800970742
-  }
+   "authorId": "demo-user-089",
+   "sentAtMs": 1792887370742
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-061",
@@ -2247,7 +2454,7 @@
   "district": "Pentes de la Croix-Rousse, Lyon 1er",
   "lat": 45.77155,
   "lng": 4.83387,
-  "date": "2026-11-05",
+  "date": "2026-11-06",
   "startTime": "19:00",
   "endTime": "20:30",
   "capacity": 12,
@@ -2268,13 +2475,16 @@
   "organizerName": "Sophie Bonnet",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792623600000,
+  "createdAtMs": 1792710000000,
   "demo": true,
   "lastMessage": {
    "text": "Merci d’être venus aussi nombreux, c’était génial !",
    "authorName": "Sophie",
-   "sentAtMs": 1792757918708
-  }
+   "authorId": "demo-user-064",
+   "sentAtMs": 1792844318708
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-062",
@@ -2290,7 +2500,7 @@
   "district": "Confluence, Lyon 2e",
   "lat": 45.7326,
   "lng": 4.818,
-  "date": "2026-11-14",
+  "date": "2026-11-15",
   "startTime": "15:00",
   "endTime": "17:00",
   "capacity": 12,
@@ -2309,13 +2519,16 @@
   "organizerName": "Bastien Benali",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792710000000,
+  "createdAtMs": 1792796400000,
   "demo": true,
   "lastMessage": {
    "text": "Quelqu’un vient depuis Villeurbanne ? On pourrait faire le trajet ensemble.",
    "authorName": "Juliette",
-   "sentAtMs": 1792985634187
-  }
+   "authorId": "demo-user-057",
+   "sentAtMs": 1793072034187
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-063",
@@ -2331,7 +2544,7 @@
   "district": "Guillotière, Lyon 7e",
   "lat": 45.74962,
   "lng": 4.84764,
-  "date": "2026-10-21",
+  "date": "2026-10-22",
   "startTime": "19:00",
   "endTime": "22:30",
   "capacity": 12,
@@ -2351,13 +2564,16 @@
   "organizerName": "Omar Mercier",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1790805600000,
+  "createdAtMs": 1790892000000,
   "demo": true,
   "lastMessage": {
    "text": "Merci pour l’organisation !",
    "authorName": "Agathe",
-   "sentAtMs": 1791173098095
-  }
+   "authorId": "demo-user-115",
+   "sentAtMs": 1791259498095
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-064",
@@ -2373,9 +2589,9 @@
   "district": "Montchat, Lyon 3e",
   "lat": 45.75866,
   "lng": 4.89374,
-  "date": "2026-11-29",
-  "startTime": "16:00",
-  "endTime": "19:00",
+  "date": "2026-11-30",
+  "startTime": "20:00",
+  "endTime": "23:00",
   "capacity": 8,
   "participantIds": [
    "demo-user-069"
@@ -2384,13 +2600,16 @@
   "organizerName": "Max Faure",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1793487600000,
+  "createdAtMs": 1793574000000,
   "demo": true,
   "lastMessage": {
    "text": "Pas besoin d’apporter de matériel, tout est prévu.",
    "authorName": "Max",
-   "sentAtMs": 1793885042336
-  }
+   "authorId": "demo-user-067",
+   "sentAtMs": 1793971442336
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-065",
@@ -2406,9 +2625,9 @@
   "district": "Montchat, Lyon 3e",
   "lat": 45.7556,
   "lng": 4.8875,
-  "date": "2026-11-22",
-  "startTime": "14:00",
-  "endTime": "16:00",
+  "date": "2026-11-23",
+  "startTime": "18:00",
+  "endTime": "20:00",
   "capacity": 15,
   "participantIds": [
    "demo-user-039",
@@ -2423,13 +2642,16 @@
   "organizerName": "Omar Mercier",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1793142000000,
+  "createdAtMs": 1793228400000,
   "demo": true,
   "lastMessage": {
    "text": "Parfait ! Je viendrai avec une amie si c’est possible.",
    "authorName": "Sarah",
-   "sentAtMs": 1793272586000
-  }
+   "authorId": "demo-user-077",
+   "sentAtMs": 1793358986000
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-066",
@@ -2445,7 +2667,7 @@
   "district": "Terreaux, Lyon 1er",
   "lat": 45.76628,
   "lng": 4.83187,
-  "date": "2026-11-28",
+  "date": "2026-11-29",
   "startTime": "15:00",
   "endTime": "17:30",
   "capacity": 12,
@@ -2459,13 +2681,16 @@
   "organizerName": "Rayan Mercier",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792191600000,
+  "createdAtMs": 1792278000000,
   "demo": true,
   "lastMessage": {
    "text": "Parfait ! Je viendrai avec une amie si c’est possible.",
    "authorName": "Lucas",
-   "sentAtMs": 1792463230695
-  }
+   "authorId": "demo-user-014",
+   "sentAtMs": 1792549630695
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-067",
@@ -2481,7 +2706,7 @@
   "district": "Guillotière, Lyon 7e",
   "lat": 45.7548,
   "lng": 4.8418,
-  "date": "2027-01-05",
+  "date": "2027-01-06",
   "startTime": "19:00",
   "endTime": "20:00",
   "capacity": 6,
@@ -2494,13 +2719,16 @@
   "organizerName": "Ibrahim Moreau",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792191600000,
+  "createdAtMs": 1792278000000,
   "demo": true,
   "lastMessage": {
    "text": "Le point de rendez-vous est bien à l’entrée principale ?",
    "authorName": "Alex",
-   "sentAtMs": 1792335308752
-  }
+   "authorId": "demo-user-008",
+   "sentAtMs": 1792421708752
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-068",
@@ -2516,9 +2744,9 @@
   "district": "Vieux Lyon, Lyon 5e",
   "lat": 45.7603,
   "lng": 4.8275,
-  "date": "2027-01-03",
-  "startTime": "10:00",
-  "endTime": "13:00",
+  "date": "2027-01-04",
+  "startTime": "12:00",
+  "endTime": "15:00",
   "capacity": 6,
   "participantIds": [
    "demo-user-003",
@@ -2528,13 +2756,16 @@
   "organizerName": "Salomé Fontaine",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792105200000,
+  "createdAtMs": 1792191600000,
   "demo": true,
   "lastMessage": {
    "text": "Pas besoin d’apporter de matériel, tout est prévu.",
    "authorName": "Salomé",
-   "sentAtMs": 1792470477466
-  }
+   "authorId": "demo-user-103",
+   "sentAtMs": 1792556877466
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-069",
@@ -2550,7 +2781,7 @@
   "district": "Croix-Rousse, Lyon 4e",
   "lat": 45.7757,
   "lng": 4.8314,
-  "date": "2026-12-02",
+  "date": "2026-12-03",
   "startTime": "19:00",
   "endTime": "21:30",
   "capacity": 12,
@@ -2561,19 +2792,31 @@
    "demo-user-027",
    "demo-user-024",
    "demo-user-040",
-   "demo-user-014"
+   "demo-user-014",
+   "demo-user-114",
+   "demo-user-071",
+   "demo-user-064",
+   "demo-user-003",
+   "demo-user-007"
   ],
   "organizerId": "demo-user-004",
   "organizerName": "Sophie Perrin",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792796400000,
+  "createdAtMs": 1792882800000,
   "demo": true,
   "lastMessage": {
    "text": "Parfait ! Je viendrai avec une amie si c’est possible.",
-   "authorName": "Agathe",
-   "sentAtMs": 1793078397949
-  }
+   "authorName": "Julie",
+   "authorId": "demo-user-061",
+   "sentAtMs": 1793164797949
+  },
+  "waitlistIds": [
+   "demo-user-053",
+   "demo-user-111",
+   "demo-user-050"
+  ],
+  "offer": null
  },
  {
   "id": "demo-act-070",
@@ -2589,7 +2832,7 @@
   "district": "Croix-Rousse, Lyon 4e",
   "lat": 45.77374,
   "lng": 4.82576,
-  "date": "2026-10-22",
+  "date": "2026-10-23",
   "startTime": "20:00",
   "endTime": "23:30",
   "capacity": 20,
@@ -2615,13 +2858,16 @@
   "organizerName": "Arthur Bonnet",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1791496800000,
+  "createdAtMs": 1791583200000,
   "demo": true,
   "lastMessage": {
    "text": "Merci d’être venus aussi nombreux, c’était génial !",
    "authorName": "Arthur",
-   "sentAtMs": 1791737149209
-  }
+   "authorId": "demo-user-094",
+   "sentAtMs": 1791823549209
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-071",
@@ -2637,24 +2883,35 @@
   "district": "Ainay, Lyon 2e",
   "lat": 45.753,
   "lng": 4.82677,
-  "date": "2026-12-28",
+  "date": "2026-12-29",
   "startTime": "18:00",
   "endTime": "21:00",
   "capacity": 6,
   "participantIds": [
-   "demo-user-039"
+   "demo-user-039",
+   "demo-user-025",
+   "demo-user-075",
+   "demo-user-005",
+   "demo-user-089",
+   "demo-user-093"
   ],
   "organizerId": "demo-user-085",
   "organizerName": "Nina Garcia",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1793487600000,
+  "createdAtMs": 1793574000000,
   "demo": true,
   "lastMessage": {
    "text": "Hâte de voir ce qu’on va créer ensemble.",
-   "authorName": "Margaux",
-   "sentAtMs": 1793809535420
-  }
+   "authorName": "Antoine",
+   "authorId": "demo-user-005",
+   "sentAtMs": 1793895935420
+  },
+  "waitlistIds": [
+   "demo-user-001",
+   "demo-user-067"
+  ],
+  "offer": null
  },
  {
   "id": "demo-act-072",
@@ -2670,7 +2927,7 @@
   "district": "Bellecour, Lyon 2e",
   "lat": 45.75615,
   "lng": 4.83031,
-  "date": "2026-12-26",
+  "date": "2026-12-27",
   "startTime": "14:00",
   "endTime": "16:00",
   "capacity": 12,
@@ -2683,13 +2940,16 @@
   "organizerName": "Agathe Garcia",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792191600000,
+  "createdAtMs": 1792278000000,
   "demo": true,
   "lastMessage": {
    "text": "Je peux apporter des boissons chaudes.",
    "authorName": "Samuel",
-   "sentAtMs": 1792519704916
-  }
+   "authorId": "demo-user-098",
+   "sentAtMs": 1792606104916
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-073",
@@ -2705,7 +2965,7 @@
   "district": "Tête d’Or, Lyon 6e",
   "lat": 45.7772,
   "lng": 4.8558,
-  "date": "2026-11-17",
+  "date": "2026-11-18",
   "startTime": "19:00",
   "endTime": "22:00",
   "capacity": 8,
@@ -2716,13 +2976,16 @@
   "organizerName": "Max Guerin",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792623600000,
+  "createdAtMs": 1792710000000,
   "demo": true,
   "lastMessage": {
    "text": "Merci pour l’organisation !",
    "authorName": "Hugo",
-   "sentAtMs": 1792855372774
-  }
+   "authorId": "demo-user-070",
+   "sentAtMs": 1792941772774
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-074",
@@ -2738,7 +3001,7 @@
   "district": "Ainay, Lyon 2e",
   "lat": 45.7482,
   "lng": 4.8268,
-  "date": "2026-11-17",
+  "date": "2026-11-18",
   "startTime": "18:00",
   "endTime": "20:00",
   "capacity": 15,
@@ -2754,13 +3017,16 @@
   "organizerName": "Sophie Perrin",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792796400000,
+  "createdAtMs": 1792882800000,
   "demo": true,
   "lastMessage": {
    "text": "Je confirme ma présence 👍",
    "authorName": "Anaïs",
-   "sentAtMs": 1792915369417
-  }
+   "authorId": "demo-user-091",
+   "sentAtMs": 1793001769417
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-075",
@@ -2776,7 +3042,7 @@
   "district": "Oullins-Pierre-Bénite",
   "lat": 45.71412,
   "lng": 4.81025,
-  "date": "2026-11-25",
+  "date": "2026-11-26",
   "startTime": "20:00",
   "endTime": "22:00",
   "capacity": 12,
@@ -2790,13 +3056,16 @@
   "organizerName": "Rayan Mercier",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792710000000,
+  "createdAtMs": 1792796400000,
   "demo": true,
   "lastMessage": {
    "text": "Merci pour ce super moment, on remet ça quand ?",
    "authorName": "Bastien",
-   "sentAtMs": 1792828711869
-  }
+   "authorId": "demo-user-046",
+   "sentAtMs": 1792915111869
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-076",
@@ -2812,7 +3081,7 @@
   "district": "Monplaisir, Lyon 8e",
   "lat": 45.74321,
   "lng": 4.87616,
-  "date": "2027-01-05",
+  "date": "2027-01-06",
   "startTime": "19:00",
   "endTime": "20:00",
   "capacity": 12,
@@ -2827,13 +3096,16 @@
   "organizerName": "Anaïs Bernard",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792882800000,
+  "createdAtMs": 1792969200000,
   "demo": true,
   "lastMessage": {
    "text": "Bienvenue à toutes et à tous dans le groupe !",
    "authorName": "Anaïs",
-   "sentAtMs": 1792980145043
-  }
+   "authorId": "demo-user-091",
+   "sentAtMs": 1793066545043
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-077",
@@ -2849,7 +3121,7 @@
   "district": "Terreaux, Lyon 1er",
   "lat": 45.76872,
   "lng": 4.8308,
-  "date": "2026-10-26",
+  "date": "2026-10-27",
   "startTime": "18:00",
   "endTime": "21:30",
   "capacity": 20,
@@ -2875,13 +3147,16 @@
   "organizerName": "Hugo Petit",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792450800000,
+  "createdAtMs": 1792537200000,
   "demo": true,
   "lastMessage": {
    "text": "Merci d’être venus aussi nombreux, c’était génial !",
    "authorName": "Hugo",
-   "sentAtMs": 1792797988451
-  }
+   "authorId": "demo-user-010",
+   "sentAtMs": 1792884388451
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-078",
@@ -2897,7 +3172,7 @@
   "district": "Bron",
   "lat": 45.73393,
   "lng": 4.9118,
-  "date": "2026-10-14",
+  "date": "2026-10-15",
   "startTime": "12:00",
   "endTime": "13:00",
   "capacity": 15,
@@ -2920,13 +3195,16 @@
   "organizerName": "Hugo Petit",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1791151200000,
+  "createdAtMs": 1791237600000,
   "demo": true,
   "lastMessage": {
    "text": "Petit rappel : pensez à prévenir si vous ne pouvez plus venir, la liste d’attente est longue.",
    "authorName": "Hugo",
-   "sentAtMs": 1791269737910
-  }
+   "authorId": "demo-user-010",
+   "sentAtMs": 1791356137910
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-079",
@@ -2942,7 +3220,7 @@
   "district": "Bellecour, Lyon 2e",
   "lat": 45.7632,
   "lng": 4.8312,
-  "date": "2026-12-03",
+  "date": "2026-12-04",
   "startTime": "12:00",
   "endTime": "13:00",
   "capacity": 10,
@@ -2959,13 +3237,16 @@
   "organizerName": "Salomé Fontaine",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1793660400000,
+  "createdAtMs": 1793746800000,
   "demo": true,
   "lastMessage": {
    "text": "Il annonce un peu de vent, pensez à une veste.",
    "authorName": "Louis",
-   "sentAtMs": 1793857929985
-  }
+   "authorId": "demo-user-082",
+   "sentAtMs": 1793944329985
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-080",
@@ -2981,7 +3262,7 @@
   "district": "Confluence, Lyon 2e",
   "lat": 45.74402,
   "lng": 4.81965,
-  "date": "2026-12-31",
+  "date": "2027-01-01",
   "startTime": "12:00",
   "endTime": "15:00",
   "capacity": 6,
@@ -2994,13 +3275,16 @@
   "organizerName": "Elsa Faure",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1793401200000,
+  "createdAtMs": 1793487600000,
   "demo": true,
   "lastMessage": {
    "text": "Je confirme ma présence 👍",
    "authorName": "Jade",
-   "sentAtMs": 1793500977876
-  }
+   "authorId": "demo-user-023",
+   "sentAtMs": 1793587377876
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-081",
@@ -3016,7 +3300,7 @@
   "district": "Confluence, Lyon 2e",
   "lat": 45.74402,
   "lng": 4.81965,
-  "date": "2027-01-02",
+  "date": "2027-01-03",
   "startTime": "14:00",
   "endTime": "17:00",
   "capacity": 10,
@@ -3028,13 +3312,16 @@
   "organizerName": "Anaïs Martin",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792882800000,
+  "createdAtMs": 1792969200000,
   "demo": true,
   "lastMessage": {
    "text": "Rendez-vous 10 minutes avant le début pour s’installer.",
    "authorName": "Anaïs",
-   "sentAtMs": 1793056539339
-  }
+   "authorId": "demo-user-031",
+   "sentAtMs": 1793142939339
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-082",
@@ -3050,7 +3337,7 @@
   "district": "Jean Macé, Lyon 7e",
   "lat": 45.74931,
   "lng": 4.84338,
-  "date": "2026-12-01",
+  "date": "2026-12-02",
   "startTime": "20:00",
   "endTime": "21:30",
   "capacity": 12,
@@ -3064,13 +3351,16 @@
   "organizerName": "Anaïs Martin",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792882800000,
+  "createdAtMs": 1792969200000,
   "demo": true,
   "lastMessage": {
    "text": "Je confirme ma présence 👍",
    "authorName": "Manon",
-   "sentAtMs": 1793094967454
-  }
+   "authorId": "demo-user-073",
+   "sentAtMs": 1793181367454
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-083",
@@ -3086,24 +3376,32 @@
   "district": "Pentes de la Croix-Rousse, Lyon 1er",
   "lat": 45.77155,
   "lng": 4.83387,
-  "date": "2026-11-21",
+  "date": "2026-11-22",
   "startTime": "14:00",
   "endTime": "15:30",
   "capacity": 6,
   "participantIds": [
-   "demo-user-119"
+   "demo-user-119",
+   "demo-user-118",
+   "demo-user-079",
+   "demo-user-019",
+   "demo-user-108",
+   "demo-user-086"
   ],
   "organizerId": "demo-user-106",
   "organizerName": "Bastien Nguyen",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1793574000000,
+  "createdAtMs": 1793660400000,
   "demo": true,
   "lastMessage": {
    "text": "En cas de pluie, on se replie à l’intérieur juste à côté.",
    "authorName": "Bastien",
-   "sentAtMs": 1793804929183
-  }
+   "authorId": "demo-user-106",
+   "sentAtMs": 1793891329183
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-084",
@@ -3119,9 +3417,9 @@
   "district": "Oullins-Pierre-Bénite",
   "lat": 45.71412,
   "lng": 4.81025,
-  "date": "2026-11-01",
-  "startTime": "10:00",
-  "endTime": "12:00",
+  "date": "2026-11-02",
+  "startTime": "12:00",
+  "endTime": "14:00",
   "capacity": 15,
   "participantIds": [
    "demo-user-006",
@@ -3139,13 +3437,16 @@
   "organizerName": "Arthur Bonnet",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792710000000,
+  "createdAtMs": 1792796400000,
   "demo": true,
   "lastMessage": {
    "text": "Petit rappel : pensez à prévenir si vous ne pouvez plus venir, la liste d’attente est longue.",
    "authorName": "Arthur",
-   "sentAtMs": 1792873340180
-  }
+   "authorId": "demo-user-094",
+   "sentAtMs": 1792959740180
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-085",
@@ -3161,9 +3462,9 @@
   "district": "Jean Macé, Lyon 7e",
   "lat": 45.74931,
   "lng": 4.84338,
-  "date": "2026-11-27",
-  "startTime": "20:00",
-  "endTime": "21:00",
+  "date": "2026-11-28",
+  "startTime": "16:00",
+  "endTime": "17:00",
   "capacity": 12,
   "participantIds": [
    "demo-user-078",
@@ -3175,13 +3476,16 @@
   "organizerName": "Julie Martin",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1793314800000,
+  "createdAtMs": 1793401200000,
   "demo": true,
   "lastMessage": {
    "text": "Quelqu’un vient depuis Villeurbanne ? On pourrait faire le trajet ensemble.",
    "authorName": "Lina",
-   "sentAtMs": 1793462954821
-  }
+   "authorId": "demo-user-079",
+   "sentAtMs": 1793549354821
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-086",
@@ -3197,7 +3501,7 @@
   "district": "Vaise, Lyon 9e",
   "lat": 45.788,
   "lng": 4.796,
-  "date": "2026-12-10",
+  "date": "2026-12-11",
   "startTime": "20:00",
   "endTime": "22:00",
   "capacity": 20,
@@ -3217,13 +3521,16 @@
   "organizerName": "Omar Mercier",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792969200000,
+  "createdAtMs": 1793055600000,
   "demo": true,
   "lastMessage": {
    "text": "Merci d’être venus aussi nombreux, c’était génial !",
    "authorName": "Omar",
-   "sentAtMs": 1793252487702
-  }
+   "authorId": "demo-user-118",
+   "sentAtMs": 1793338887702
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-087",
@@ -3239,7 +3546,7 @@
   "district": "Croix-Rousse, Lyon 4e",
   "lat": 45.7772,
   "lng": 4.8318,
-  "date": "2026-10-17",
+  "date": "2026-10-18",
   "startTime": "16:00",
   "endTime": "19:00",
   "capacity": 8,
@@ -3253,13 +3560,16 @@
   "organizerName": "Pauline Roux",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1791064800000,
+  "createdAtMs": 1791151200000,
   "demo": true,
   "lastMessage": {
    "text": "Hâte de voir ce qu’on va créer ensemble.",
    "authorName": "Lou",
-   "sentAtMs": 1791206671298
-  }
+   "authorId": "demo-user-029",
+   "sentAtMs": 1791293071298
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-088",
@@ -3275,7 +3585,7 @@
   "district": "Caluire-et-Cuire",
   "lat": 45.79956,
   "lng": 4.84424,
-  "date": "2026-11-03",
+  "date": "2026-11-04",
   "startTime": "12:00",
   "endTime": "14:00",
   "capacity": 15,
@@ -3297,13 +3607,16 @@
   "organizerName": "Louis Muller",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792623600000,
+  "createdAtMs": 1792710000000,
   "demo": true,
   "lastMessage": {
    "text": "En cas de pluie, on se replie à l’intérieur juste à côté.",
    "authorName": "Louis",
-   "sentAtMs": 1792973611080
-  }
+   "authorId": "demo-user-082",
+   "sentAtMs": 1793060011080
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-089",
@@ -3319,7 +3632,7 @@
   "district": "Confluence, Lyon 2e",
   "lat": 45.7396,
   "lng": 4.8168,
-  "date": "2026-12-10",
+  "date": "2026-12-11",
   "startTime": "20:00",
   "endTime": "22:00",
   "capacity": 12,
@@ -3340,13 +3653,16 @@
   "organizerName": "Arthur Bonnet",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792364400000,
+  "createdAtMs": 1792450800000,
   "demo": true,
   "lastMessage": {
    "text": "Bonne idée le thème de cette fois !",
    "authorName": "Ethan",
-   "sentAtMs": 1792718884404
-  }
+   "authorId": "demo-user-110",
+   "sentAtMs": 1792805284404
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-090",
@@ -3362,7 +3678,7 @@
   "district": "Terreaux, Lyon 1er",
   "lat": 45.76535,
   "lng": 4.83586,
-  "date": "2026-12-23",
+  "date": "2026-12-24",
   "startTime": "18:00",
   "endTime": "21:00",
   "capacity": 6,
@@ -3375,13 +3691,16 @@
   "organizerName": "Arthur Bonnet",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1793401200000,
+  "createdAtMs": 1793487600000,
   "demo": true,
   "lastMessage": {
    "text": "Parfait ! Je viendrai avec une amie si c’est possible.",
    "authorName": "Manon",
-   "sentAtMs": 1793525297208
-  }
+   "authorId": "demo-user-013",
+   "sentAtMs": 1793611697208
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-091",
@@ -3397,7 +3716,7 @@
   "district": "Terreaux, Lyon 1er",
   "lat": 45.7697,
   "lng": 4.8302,
-  "date": "2026-12-10",
+  "date": "2026-12-11",
   "startTime": "19:00",
   "endTime": "22:30",
   "capacity": 20,
@@ -3408,13 +3727,16 @@
   "organizerName": "Pauline Roux",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1793314800000,
+  "createdAtMs": 1793401200000,
   "demo": true,
   "lastMessage": {
    "text": "Merci pour l’organisation !",
    "authorName": "Samuel",
-   "sentAtMs": 1793738302468
-  }
+   "authorId": "demo-user-098",
+   "sentAtMs": 1793824702468
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-092",
@@ -3430,7 +3752,7 @@
   "district": "Jean Macé, Lyon 7e",
   "lat": 45.7457,
   "lng": 4.8423,
-  "date": "2026-12-12",
+  "date": "2026-12-13",
   "startTime": "16:00",
   "endTime": "18:00",
   "capacity": 10,
@@ -3441,13 +3763,16 @@
   "organizerName": "Manon Fontaine",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792969200000,
+  "createdAtMs": 1793055600000,
   "demo": true,
   "lastMessage": {
    "text": "En cas de pluie, on se replie à l’intérieur juste à côté.",
    "authorName": "Manon",
-   "sentAtMs": 1793427125373
-  }
+   "authorId": "demo-user-073",
+   "sentAtMs": 1793513525373
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-093",
@@ -3463,7 +3788,7 @@
   "district": "Monplaisir, Lyon 8e",
   "lat": 45.74154,
   "lng": 4.86903,
-  "date": "2026-11-23",
+  "date": "2026-11-24",
   "startTime": "20:00",
   "endTime": "23:00",
   "capacity": 20,
@@ -3478,13 +3803,16 @@
   "organizerName": "Anaïs Bernard",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792882800000,
+  "createdAtMs": 1792969200000,
   "demo": true,
   "lastMessage": {
    "text": "Pas besoin d’apporter de matériel, tout est prévu.",
    "authorName": "Anaïs",
-   "sentAtMs": 1793085897431
-  }
+   "authorId": "demo-user-091",
+   "sentAtMs": 1793172297431
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-094",
@@ -3500,7 +3828,7 @@
   "district": "Confluence, Lyon 2e",
   "lat": 45.74297,
   "lng": 4.8204,
-  "date": "2026-11-19",
+  "date": "2026-11-20",
   "startTime": "18:00",
   "endTime": "19:00",
   "capacity": 12,
@@ -3522,13 +3850,21 @@
   "organizerName": "Bastien Benali",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1793314800000,
+  "createdAtMs": 1793401200000,
   "demo": true,
   "lastMessage": {
    "text": "Parfait ! Je viendrai avec une amie si c’est possible.",
    "authorName": "Arthur",
-   "sentAtMs": 1793537605579
-  }
+   "authorId": "demo-user-034",
+   "sentAtMs": 1793624005579
+  },
+  "waitlistIds": [
+   "demo-user-118",
+   "demo-user-082",
+   "demo-user-090",
+   "demo-user-105"
+  ],
+  "offer": null
  },
  {
   "id": "demo-act-095",
@@ -3544,9 +3880,9 @@
   "district": "États-Unis, Lyon 8e",
   "lat": 45.7324,
   "lng": 4.86028,
-  "date": "2026-12-20",
-  "startTime": "16:00",
-  "endTime": "19:30",
+  "date": "2026-12-21",
+  "startTime": "20:00",
+  "endTime": "23:30",
   "capacity": 20,
   "participantIds": [
    "demo-user-084",
@@ -3568,13 +3904,16 @@
   "organizerName": "Louis Vincent",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792710000000,
+  "createdAtMs": 1792796400000,
   "demo": true,
   "lastMessage": {
    "text": "Trop bien, ça va être top.",
    "authorName": "Salomé",
-   "sentAtMs": 1792872164838
-  }
+   "authorId": "demo-user-103",
+   "sentAtMs": 1792958564838
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-096",
@@ -3590,7 +3929,7 @@
   "district": "Terreaux, Lyon 1er",
   "lat": 45.76535,
   "lng": 4.83586,
-  "date": "2026-12-17",
+  "date": "2026-12-18",
   "startTime": "20:00",
   "endTime": "22:00",
   "capacity": 10,
@@ -3605,13 +3944,16 @@
   "organizerName": "Nina Garcia",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792796400000,
+  "createdAtMs": 1792882800000,
   "demo": true,
   "lastMessage": {
    "text": "Est-ce qu’il reste de la place pour une personne de plus ?",
    "authorName": "Lina",
-   "sentAtMs": 1793283505740
-  }
+   "authorId": "demo-user-019",
+   "sentAtMs": 1793369905740
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-097",
@@ -3627,9 +3969,9 @@
   "district": "Vaise, Lyon 9e",
   "lat": 45.772,
   "lng": 4.81,
-  "date": "2026-11-27",
-  "startTime": "20:00",
-  "endTime": "21:30",
+  "date": "2026-11-28",
+  "startTime": "16:00",
+  "endTime": "17:30",
   "capacity": 20,
   "participantIds": [
    "demo-user-084",
@@ -3639,13 +3981,16 @@
   "organizerName": "Julie Martin",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1793055600000,
+  "createdAtMs": 1793142000000,
   "demo": true,
   "lastMessage": {
    "text": "Je peux apporter des boissons chaudes.",
    "authorName": "Nina",
-   "sentAtMs": 1793340803230
-  }
+   "authorId": "demo-user-025",
+   "sentAtMs": 1793427203230
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-098",
@@ -3661,7 +4006,7 @@
   "district": "Bellecour, Lyon 2e",
   "lat": 45.75861,
   "lng": 4.83089,
-  "date": "2026-12-02",
+  "date": "2026-12-03",
   "startTime": "20:00",
   "endTime": "21:00",
   "capacity": 12,
@@ -3677,13 +4022,16 @@
   "organizerName": "Pauline Roux",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792623600000,
+  "createdAtMs": 1792710000000,
   "demo": true,
   "lastMessage": {
    "text": "C’est ma première fois, un peu stressée mais motivée !",
    "authorName": "Amina",
-   "sentAtMs": 1792887685930
-  }
+   "authorId": "demo-user-105",
+   "sentAtMs": 1792974085930
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-099",
@@ -3699,7 +4047,7 @@
   "district": "Gerland, Lyon 7e",
   "lat": 45.7232,
   "lng": 4.8338,
-  "date": "2026-12-15",
+  "date": "2026-12-16",
   "startTime": "12:00",
   "endTime": "15:00",
   "capacity": 6,
@@ -3714,13 +4062,16 @@
   "organizerName": "Bastien Benali",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792018800000,
+  "createdAtMs": 1792105200000,
   "demo": true,
   "lastMessage": {
    "text": "Le point de rendez-vous est bien à l’entrée principale ?",
    "authorName": "Ethan",
-   "sentAtMs": 1792443047681
-  }
+   "authorId": "demo-user-050",
+   "sentAtMs": 1792529447681
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-100",
@@ -3736,7 +4087,7 @@
   "district": "Bron",
   "lat": 45.73435,
   "lng": 4.9085,
-  "date": "2026-11-30",
+  "date": "2026-12-01",
   "startTime": "20:00",
   "endTime": "22:30",
   "capacity": 20,
@@ -3751,13 +4102,16 @@
   "organizerName": "Romain Vincent",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1793660400000,
+  "createdAtMs": 1793746800000,
   "demo": true,
   "lastMessage": {
    "text": "Petit rappel : pensez à prévenir si vous ne pouvez plus venir, la liste d’attente est longue.",
    "authorName": "Romain",
-   "sentAtMs": 1793926202253
-  }
+   "authorId": "demo-user-052",
+   "sentAtMs": 1794012602253
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-101",
@@ -3773,9 +4127,9 @@
   "district": "Saxe-Guichard, Lyon 3e",
   "lat": 45.7594,
   "lng": 4.85327,
-  "date": "2026-11-29",
-  "startTime": "10:00",
-  "endTime": "13:30",
+  "date": "2026-11-30",
+  "startTime": "12:00",
+  "endTime": "15:30",
   "capacity": 15,
   "participantIds": [
    "demo-user-005",
@@ -3789,19 +4143,27 @@
    "demo-user-023",
    "demo-user-073",
    "demo-user-004",
-   "demo-user-114"
+   "demo-user-114",
+   "demo-user-056",
+   "demo-user-096",
+   "demo-user-017"
   ],
   "organizerId": "demo-user-118",
   "organizerName": "Omar Mercier",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792710000000,
+  "createdAtMs": 1792796400000,
   "demo": true,
   "lastMessage": {
    "text": "J’ai mis mes photos dans l’album, allez voir !",
-   "authorName": "Sophie",
-   "sentAtMs": 1792807327113
-  }
+   "authorName": "Diego",
+   "authorId": "demo-user-056",
+   "sentAtMs": 1792893727113
+  },
+  "waitlistIds": [
+   "demo-user-070"
+  ],
+  "offer": null
  },
  {
   "id": "demo-act-102",
@@ -3817,7 +4179,7 @@
   "district": "Oullins-Pierre-Bénite",
   "lat": 45.71412,
   "lng": 4.81025,
-  "date": "2026-11-19",
+  "date": "2026-11-20",
   "startTime": "19:00",
   "endTime": "21:00",
   "capacity": 15,
@@ -3831,13 +4193,16 @@
   "organizerName": "Max Guerin",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792105200000,
+  "createdAtMs": 1792191600000,
   "demo": true,
   "lastMessage": {
    "text": "Hâte de voir ce qu’on va créer ensemble.",
    "authorName": "Antoine",
-   "sentAtMs": 1792313115154
-  }
+   "authorId": "demo-user-005",
+   "sentAtMs": 1792399515154
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-103",
@@ -3853,7 +4218,7 @@
   "district": "Monplaisir, Lyon 8e",
   "lat": 45.7448,
   "lng": 4.8708,
-  "date": "2026-11-12",
+  "date": "2026-11-13",
   "startTime": "12:00",
   "endTime": "13:00",
   "capacity": 6,
@@ -3868,13 +4233,16 @@
   "organizerName": "Lina Roux",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792710000000,
+  "createdAtMs": 1792796400000,
   "demo": true,
   "lastMessage": {
    "text": "Je confirme ma présence 👍",
    "authorName": "Inès",
-   "sentAtMs": 1792808442545
-  }
+   "authorId": "demo-user-069",
+   "sentAtMs": 1792894842545
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-104",
@@ -3890,7 +4258,7 @@
   "district": "Oullins-Pierre-Bénite",
   "lat": 45.71443,
   "lng": 4.81203,
-  "date": "2026-11-16",
+  "date": "2026-11-17",
   "startTime": "18:00",
   "endTime": "21:00",
   "capacity": 8,
@@ -3906,13 +4274,16 @@
   "organizerName": "Arthur Bonnet",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1793487600000,
+  "createdAtMs": 1793574000000,
   "demo": true,
   "lastMessage": {
    "text": "J’ai partagé l’activité avec mon colocataire, il s’est inscrit.",
    "authorName": "Emma",
-   "sentAtMs": 1793733863225
-  }
+   "authorId": "demo-user-075",
+   "sentAtMs": 1793820263225
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-105",
@@ -3928,9 +4299,9 @@
   "district": "Gratte-Ciel, Villeurbanne",
   "lat": 45.76766,
   "lng": 4.87552,
-  "date": "2026-11-29",
-  "startTime": "16:00",
-  "endTime": "17:00",
+  "date": "2026-11-30",
+  "startTime": "20:00",
+  "endTime": "21:00",
   "capacity": 6,
   "participantIds": [
    "demo-user-010"
@@ -3939,13 +4310,16 @@
   "organizerName": "Yanis Benali",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792191600000,
+  "createdAtMs": 1792278000000,
   "demo": true,
   "lastMessage": {
    "text": "Quelqu’un vient depuis Villeurbanne ? On pourrait faire le trajet ensemble.",
    "authorName": "Hugo",
-   "sentAtMs": 1792590425493
-  }
+   "authorId": "demo-user-010",
+   "sentAtMs": 1792676825493
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-106",
@@ -3961,7 +4335,7 @@
   "district": "Part-Dieu, Lyon 3e",
   "lat": 45.76283,
   "lng": 4.85862,
-  "date": "2026-10-26",
+  "date": "2026-10-27",
   "startTime": "20:00",
   "endTime": "21:30",
   "capacity": 20,
@@ -3988,13 +4362,16 @@
   "organizerName": "Agathe Rossi",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792450800000,
+  "createdAtMs": 1792537200000,
   "demo": true,
   "lastMessage": {
    "text": "Parfait ! Je viendrai avec une amie si c’est possible.",
    "authorName": "Jade",
-   "sentAtMs": 1792696343883
-  }
+   "authorId": "demo-user-083",
+   "sentAtMs": 1792782743883
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-107",
@@ -4010,7 +4387,7 @@
   "district": "Brotteaux, Lyon 6e",
   "lat": 45.76664,
   "lng": 4.84714,
-  "date": "2026-12-02",
+  "date": "2026-12-03",
   "startTime": "19:00",
   "endTime": "21:30",
   "capacity": 12,
@@ -4021,13 +4398,16 @@
   "organizerName": "Nina Garcia",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792191600000,
+  "createdAtMs": 1792278000000,
   "demo": true,
   "lastMessage": {
    "text": "Le point de rendez-vous est bien à l’entrée principale ?",
    "authorName": "Victor",
-   "sentAtMs": 1792290536421
-  }
+   "authorId": "demo-user-102",
+   "sentAtMs": 1792376936421
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-108",
@@ -4043,9 +4423,9 @@
   "district": "Oullins-Pierre-Bénite",
   "lat": 45.71412,
   "lng": 4.81025,
-  "date": "2026-11-27",
-  "startTime": "19:00",
-  "endTime": "21:00",
+  "date": "2026-11-28",
+  "startTime": "15:00",
+  "endTime": "17:00",
   "capacity": 10,
   "participantIds": [
    "demo-user-043",
@@ -4061,13 +4441,16 @@
   "organizerName": "Ibrahim Petit",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792969200000,
+  "createdAtMs": 1793055600000,
   "demo": true,
   "lastMessage": {
    "text": "Merci pour ce super moment, on remet ça quand ?",
    "authorName": "Salomé",
-   "sentAtMs": 1793276933004
-  }
+   "authorId": "demo-user-043",
+   "sentAtMs": 1793363333004
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-109",
@@ -4083,7 +4466,7 @@
   "district": "Tête d’Or, Lyon 6e",
   "lat": 45.77394,
   "lng": 4.85528,
-  "date": "2026-11-04",
+  "date": "2026-11-05",
   "startTime": "18:00",
   "endTime": "21:00",
   "capacity": 6,
@@ -4096,13 +4479,16 @@
   "organizerName": "Hugo Moreau",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792278000000,
+  "createdAtMs": 1792364400000,
   "demo": true,
   "lastMessage": {
    "text": "On se retrouve directement sur place ?",
    "authorName": "Margaux",
-   "sentAtMs": 1792468588908
-  }
+   "authorId": "demo-user-039",
+   "sentAtMs": 1792554988908
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-110",
@@ -4118,7 +4504,7 @@
   "district": "Gratte-Ciel, Villeurbanne",
   "lat": 45.7666,
   "lng": 4.8798,
-  "date": "2026-11-26",
+  "date": "2026-11-27",
   "startTime": "18:00",
   "endTime": "20:00",
   "capacity": 20,
@@ -4134,13 +4520,16 @@
   "organizerName": "Sophie Perrin",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792018800000,
+  "createdAtMs": 1792105200000,
   "demo": true,
   "lastMessage": {
    "text": "Le point de rendez-vous est bien à l’entrée principale ?",
    "authorName": "Jade",
-   "sentAtMs": 1792254526651
-  }
+   "authorId": "demo-user-083",
+   "sentAtMs": 1792340926651
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-111",
@@ -4156,9 +4545,9 @@
   "district": "Bron",
   "lat": 45.7232,
   "lng": 4.8982,
-  "date": "2026-12-13",
-  "startTime": "14:00",
-  "endTime": "16:00",
+  "date": "2026-12-14",
+  "startTime": "18:00",
+  "endTime": "20:00",
   "capacity": 20,
   "participantIds": [
    "demo-user-057",
@@ -4183,13 +4572,16 @@
   "organizerName": "Salomé Fontaine",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792796400000,
+  "createdAtMs": 1792882800000,
   "demo": true,
   "lastMessage": {
    "text": "Quelqu’un vient depuis Villeurbanne ? On pourrait faire le trajet ensemble.",
    "authorName": "Zoé",
-   "sentAtMs": 1793082192006
-  }
+   "authorId": "demo-user-021",
+   "sentAtMs": 1793168592006
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-112",
@@ -4205,7 +4597,7 @@
   "district": "Monplaisir, Lyon 8e",
   "lat": 45.74321,
   "lng": 4.87616,
-  "date": "2026-10-24",
+  "date": "2026-10-25",
   "startTime": "15:00",
   "endTime": "16:00",
   "capacity": 10,
@@ -4221,13 +4613,16 @@
   "organizerName": "Hugo Moreau",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1791842400000,
+  "createdAtMs": 1791928800000,
   "demo": true,
   "lastMessage": {
    "text": "Quelqu’un vient depuis Villeurbanne ? On pourrait faire le trajet ensemble.",
    "authorName": "Adam",
-   "sentAtMs": 1792110048712
-  }
+   "authorId": "demo-user-086",
+   "sentAtMs": 1792196448712
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-113",
@@ -4243,7 +4638,7 @@
   "district": "Vaise, Lyon 9e",
   "lat": 45.788,
   "lng": 4.796,
-  "date": "2026-12-05",
+  "date": "2026-12-06",
   "startTime": "16:00",
   "endTime": "18:00",
   "capacity": 15,
@@ -4254,13 +4649,16 @@
   "organizerName": "Agathe Garcia",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792882800000,
+  "createdAtMs": 1792969200000,
   "demo": true,
   "lastMessage": {
    "text": "Est-ce que quelqu’un sait s’il faut apporter son propre matériel ?",
    "authorName": "Adam",
-   "sentAtMs": 1793327295924
-  }
+   "authorId": "demo-user-086",
+   "sentAtMs": 1793413695924
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-114",
@@ -4276,7 +4674,7 @@
   "district": "Oullins-Pierre-Bénite",
   "lat": 45.71412,
   "lng": 4.81025,
-  "date": "2026-12-07",
+  "date": "2026-12-08",
   "startTime": "19:00",
   "endTime": "20:30",
   "capacity": 8,
@@ -4288,13 +4686,16 @@
   "organizerName": "Ibrahim Moreau",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792278000000,
+  "createdAtMs": 1792364400000,
   "demo": true,
   "lastMessage": {
    "text": "J’ai partagé l’activité avec mon colocataire, il s’est inscrit.",
    "authorName": "Sophie",
-   "sentAtMs": 1792626396021
-  }
+   "authorId": "demo-user-004",
+   "sentAtMs": 1792712796021
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-115",
@@ -4310,9 +4711,9 @@
   "district": "Confluence, Lyon 2e",
   "lat": 45.7396,
   "lng": 4.8168,
-  "date": "2026-12-13",
-  "startTime": "14:00",
-  "endTime": "17:00",
+  "date": "2026-12-14",
+  "startTime": "18:00",
+  "endTime": "21:00",
   "capacity": 15,
   "participantIds": [
    "demo-user-010",
@@ -4328,13 +4729,16 @@
   "organizerName": "Elsa Guerin",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792450800000,
+  "createdAtMs": 1792537200000,
   "demo": true,
   "lastMessage": {
    "text": "Merci pour l’organisation !",
    "authorName": "Louise",
-   "sentAtMs": 1792806159893
-  }
+   "authorId": "demo-user-107",
+   "sentAtMs": 1792892559893
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-116",
@@ -4350,7 +4754,7 @@
   "district": "Part-Dieu, Lyon 3e",
   "lat": 45.75682,
   "lng": 4.85843,
-  "date": "2026-12-10",
+  "date": "2026-12-11",
   "startTime": "18:00",
   "endTime": "19:00",
   "capacity": 6,
@@ -4363,13 +4767,16 @@
   "organizerName": "Omar Morel",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1793228400000,
+  "createdAtMs": 1793314800000,
   "demo": true,
   "lastMessage": {
    "text": "Hâte de voir ce qu’on va créer ensemble.",
    "authorName": "Capucine",
-   "sentAtMs": 1793713891057
-  }
+   "authorId": "demo-user-119",
+   "sentAtMs": 1793800291057
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-117",
@@ -4385,9 +4792,9 @@
   "district": "Part-Dieu, Lyon 3e",
   "lat": 45.76372,
   "lng": 4.85951,
-  "date": "2026-10-18",
-  "startTime": "16:00",
-  "endTime": "19:30",
+  "date": "2026-10-19",
+  "startTime": "20:00",
+  "endTime": "23:30",
   "capacity": 10,
   "participantIds": [
    "demo-user-013",
@@ -4405,13 +4812,16 @@
   "organizerName": "Anaïs Bernard",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1791410400000,
+  "createdAtMs": 1791496800000,
   "demo": true,
   "lastMessage": {
    "text": "Merci pour l’organisation !",
    "authorName": "Elsa",
-   "sentAtMs": 1791833987475
-  }
+   "authorId": "demo-user-097",
+   "sentAtMs": 1791920387475
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-118",
@@ -4427,7 +4837,7 @@
   "district": "Bron",
   "lat": 45.73807,
   "lng": 4.90943,
-  "date": "2026-12-03",
+  "date": "2026-12-04",
   "startTime": "12:00",
   "endTime": "15:00",
   "capacity": 20,
@@ -4447,13 +4857,16 @@
   "organizerName": "Lina Girard",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792537200000,
+  "createdAtMs": 1792623600000,
   "demo": true,
   "lastMessage": {
    "text": "Pas besoin d’apporter de matériel, tout est prévu.",
    "authorName": "Lina",
-   "sentAtMs": 1792821132770
-  }
+   "authorId": "demo-user-019",
+   "sentAtMs": 1792907532770
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-119",
@@ -4469,9 +4882,9 @@
   "district": "Part-Dieu, Lyon 3e",
   "lat": 45.7615,
   "lng": 4.8574,
-  "date": "2026-11-22",
-  "startTime": "14:00",
-  "endTime": "17:30",
+  "date": "2026-11-23",
+  "startTime": "18:00",
+  "endTime": "21:30",
   "capacity": 12,
   "participantIds": [
    "demo-user-069",
@@ -4485,13 +4898,16 @@
   "organizerName": "Pauline Girard",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792796400000,
+  "createdAtMs": 1792882800000,
   "demo": true,
   "lastMessage": {
    "text": "Merci d’être venus aussi nombreux, c’était génial !",
    "authorName": "Pauline",
-   "sentAtMs": 1793145308769
-  }
+   "authorId": "demo-user-049",
+   "sentAtMs": 1793231708769
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-120",
@@ -4507,9 +4923,9 @@
   "district": "Bron",
   "lat": 45.73631,
   "lng": 4.91178,
-  "date": "2026-11-15",
-  "startTime": "10:00",
-  "endTime": "12:00",
+  "date": "2026-11-16",
+  "startTime": "12:00",
+  "endTime": "14:00",
   "capacity": 15,
   "participantIds": [
    "demo-user-002",
@@ -4530,13 +4946,16 @@
   "organizerName": "Manon Lambert",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1793228400000,
+  "createdAtMs": 1793314800000,
   "demo": true,
   "lastMessage": {
    "text": "Merci pour ce super moment, on remet ça quand ?",
    "authorName": "Thomas",
-   "sentAtMs": 1793287941580
-  }
+   "authorId": "demo-user-002",
+   "sentAtMs": 1793374341580
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-121",
@@ -4552,7 +4971,7 @@
   "district": "Saxe-Guichard, Lyon 3e",
   "lat": 45.75518,
   "lng": 4.84476,
-  "date": "2026-10-13",
+  "date": "2026-10-14",
   "startTime": "12:00",
   "endTime": "13:00",
   "capacity": 8,
@@ -4568,13 +4987,16 @@
   "organizerName": "Hugo Moreau",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1791064800000,
+  "createdAtMs": 1791151200000,
   "demo": true,
   "lastMessage": {
    "text": "Je confirme ma présence 👍",
    "authorName": "Camille",
-   "sentAtMs": 1791269076072
-  }
+   "authorId": "demo-user-006",
+   "sentAtMs": 1791355476072
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-122",
@@ -4590,7 +5012,7 @@
   "district": "États-Unis, Lyon 8e",
   "lat": 45.73725,
   "lng": 4.86863,
-  "date": "2026-10-12",
+  "date": "2026-10-13",
   "startTime": "20:00",
   "endTime": "23:30",
   "capacity": 10,
@@ -4609,13 +5031,16 @@
   "organizerName": "Sophie Bonnet",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1790287200000,
+  "createdAtMs": 1790373600000,
   "demo": true,
   "lastMessage": {
    "text": "C’est ma première fois, un peu stressée mais motivée !",
    "authorName": "Simon",
-   "sentAtMs": 1790434062123
-  }
+   "authorId": "demo-user-060",
+   "sentAtMs": 1790520462123
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-123",
@@ -4631,7 +5056,7 @@
   "district": "Vénissieux",
   "lat": 45.69711,
   "lng": 4.88649,
-  "date": "2026-11-18",
+  "date": "2026-11-19",
   "startTime": "20:00",
   "endTime": "23:00",
   "capacity": 15,
@@ -4653,13 +5078,16 @@
   "organizerName": "Max Faure",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792191600000,
+  "createdAtMs": 1792278000000,
   "demo": true,
   "lastMessage": {
    "text": "En cas de pluie, on se replie à l’intérieur juste à côté.",
    "authorName": "Max",
-   "sentAtMs": 1792424031561
-  }
+   "authorId": "demo-user-067",
+   "sentAtMs": 1792510431561
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-124",
@@ -4675,9 +5103,9 @@
   "district": "Bron",
   "lat": 45.73631,
   "lng": 4.91178,
-  "date": "2027-01-03",
-  "startTime": "10:00",
-  "endTime": "11:00",
+  "date": "2027-01-04",
+  "startTime": "12:00",
+  "endTime": "13:00",
   "capacity": 6,
   "participantIds": [
    "demo-user-046",
@@ -4690,13 +5118,16 @@
   "organizerName": "Elsa Guerin",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1793401200000,
+  "createdAtMs": 1793487600000,
   "demo": true,
   "lastMessage": {
    "text": "Le point de rendez-vous est bien à l’entrée principale ?",
    "authorName": "Aïcha",
-   "sentAtMs": 1793432331670
-  }
+   "authorId": "demo-user-095",
+   "sentAtMs": 1793518731670
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-125",
@@ -4712,24 +5143,43 @@
   "district": "Guillotière, Lyon 7e",
   "lat": 45.7548,
   "lng": 4.8418,
-  "date": "2026-12-01",
+  "date": "2026-12-02",
   "startTime": "12:00",
   "endTime": "13:00",
   "capacity": 15,
   "participantIds": [
-   "demo-user-056"
+   "demo-user-056",
+   "demo-user-037",
+   "demo-user-080",
+   "demo-user-091",
+   "demo-user-031",
+   "demo-user-085",
+   "demo-user-029",
+   "demo-user-028",
+   "demo-user-115",
+   "demo-user-036",
+   "demo-user-096",
+   "demo-user-033",
+   "demo-user-025",
+   "demo-user-081",
+   "demo-user-072"
   ],
   "organizerId": "demo-user-055",
   "organizerName": "Agathe Rossi",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1793314800000,
+  "createdAtMs": 1793401200000,
   "demo": true,
   "lastMessage": {
    "text": "Le point de rendez-vous est bien à l’entrée principale ?",
-   "authorName": "Diego",
-   "sentAtMs": 1793378268531
-  }
+   "authorName": "Anaïs",
+   "authorId": "demo-user-091",
+   "sentAtMs": 1793464668531
+  },
+  "waitlistIds": [
+   "demo-user-058"
+  ],
+  "offer": null
  },
  {
   "id": "demo-act-126",
@@ -4745,7 +5195,7 @@
   "district": "Montchat, Lyon 3e",
   "lat": 45.75866,
   "lng": 4.89374,
-  "date": "2026-11-04",
+  "date": "2026-11-05",
   "startTime": "19:00",
   "endTime": "20:00",
   "capacity": 12,
@@ -4763,13 +5213,16 @@
   "organizerName": "Sophie Perrin",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1793228400000,
+  "createdAtMs": 1793314800000,
   "demo": true,
   "lastMessage": {
    "text": "Je serai peut-être 5 minutes en retard, désolé d’avance.",
    "authorName": "Nathan",
-   "sentAtMs": 1793530829729
-  }
+   "authorId": "demo-user-072",
+   "sentAtMs": 1793617229729
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-127",
@@ -4785,7 +5238,7 @@
   "district": "Monplaisir, Lyon 8e",
   "lat": 45.7475,
   "lng": 4.868,
-  "date": "2026-12-21",
+  "date": "2026-12-22",
   "startTime": "19:00",
   "endTime": "22:00",
   "capacity": 15,
@@ -4801,13 +5254,16 @@
   "organizerName": "Hugo Petit",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1793228400000,
+  "createdAtMs": 1793314800000,
   "demo": true,
   "lastMessage": {
    "text": "Je serai peut-être 5 minutes en retard, désolé d’avance.",
    "authorName": "Inès",
-   "sentAtMs": 1793589936957
-  }
+   "authorId": "demo-user-009",
+   "sentAtMs": 1793676336957
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-128",
@@ -4823,7 +5279,7 @@
   "district": "Vieux Lyon, Lyon 5e",
   "lat": 45.7622,
   "lng": 4.8222,
-  "date": "2026-11-04",
+  "date": "2026-11-05",
   "startTime": "18:00",
   "endTime": "20:00",
   "capacity": 10,
@@ -4838,13 +5294,16 @@
   "organizerName": "Omar Morel",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1793314800000,
+  "createdAtMs": 1793401200000,
   "demo": true,
   "lastMessage": {
    "text": "J’ai partagé l’activité avec mon colocataire, il s’est inscrit.",
    "authorName": "Anaïs",
-   "sentAtMs": 1793397193379
-  }
+   "authorId": "demo-user-031",
+   "sentAtMs": 1793483593379
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-129",
@@ -4860,7 +5319,7 @@
   "district": "Monplaisir, Lyon 8e",
   "lat": 45.74154,
   "lng": 4.86903,
-  "date": "2026-12-19",
+  "date": "2026-12-20",
   "startTime": "16:00",
   "endTime": "19:30",
   "capacity": 10,
@@ -4879,13 +5338,16 @@
   "organizerName": "Nina Garcia",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792018800000,
+  "createdAtMs": 1792105200000,
   "demo": true,
   "lastMessage": {
    "text": "Merci pour l’organisation !",
    "authorName": "Nathan",
-   "sentAtMs": 1792464718868
-  }
+   "authorId": "demo-user-072",
+   "sentAtMs": 1792551118868
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-130",
@@ -4901,9 +5363,9 @@
   "district": "Bron",
   "lat": 45.73807,
   "lng": 4.90943,
-  "date": "2026-12-11",
-  "startTime": "18:00",
-  "endTime": "21:00",
+  "date": "2026-12-12",
+  "startTime": "14:00",
+  "endTime": "17:00",
   "capacity": 10,
   "participantIds": [
    "demo-user-112",
@@ -4916,13 +5378,16 @@
   "organizerName": "Omar Mercier",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792105200000,
+  "createdAtMs": 1792191600000,
   "demo": true,
   "lastMessage": {
    "text": "Parfait ! Je viendrai avec une amie si c’est possible.",
    "authorName": "Bastien",
-   "sentAtMs": 1792274855251
-  }
+   "authorId": "demo-user-046",
+   "sentAtMs": 1792361255251
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-131",
@@ -4938,9 +5403,9 @@
   "district": "Part-Dieu, Lyon 3e",
   "lat": 45.76372,
   "lng": 4.85951,
-  "date": "2026-12-18",
-  "startTime": "18:00",
-  "endTime": "21:30",
+  "date": "2026-12-19",
+  "startTime": "14:00",
+  "endTime": "17:30",
   "capacity": 20,
   "participantIds": [
    "demo-user-110",
@@ -4951,13 +5416,16 @@
   "organizerName": "Elsa Faure",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792969200000,
+  "createdAtMs": 1793055600000,
   "demo": true,
   "lastMessage": {
    "text": "Je serai peut-être 5 minutes en retard, désolé d’avance.",
    "authorName": "Juliette",
-   "sentAtMs": 1793120103896
-  }
+   "authorId": "demo-user-057",
+   "sentAtMs": 1793206503896
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-132",
@@ -4973,9 +5441,9 @@
   "district": "Part-Dieu, Lyon 3e",
   "lat": 45.7615,
   "lng": 4.8574,
-  "date": "2026-11-01",
-  "startTime": "14:00",
-  "endTime": "15:00",
+  "date": "2026-11-02",
+  "startTime": "18:00",
+  "endTime": "19:00",
   "capacity": 8,
   "participantIds": [
    "demo-user-041",
@@ -4987,13 +5455,16 @@
   "organizerName": "Pauline Girard",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792882800000,
+  "createdAtMs": 1792969200000,
   "demo": true,
   "lastMessage": {
    "text": "Bonne idée le thème de cette fois !",
    "authorName": "Rose",
-   "sentAtMs": 1793003336789
-  }
+   "authorId": "demo-user-041",
+   "sentAtMs": 1793089736789
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-133",
@@ -5009,7 +5480,7 @@
   "district": "Part-Dieu, Lyon 3e",
   "lat": 45.7568,
   "lng": 4.85848,
-  "date": "2026-10-28",
+  "date": "2026-10-29",
   "startTime": "18:00",
   "endTime": "21:00",
   "capacity": 15,
@@ -5031,13 +5502,16 @@
   "organizerName": "Max Faure",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792191600000,
+  "createdAtMs": 1792278000000,
   "demo": true,
   "lastMessage": {
    "text": "Petit rappel : pensez à prévenir si vous ne pouvez plus venir, la liste d’attente est longue.",
    "authorName": "Max",
-   "sentAtMs": 1792331376599
-  }
+   "authorId": "demo-user-067",
+   "sentAtMs": 1792417776599
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-134",
@@ -5053,7 +5527,7 @@
   "district": "Monplaisir, Lyon 8e",
   "lat": 45.7475,
   "lng": 4.868,
-  "date": "2026-12-30",
+  "date": "2026-12-31",
   "startTime": "20:00",
   "endTime": "21:00",
   "capacity": 10,
@@ -5067,13 +5541,16 @@
   "organizerName": "Manon Lambert",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1793574000000,
+  "createdAtMs": 1793660400000,
   "demo": true,
   "lastMessage": {
    "text": "Je confirme ma présence 👍",
    "authorName": "Gabriel",
-   "sentAtMs": 1793848013385
-  }
+   "authorId": "demo-user-024",
+   "sentAtMs": 1793934413385
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-135",
@@ -5089,7 +5566,7 @@
   "district": "Oullins-Pierre-Bénite",
   "lat": 45.71412,
   "lng": 4.81025,
-  "date": "2026-12-28",
+  "date": "2026-12-29",
   "startTime": "18:00",
   "endTime": "19:00",
   "capacity": 8,
@@ -5107,13 +5584,18 @@
   "organizerName": "Ibrahim Petit",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792364400000,
+  "createdAtMs": 1792450800000,
   "demo": true,
   "lastMessage": {
    "text": "Bienvenue à toutes et à tous dans le groupe !",
    "authorName": "Ibrahim",
-   "sentAtMs": 1792509171583
-  }
+   "authorId": "demo-user-040",
+   "sentAtMs": 1792595571583
+  },
+  "waitlistIds": [
+   "demo-user-032"
+  ],
+  "offer": null
  },
  {
   "id": "demo-act-136",
@@ -5129,9 +5611,9 @@
   "district": "Vaise, Lyon 9e",
   "lat": 45.7748,
   "lng": 4.8048,
-  "date": "2026-11-06",
-  "startTime": "20:00",
-  "endTime": "22:00",
+  "date": "2026-11-07",
+  "startTime": "16:00",
+  "endTime": "18:00",
   "capacity": 12,
   "participantIds": [
    "demo-user-002",
@@ -5145,13 +5627,16 @@
   "organizerName": "Agathe Rossi",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792450800000,
+  "createdAtMs": 1792537200000,
   "demo": true,
   "lastMessage": {
    "text": "Bonne idée le thème de cette fois !",
    "authorName": "Thomas",
-   "sentAtMs": 1792819732286
-  }
+   "authorId": "demo-user-002",
+   "sentAtMs": 1792906132286
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-137",
@@ -5167,7 +5652,7 @@
   "district": "Saxe-Guichard, Lyon 3e",
   "lat": 45.75943,
   "lng": 4.84897,
-  "date": "2026-10-26",
+  "date": "2026-10-27",
   "startTime": "19:00",
   "endTime": "21:30",
   "capacity": 8,
@@ -5184,13 +5669,16 @@
   "organizerName": "Agathe Rossi",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1791673200000,
+  "createdAtMs": 1791759600000,
   "demo": true,
   "lastMessage": {
    "text": "Je confirme ma présence 👍",
    "authorName": "Louise",
-   "sentAtMs": 1792178814257
-  }
+   "authorId": "demo-user-107",
+   "sentAtMs": 1792265214257
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-138",
@@ -5206,7 +5694,7 @@
   "district": "Guillotière, Lyon 7e",
   "lat": 45.75114,
   "lng": 4.83884,
-  "date": "2026-10-13",
+  "date": "2026-10-14",
   "startTime": "12:00",
   "endTime": "13:30",
   "capacity": 10,
@@ -5224,13 +5712,16 @@
   "organizerName": "Romain Vincent",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1790460000000,
+  "createdAtMs": 1790546400000,
   "demo": true,
   "lastMessage": {
    "text": "Bonne idée le thème de cette fois !",
    "authorName": "Ethan",
-   "sentAtMs": 1790953933249
-  }
+   "authorId": "demo-user-110",
+   "sentAtMs": 1791040333249
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-139",
@@ -5246,9 +5737,9 @@
   "district": "Monplaisir, Lyon 8e",
   "lat": 45.7475,
   "lng": 4.868,
-  "date": "2026-10-25",
-  "startTime": "16:00",
-  "endTime": "19:00",
+  "date": "2026-10-26",
+  "startTime": "20:00",
+  "endTime": "23:00",
   "capacity": 15,
   "participantIds": [
    "demo-user-028",
@@ -5268,13 +5759,16 @@
   "organizerName": "Omar Morel",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1790805600000,
+  "createdAtMs": 1790895600000,
   "demo": true,
   "lastMessage": {
    "text": "Merci pour ce super moment, on remet ça quand ?",
    "authorName": "Rose",
-   "sentAtMs": 1791098718064
-  }
+   "authorId": "demo-user-041",
+   "sentAtMs": 1791188718064
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-140",
@@ -5290,7 +5784,7 @@
   "district": "Ainay, Lyon 2e",
   "lat": 45.7482,
   "lng": 4.8268,
-  "date": "2026-12-14",
+  "date": "2026-12-15",
   "startTime": "20:00",
   "endTime": "21:00",
   "capacity": 6,
@@ -5301,13 +5795,16 @@
   "organizerName": "Agathe Garcia",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1793055600000,
+  "createdAtMs": 1793142000000,
   "demo": true,
   "lastMessage": {
    "text": "Hâte de voir ce qu’on va créer ensemble.",
    "authorName": "Gabriel",
-   "sentAtMs": 1793455168872
-  }
+   "authorId": "demo-user-084",
+   "sentAtMs": 1793541568872
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-141",
@@ -5323,9 +5820,9 @@
   "district": "Brotteaux, Lyon 6e",
   "lat": 45.76664,
   "lng": 4.84714,
-  "date": "2026-11-15",
-  "startTime": "14:00",
-  "endTime": "15:00",
+  "date": "2026-11-16",
+  "startTime": "18:00",
+  "endTime": "19:00",
   "capacity": 8,
   "participantIds": [
    "demo-user-053",
@@ -5335,13 +5832,16 @@
   "organizerName": "Pauline Girard",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1793314800000,
+  "createdAtMs": 1793401200000,
   "demo": true,
   "lastMessage": {
    "text": "Il annonce un peu de vent, pensez à une veste.",
    "authorName": "Gabriel",
-   "sentAtMs": 1793576686676
-  }
+   "authorId": "demo-user-024",
+   "sentAtMs": 1793663086676
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-142",
@@ -5357,7 +5857,7 @@
   "district": "Tête d’Or, Lyon 6e",
   "lat": 45.77231,
   "lng": 4.85218,
-  "date": "2026-10-15",
+  "date": "2026-10-16",
   "startTime": "20:00",
   "endTime": "22:30",
   "capacity": 12,
@@ -5377,13 +5877,16 @@
   "organizerName": "Salomé Lambert",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1791151200000,
+  "createdAtMs": 1791237600000,
   "demo": true,
   "lastMessage": {
    "text": "Quelqu’un vient depuis Villeurbanne ? On pourrait faire le trajet ensemble.",
    "authorName": "Pauline",
-   "sentAtMs": 1791456017797
-  }
+   "authorId": "demo-user-049",
+   "sentAtMs": 1791542417797
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-143",
@@ -5399,7 +5902,7 @@
   "district": "Croix-Rousse, Lyon 4e",
   "lat": 45.7741,
   "lng": 4.83313,
-  "date": "2026-10-15",
+  "date": "2026-10-16",
   "startTime": "12:00",
   "endTime": "15:30",
   "capacity": 8,
@@ -5413,13 +5916,16 @@
   "organizerName": "Hugo Petit",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1789941600000,
+  "createdAtMs": 1790028000000,
   "demo": true,
   "lastMessage": {
    "text": "Rendez-vous 10 minutes avant le début pour s’installer.",
    "authorName": "Hugo",
-   "sentAtMs": 1790042094208
-  }
+   "authorId": "demo-user-010",
+   "sentAtMs": 1790128494208
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-144",
@@ -5435,9 +5941,9 @@
   "district": "Confluence, Lyon 2e",
   "lat": 45.74402,
   "lng": 4.81965,
-  "date": "2026-12-18",
-  "startTime": "12:00",
-  "endTime": "14:00",
+  "date": "2026-12-19",
+  "startTime": "10:00",
+  "endTime": "12:00",
   "capacity": 20,
   "participantIds": [
    "demo-user-086",
@@ -5462,13 +5968,16 @@
   "organizerName": "Julie Martin",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792710000000,
+  "createdAtMs": 1792796400000,
   "demo": true,
   "lastMessage": {
    "text": "Merci pour l’organisation !",
    "authorName": "Salomé",
-   "sentAtMs": 1792980646859
-  }
+   "authorId": "demo-user-043",
+   "sentAtMs": 1793067046859
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-145",
@@ -5484,7 +5993,7 @@
   "district": "Pentes de la Croix-Rousse, Lyon 1er",
   "lat": 45.77155,
   "lng": 4.83387,
-  "date": "2026-11-11",
+  "date": "2026-11-12",
   "startTime": "18:00",
   "endTime": "20:00",
   "capacity": 10,
@@ -5497,13 +6006,16 @@
   "organizerName": "Elsa Guerin",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792018800000,
+  "createdAtMs": 1792105200000,
   "demo": true,
   "lastMessage": {
    "text": "Le point de rendez-vous est bien à l’entrée principale ?",
    "authorName": "Hugo",
-   "sentAtMs": 1792354206018
-  }
+   "authorId": "demo-user-070",
+   "sentAtMs": 1792440606018
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-146",
@@ -5519,7 +6031,7 @@
   "district": "Confluence, Lyon 2e",
   "lat": 45.7326,
   "lng": 4.818,
-  "date": "2026-11-03",
+  "date": "2026-11-04",
   "startTime": "18:00",
   "endTime": "20:00",
   "capacity": 8,
@@ -5534,13 +6046,16 @@
   "organizerName": "Omar Mercier",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792191600000,
+  "createdAtMs": 1792278000000,
   "demo": true,
   "lastMessage": {
    "text": "Pas besoin d’apporter de matériel, tout est prévu.",
    "authorName": "Omar",
-   "sentAtMs": 1792650153582
-  }
+   "authorId": "demo-user-118",
+   "sentAtMs": 1792736553582
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-147",
@@ -5556,9 +6071,9 @@
   "district": "Montchat, Lyon 3e",
   "lat": 45.75635,
   "lng": 4.88893,
-  "date": "2026-10-30",
-  "startTime": "20:00",
-  "endTime": "22:00",
+  "date": "2026-10-31",
+  "startTime": "16:00",
+  "endTime": "18:00",
   "capacity": 20,
   "participantIds": [
    "demo-user-061",
@@ -5584,13 +6099,16 @@
   "organizerName": "Anaïs Bernard",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792450800000,
+  "createdAtMs": 1792537200000,
   "demo": true,
   "lastMessage": {
    "text": "C’est ma première fois, un peu stressée mais motivée !",
    "authorName": "Fatou",
-   "sentAtMs": 1792709867418
-  }
+   "authorId": "demo-user-051",
+   "sentAtMs": 1792796267418
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-148",
@@ -5606,7 +6124,7 @@
   "district": "Pentes de la Croix-Rousse, Lyon 1er",
   "lat": 45.77027,
   "lng": 4.83513,
-  "date": "2026-10-10",
+  "date": "2026-10-11",
   "startTime": "14:00",
   "endTime": "15:00",
   "capacity": 10,
@@ -5622,13 +6140,16 @@
   "organizerName": "Nina Garcia",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1790546400000,
+  "createdAtMs": 1790632800000,
   "demo": true,
   "lastMessage": {
    "text": "Trop bien, ça va être top.",
    "authorName": "Emma",
-   "sentAtMs": 1790873807513
-  }
+   "authorId": "demo-user-015",
+   "sentAtMs": 1790960207513
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-149",
@@ -5644,7 +6165,7 @@
   "district": "Vaise, Lyon 9e",
   "lat": 45.77841,
   "lng": 4.80994,
-  "date": "2026-12-15",
+  "date": "2026-12-16",
   "startTime": "19:00",
   "endTime": "21:30",
   "capacity": 15,
@@ -5663,13 +6184,16 @@
   "organizerName": "Yanis Nguyen",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1793314800000,
+  "createdAtMs": 1793401200000,
   "demo": true,
   "lastMessage": {
    "text": "Merci pour l’organisation !",
    "authorName": "Antoine",
-   "sentAtMs": 1793434115603
-  }
+   "authorId": "demo-user-005",
+   "sentAtMs": 1793520515603
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-150",
@@ -5685,7 +6209,7 @@
   "district": "Monplaisir, Lyon 8e",
   "lat": 45.74699,
   "lng": 4.86713,
-  "date": "2026-12-03",
+  "date": "2026-12-04",
   "startTime": "20:00",
   "endTime": "22:00",
   "capacity": 6,
@@ -5696,13 +6220,16 @@
   "organizerName": "Manon Lambert",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792191600000,
+  "createdAtMs": 1792278000000,
   "demo": true,
   "lastMessage": {
    "text": "Trop bien, ça va être top.",
    "authorName": "Ethan",
-   "sentAtMs": 1792453198008
-  }
+   "authorId": "demo-user-110",
+   "sentAtMs": 1792539598008
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-151",
@@ -5718,7 +6245,7 @@
   "district": "Terreaux, Lyon 1er",
   "lat": 45.7676,
   "lng": 4.8336,
-  "date": "2026-11-12",
+  "date": "2026-11-13",
   "startTime": "18:00",
   "endTime": "21:00",
   "capacity": 8,
@@ -5734,13 +6261,16 @@
   "organizerName": "Bastien Benali",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1793574000000,
+  "createdAtMs": 1793660400000,
   "demo": true,
   "lastMessage": {
    "text": "Est-ce que quelqu’un sait s’il faut apporter son propre matériel ?",
    "authorName": "Louise",
-   "sentAtMs": 1793726390642
-  }
+   "authorId": "demo-user-047",
+   "sentAtMs": 1793812790642
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-152",
@@ -5756,9 +6286,9 @@
   "district": "Terreaux, Lyon 1er",
   "lat": 45.7697,
   "lng": 4.8302,
-  "date": "2026-10-09",
-  "startTime": "19:00",
-  "endTime": "21:00",
+  "date": "2026-10-10",
+  "startTime": "15:00",
+  "endTime": "17:00",
   "capacity": 15,
   "participantIds": [
    "demo-user-071",
@@ -5778,13 +6308,16 @@
   "organizerName": "Omar Morel",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1790200800000,
+  "createdAtMs": 1790287200000,
   "demo": true,
   "lastMessage": {
    "text": "En cas de pluie, on se replie à l’intérieur juste à côté.",
    "authorName": "Omar",
-   "sentAtMs": 1790331692233
-  }
+   "authorId": "demo-user-058",
+   "sentAtMs": 1790418092233
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-153",
@@ -5800,7 +6333,7 @@
   "district": "États-Unis, Lyon 8e",
   "lat": 45.73744,
   "lng": 4.86871,
-  "date": "2026-10-10",
+  "date": "2026-10-11",
   "startTime": "16:00",
   "endTime": "18:30",
   "capacity": 8,
@@ -5815,13 +6348,16 @@
   "organizerName": "Julie Martin",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1789855200000,
+  "createdAtMs": 1789941600000,
   "demo": true,
   "lastMessage": {
    "text": "Merci pour ce super moment, on remet ça quand ?",
    "authorName": "Adam",
-   "sentAtMs": 1790034752063
-  }
+   "authorId": "demo-user-086",
+   "sentAtMs": 1790121152063
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-154",
@@ -5837,7 +6373,7 @@
   "district": "Part-Dieu, Lyon 3e",
   "lat": 45.76283,
   "lng": 4.85862,
-  "date": "2026-11-02",
+  "date": "2026-11-03",
   "startTime": "20:00",
   "endTime": "21:00",
   "capacity": 10,
@@ -5857,13 +6393,16 @@
   "organizerName": "Max Guerin",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1793055600000,
+  "createdAtMs": 1793142000000,
   "demo": true,
   "lastMessage": {
    "text": "Je serai peut-être 5 minutes en retard, désolé d’avance.",
    "authorName": "Margaux",
-   "sentAtMs": 1793221147128
-  }
+   "authorId": "demo-user-099",
+   "sentAtMs": 1793307547128
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-155",
@@ -5879,7 +6418,7 @@
   "district": "Bron",
   "lat": 45.7383,
   "lng": 4.90738,
-  "date": "2026-10-28",
+  "date": "2026-10-29",
   "startTime": "12:00",
   "endTime": "14:00",
   "capacity": 12,
@@ -5896,13 +6435,16 @@
   "organizerName": "Romain Muller",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1791068400000,
+  "createdAtMs": 1791154800000,
   "demo": true,
   "lastMessage": {
    "text": "Il annonce un peu de vent, pensez à une veste.",
    "authorName": "Max",
-   "sentAtMs": 1791360225451
-  }
+   "authorId": "demo-user-007",
+   "sentAtMs": 1791446625451
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-156",
@@ -5918,7 +6460,7 @@
   "district": "Point du Jour, Lyon 5e",
   "lat": 45.75496,
   "lng": 4.79493,
-  "date": "2026-10-19",
+  "date": "2026-10-20",
   "startTime": "20:00",
   "endTime": "21:00",
   "capacity": 12,
@@ -5939,13 +6481,16 @@
   "organizerName": "Julie Martin",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1791583200000,
+  "createdAtMs": 1791669600000,
   "demo": true,
   "lastMessage": {
    "text": "J’ai mis mes photos dans l’album, allez voir !",
    "authorName": "Yanis",
-   "sentAtMs": 1791736719090
-  }
+   "authorId": "demo-user-016",
+   "sentAtMs": 1791823119090
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-157",
@@ -5961,7 +6506,7 @@
   "district": "Montchat, Lyon 3e",
   "lat": 45.7556,
   "lng": 4.8875,
-  "date": "2027-01-02",
+  "date": "2027-01-03",
   "startTime": "10:00",
   "endTime": "12:00",
   "capacity": 6,
@@ -5976,13 +6521,16 @@
   "organizerName": "Ibrahim Moreau",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1793574000000,
+  "createdAtMs": 1793660400000,
   "demo": true,
   "lastMessage": {
    "text": "J’ai partagé l’activité avec mon colocataire, il s’est inscrit.",
    "authorName": "Inès",
-   "sentAtMs": 1793843705729
-  }
+   "authorId": "demo-user-069",
+   "sentAtMs": 1793930105729
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-158",
@@ -5998,7 +6546,7 @@
   "district": "Monplaisir, Lyon 8e",
   "lat": 45.7448,
   "lng": 4.8708,
-  "date": "2026-11-07",
+  "date": "2026-11-08",
   "startTime": "16:00",
   "endTime": "19:00",
   "capacity": 12,
@@ -6019,13 +6567,16 @@
   "organizerName": "Pauline Roux",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1793487600000,
+  "createdAtMs": 1793574000000,
   "demo": true,
   "lastMessage": {
    "text": "Quelqu’un vient depuis Villeurbanne ? On pourrait faire le trajet ensemble.",
    "authorName": "Louise",
-   "sentAtMs": 1793617500390
-  }
+   "authorId": "demo-user-047",
+   "sentAtMs": 1793703900390
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-159",
@@ -6041,9 +6592,9 @@
   "district": "Terreaux, Lyon 1er",
   "lat": 45.76535,
   "lng": 4.83586,
-  "date": "2026-11-29",
-  "startTime": "15:00",
-  "endTime": "17:30",
+  "date": "2026-11-30",
+  "startTime": "19:00",
+  "endTime": "21:30",
   "capacity": 8,
   "participantIds": [
    "demo-user-072",
@@ -6053,13 +6604,16 @@
   "organizerName": "Ibrahim Petit",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792969200000,
+  "createdAtMs": 1793055600000,
   "demo": true,
   "lastMessage": {
    "text": "Rendez-vous 10 minutes avant le début pour s’installer.",
    "authorName": "Ibrahim",
-   "sentAtMs": 1793196587560
-  }
+   "authorId": "demo-user-040",
+   "sentAtMs": 1793282987560
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-160",
@@ -6075,7 +6629,7 @@
   "district": "Bron",
   "lat": 45.74151,
   "lng": 4.91321,
-  "date": "2026-12-16",
+  "date": "2026-12-17",
   "startTime": "12:00",
   "endTime": "13:30",
   "capacity": 15,
@@ -6090,13 +6644,16 @@
   "organizerName": "Salomé Fontaine",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792278000000,
+  "createdAtMs": 1792364400000,
   "demo": true,
   "lastMessage": {
    "text": "Petit rappel : pensez à prévenir si vous ne pouvez plus venir, la liste d’attente est longue.",
    "authorName": "Salomé",
-   "sentAtMs": 1792513008206
-  }
+   "authorId": "demo-user-103",
+   "sentAtMs": 1792599408206
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-161",
@@ -6112,7 +6669,7 @@
   "district": "Guillotière, Lyon 7e",
   "lat": 45.7548,
   "lng": 4.8418,
-  "date": "2026-12-30",
+  "date": "2026-12-31",
   "startTime": "20:00",
   "endTime": "23:00",
   "capacity": 12,
@@ -6128,13 +6685,16 @@
   "organizerName": "Anaïs Bernard",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792969200000,
+  "createdAtMs": 1793055600000,
   "demo": true,
   "lastMessage": {
    "text": "Quelqu’un vient depuis Villeurbanne ? On pourrait faire le trajet ensemble.",
    "authorName": "Sarah",
-   "sentAtMs": 1793278494133
-  }
+   "authorId": "demo-user-077",
+   "sentAtMs": 1793364894133
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-162",
@@ -6150,9 +6710,9 @@
   "district": "Monplaisir, Lyon 8e",
   "lat": 45.74321,
   "lng": 4.87616,
-  "date": "2026-11-06",
-  "startTime": "18:00",
-  "endTime": "19:00",
+  "date": "2026-11-07",
+  "startTime": "14:00",
+  "endTime": "15:00",
   "capacity": 8,
   "participantIds": [
    "demo-user-030",
@@ -6166,13 +6726,16 @@
   "organizerName": "Arthur Bonnet",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792191600000,
+  "createdAtMs": 1792278000000,
   "demo": true,
   "lastMessage": {
    "text": "Je peux apporter des boissons chaudes.",
    "authorName": "Adam",
-   "sentAtMs": 1792481847805
-  }
+   "authorId": "demo-user-086",
+   "sentAtMs": 1792568247805
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-163",
@@ -6188,7 +6751,7 @@
   "district": "Vaise, Lyon 9e",
   "lat": 45.772,
   "lng": 4.81,
-  "date": "2026-10-20",
+  "date": "2026-10-21",
   "startTime": "12:00",
   "endTime": "13:00",
   "capacity": 20,
@@ -6211,13 +6774,16 @@
   "organizerName": "Nina Rossi",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1791324000000,
+  "createdAtMs": 1791410400000,
   "demo": true,
   "lastMessage": {
    "text": "Parfait ! Je viendrai avec une amie si c’est possible.",
    "authorName": "Noah",
-   "sentAtMs": 1791620864558
-  }
+   "authorId": "demo-user-044",
+   "sentAtMs": 1791707264558
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-164",
@@ -6233,7 +6799,7 @@
   "district": "Gratte-Ciel, Villeurbanne",
   "lat": 45.7666,
   "lng": 4.8798,
-  "date": "2026-11-11",
+  "date": "2026-11-12",
   "startTime": "18:00",
   "endTime": "20:30",
   "capacity": 6,
@@ -6244,13 +6810,16 @@
   "organizerName": "Elsa Guerin",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792105200000,
+  "createdAtMs": 1792191600000,
   "demo": true,
   "lastMessage": {
    "text": "Bonne idée le thème de cette fois !",
    "authorName": "Alex",
-   "sentAtMs": 1792315593796
-  }
+   "authorId": "demo-user-008",
+   "sentAtMs": 1792401993796
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-165",
@@ -6266,9 +6835,9 @@
   "district": "Bron",
   "lat": 45.7383,
   "lng": 4.90738,
-  "date": "2026-12-13",
-  "startTime": "15:00",
-  "endTime": "16:30",
+  "date": "2026-12-14",
+  "startTime": "19:00",
+  "endTime": "20:30",
   "capacity": 6,
   "participantIds": [
    "demo-user-091"
@@ -6277,13 +6846,16 @@
   "organizerName": "Manon Fontaine",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792018800000,
+  "createdAtMs": 1792105200000,
   "demo": true,
   "lastMessage": {
    "text": "Merci pour ce super moment, on remet ça quand ?",
    "authorName": "Anaïs",
-   "sentAtMs": 1792173204385
-  }
+   "authorId": "demo-user-091",
+   "sentAtMs": 1792259604385
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-166",
@@ -6299,7 +6871,7 @@
   "district": "Vénissieux",
   "lat": 45.69711,
   "lng": 4.88649,
-  "date": "2026-10-17",
+  "date": "2026-10-18",
   "startTime": "16:00",
   "endTime": "19:00",
   "capacity": 8,
@@ -6313,13 +6885,16 @@
   "organizerName": "Julie Martin",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1790287200000,
+  "createdAtMs": 1790373600000,
   "demo": true,
   "lastMessage": {
    "text": "Hâte de voir ce qu’on va créer ensemble.",
    "authorName": "Louis",
-   "sentAtMs": 1790607064634
-  }
+   "authorId": "demo-user-022",
+   "sentAtMs": 1790693464634
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-167",
@@ -6335,9 +6910,9 @@
   "district": "Monplaisir, Lyon 8e",
   "lat": 45.74682,
   "lng": 4.87302,
-  "date": "2026-10-09",
-  "startTime": "12:00",
-  "endTime": "15:30",
+  "date": "2026-10-10",
+  "startTime": "10:00",
+  "endTime": "13:30",
   "capacity": 20,
   "participantIds": [
    "demo-user-083",
@@ -6365,13 +6940,16 @@
   "organizerName": "Yanis Benali",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1790200800000,
+  "createdAtMs": 1790287200000,
   "demo": true,
   "lastMessage": {
    "text": "Trop bien, ça va être top.",
    "authorName": "Antoine",
-   "sentAtMs": 1790258501000
-  }
+   "authorId": "demo-user-065",
+   "sentAtMs": 1790344901000
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-168",
@@ -6387,7 +6965,7 @@
   "district": "Terreaux, Lyon 1er",
   "lat": 45.76535,
   "lng": 4.83586,
-  "date": "2026-12-29",
+  "date": "2026-12-30",
   "startTime": "12:00",
   "endTime": "14:00",
   "capacity": 8,
@@ -6396,19 +6974,29 @@
    "demo-user-025",
    "demo-user-048",
    "demo-user-112",
-   "demo-user-009"
+   "demo-user-009",
+   "demo-user-086",
+   "demo-user-030",
+   "demo-user-053"
   ],
   "organizerId": "demo-user-058",
   "organizerName": "Omar Morel",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792882800000,
+  "createdAtMs": 1792969200000,
   "demo": true,
   "lastMessage": {
    "text": "Super, j’ai hâte !",
-   "authorName": "Malik",
-   "sentAtMs": 1793010034532
-  }
+   "authorName": "Romain",
+   "authorId": "demo-user-112",
+   "sentAtMs": 1793096434532
+  },
+  "waitlistIds": [
+   "demo-user-095",
+   "demo-user-118",
+   "demo-user-120"
+  ],
+  "offer": null
  },
  {
   "id": "demo-act-169",
@@ -6424,7 +7012,7 @@
   "district": "Bellecour, Lyon 2e",
   "lat": 45.75861,
   "lng": 4.83089,
-  "date": "2026-12-14",
+  "date": "2026-12-15",
   "startTime": "20:00",
   "endTime": "22:00",
   "capacity": 10,
@@ -6442,13 +7030,16 @@
   "organizerName": "Manon Fontaine",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1793487600000,
+  "createdAtMs": 1793574000000,
   "demo": true,
   "lastMessage": {
    "text": "C’est ma première fois, un peu stressée mais motivée !",
    "authorName": "Jules",
-   "sentAtMs": 1793583322243
-  }
+   "authorId": "demo-user-036",
+   "sentAtMs": 1793669722243
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-170",
@@ -6464,9 +7055,9 @@
   "district": "Guillotière, Lyon 7e",
   "lat": 45.7448,
   "lng": 4.856,
-  "date": "2026-11-06",
-  "startTime": "19:00",
-  "endTime": "21:00",
+  "date": "2026-11-07",
+  "startTime": "15:00",
+  "endTime": "17:00",
   "capacity": 10,
   "participantIds": [
    "demo-user-040",
@@ -6484,13 +7075,16 @@
   "organizerName": "Hugo Moreau",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1793142000000,
+  "createdAtMs": 1793228400000,
   "demo": true,
   "lastMessage": {
    "text": "Est-ce qu’il reste de la place pour une personne de plus ?",
    "authorName": "Adam",
-   "sentAtMs": 1793264758927
-  }
+   "authorId": "demo-user-086",
+   "sentAtMs": 1793351158927
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-171",
@@ -6506,24 +7100,42 @@
   "district": "Montchat, Lyon 3e",
   "lat": 45.75635,
   "lng": 4.88893,
-  "date": "2026-11-16",
+  "date": "2026-11-17",
   "startTime": "19:00",
   "endTime": "20:00",
   "capacity": 12,
   "participantIds": [
-   "demo-user-069"
+   "demo-user-069",
+   "demo-user-112",
+   "demo-user-099",
+   "demo-user-094",
+   "demo-user-052",
+   "demo-user-007",
+   "demo-user-014",
+   "demo-user-004",
+   "demo-user-029",
+   "demo-user-116",
+   "demo-user-063",
+   "demo-user-018"
   ],
   "organizerId": "demo-user-085",
   "organizerName": "Nina Garcia",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792364400000,
+  "createdAtMs": 1792450800000,
   "demo": true,
   "lastMessage": {
    "text": "Je peux apporter des boissons chaudes.",
-   "authorName": "Inès",
-   "sentAtMs": 1792662566843
-  }
+   "authorName": "Diego",
+   "authorId": "demo-user-116",
+   "sentAtMs": 1792748966843
+  },
+  "waitlistIds": [
+   "demo-user-111",
+   "demo-user-017",
+   "demo-user-071"
+  ],
+  "offer": null
  },
  {
   "id": "demo-act-172",
@@ -6539,7 +7151,7 @@
   "district": "Guillotière, Lyon 7e",
   "lat": 45.75114,
   "lng": 4.83884,
-  "date": "2026-12-16",
+  "date": "2026-12-17",
   "startTime": "12:00",
   "endTime": "13:00",
   "capacity": 12,
@@ -6553,13 +7165,16 @@
   "organizerName": "Anaïs Bernard",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792191600000,
+  "createdAtMs": 1792278000000,
   "demo": true,
   "lastMessage": {
    "text": "En cas de pluie, on se replie à l’intérieur juste à côté.",
    "authorName": "Anaïs",
-   "sentAtMs": 1792357967703
-  }
+   "authorId": "demo-user-091",
+   "sentAtMs": 1792444367703
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-173",
@@ -6575,9 +7190,9 @@
   "district": "Pentes de la Croix-Rousse, Lyon 1er",
   "lat": 45.77027,
   "lng": 4.83513,
-  "date": "2026-10-23",
-  "startTime": "20:00",
-  "endTime": "21:00",
+  "date": "2026-10-24",
+  "startTime": "16:00",
+  "endTime": "17:00",
   "capacity": 12,
   "participantIds": [
    "demo-user-099",
@@ -6596,13 +7211,16 @@
   "organizerName": "Pauline Roux",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1791410400000,
+  "createdAtMs": 1791496800000,
   "demo": true,
   "lastMessage": {
    "text": "Trop bien, ça va être top.",
    "authorName": "Mathilde",
-   "sentAtMs": 1791739134944
-  }
+   "authorId": "demo-user-093",
+   "sentAtMs": 1791825534944
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-174",
@@ -6618,9 +7236,9 @@
   "district": "Pentes de la Croix-Rousse, Lyon 1er",
   "lat": 45.77027,
   "lng": 4.83513,
-  "date": "2026-10-18",
-  "startTime": "10:00",
-  "endTime": "11:00",
+  "date": "2026-10-19",
+  "startTime": "12:00",
+  "endTime": "13:00",
   "capacity": 8,
   "participantIds": [
    "demo-user-113",
@@ -6634,13 +7252,16 @@
   "organizerName": "Nina Rossi",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1791583200000,
+  "createdAtMs": 1791669600000,
   "demo": true,
   "lastMessage": {
    "text": "Je serai peut-être 5 minutes en retard, désolé d’avance.",
    "authorName": "Adam",
-   "sentAtMs": 1791868974379
-  }
+   "authorId": "demo-user-026",
+   "sentAtMs": 1791955374379
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-175",
@@ -6656,27 +7277,46 @@
   "district": "Terreaux, Lyon 1er",
   "lat": 45.7676,
   "lng": 4.8336,
-  "date": "2026-12-11",
-  "startTime": "12:00",
-  "endTime": "14:30",
+  "date": "2026-12-12",
+  "startTime": "10:00",
+  "endTime": "12:30",
   "capacity": 20,
   "participantIds": [
    "demo-user-103",
    "demo-user-110",
    "demo-user-088",
-   "demo-user-113"
+   "demo-user-113",
+   "demo-user-036",
+   "demo-user-114",
+   "demo-user-089",
+   "demo-user-085",
+   "demo-user-017",
+   "demo-user-104",
+   "demo-user-032",
+   "demo-user-107",
+   "demo-user-080",
+   "demo-user-004",
+   "demo-user-105",
+   "demo-user-112",
+   "demo-user-003",
+   "demo-user-018",
+   "demo-user-064",
+   "demo-user-079"
   ],
   "organizerId": "demo-user-070",
   "organizerName": "Hugo Moreau",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792364400000,
+  "createdAtMs": 1792450800000,
   "demo": true,
   "lastMessage": {
    "text": "J’ai mis mes photos dans l’album, allez voir !",
-   "authorName": "Ethan",
-   "sentAtMs": 1792500568928
-  }
+   "authorName": "Kenji",
+   "authorId": "demo-user-114",
+   "sentAtMs": 1792586968928
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-176",
@@ -6692,7 +7332,7 @@
   "district": "Terreaux, Lyon 1er",
   "lat": 45.7676,
   "lng": 4.8336,
-  "date": "2026-11-03",
+  "date": "2026-11-04",
   "startTime": "20:00",
   "endTime": "22:00",
   "capacity": 20,
@@ -6716,13 +7356,16 @@
   "organizerName": "Rayan Mercier",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792278000000,
+  "createdAtMs": 1792364400000,
   "demo": true,
   "lastMessage": {
    "text": "Est-ce que quelqu’un sait s’il faut apporter son propre matériel ?",
    "authorName": "Mathilde",
-   "sentAtMs": 1792422101077
-  }
+   "authorId": "demo-user-093",
+   "sentAtMs": 1792508501077
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-177",
@@ -6738,7 +7381,7 @@
   "district": "Confluence, Lyon 2e",
   "lat": 45.74402,
   "lng": 4.81965,
-  "date": "2027-01-04",
+  "date": "2027-01-05",
   "startTime": "19:00",
   "endTime": "22:30",
   "capacity": 10,
@@ -6751,13 +7394,16 @@
   "organizerName": "Nina Garcia",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792969200000,
+  "createdAtMs": 1793055600000,
   "demo": true,
   "lastMessage": {
    "text": "Merci d’être venus aussi nombreux, c’était génial !",
    "authorName": "Nina",
-   "sentAtMs": 1793358756010
-  }
+   "authorId": "demo-user-085",
+   "sentAtMs": 1793445156010
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-178",
@@ -6773,7 +7419,7 @@
   "district": "Part-Dieu, Lyon 3e",
   "lat": 45.76089,
   "lng": 4.85544,
-  "date": "2026-11-16",
+  "date": "2026-11-17",
   "startTime": "20:00",
   "endTime": "21:00",
   "capacity": 6,
@@ -6786,13 +7432,16 @@
   "organizerName": "Julie Martin",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1793660400000,
+  "createdAtMs": 1793746800000,
   "demo": true,
   "lastMessage": {
    "text": "Je serai peut-être 5 minutes en retard, désolé d’avance.",
    "authorName": "Aïcha",
-   "sentAtMs": 1793884030320
-  }
+   "authorId": "demo-user-035",
+   "sentAtMs": 1793970430320
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-179",
@@ -6808,7 +7457,7 @@
   "district": "Part-Dieu, Lyon 3e",
   "lat": 45.7615,
   "lng": 4.8574,
-  "date": "2027-01-06",
+  "date": "2027-01-07",
   "startTime": "19:00",
   "endTime": "20:30",
   "capacity": 6,
@@ -6824,13 +7473,18 @@
   "organizerName": "Max Faure",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792537200000,
+  "createdAtMs": 1792623600000,
   "demo": true,
   "lastMessage": {
    "text": "Parfait ! Je viendrai avec une amie si c’est possible.",
    "authorName": "Samuel",
-   "sentAtMs": 1792699395487
-  }
+   "authorId": "demo-user-038",
+   "sentAtMs": 1792785795487
+  },
+  "waitlistIds": [
+   "demo-user-090"
+  ],
+  "offer": null
  },
  {
   "id": "demo-act-180",
@@ -6846,7 +7500,7 @@
   "district": "Bellecour, Lyon 2e",
   "lat": 45.75975,
   "lng": 4.83463,
-  "date": "2026-10-24",
+  "date": "2026-10-25",
   "startTime": "14:00",
   "endTime": "15:30",
   "capacity": 10,
@@ -6866,13 +7520,16 @@
   "organizerName": "Julie Martin",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792188000000,
+  "createdAtMs": 1792274400000,
   "demo": true,
   "lastMessage": {
    "text": "Hâte de voir ce qu’on va créer ensemble.",
    "authorName": "Paul",
-   "sentAtMs": 1792283076809
-  }
+   "authorId": "demo-user-030",
+   "sentAtMs": 1792369476809
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-181",
@@ -6888,7 +7545,7 @@
   "district": "Vaise, Lyon 9e",
   "lat": 45.772,
   "lng": 4.81,
-  "date": "2026-12-29",
+  "date": "2026-12-30",
   "startTime": "19:00",
   "endTime": "21:30",
   "capacity": 6,
@@ -6900,13 +7557,16 @@
   "organizerName": "Romain Vincent",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1793055600000,
+  "createdAtMs": 1793142000000,
   "demo": true,
   "lastMessage": {
    "text": "J’ai mis mes photos dans l’album, allez voir !",
    "authorName": "Léa",
-   "sentAtMs": 1793520206249
-  }
+   "authorId": "demo-user-003",
+   "sentAtMs": 1793606606249
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-182",
@@ -6922,7 +7582,7 @@
   "district": "Bellecour, Lyon 2e",
   "lat": 45.7578,
   "lng": 4.832,
-  "date": "2026-11-19",
+  "date": "2026-11-20",
   "startTime": "19:00",
   "endTime": "22:30",
   "capacity": 8,
@@ -6932,19 +7592,24 @@
    "demo-user-054",
    "demo-user-038",
    "demo-user-061",
-   "demo-user-093"
+   "demo-user-093",
+   "demo-user-025",
+   "demo-user-052"
   ],
   "organizerId": "demo-user-031",
   "organizerName": "Anaïs Martin",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792710000000,
+  "createdAtMs": 1792796400000,
   "demo": true,
   "lastMessage": {
    "text": "Le point de rendez-vous est bien à l’entrée principale ?",
-   "authorName": "Kenji",
-   "sentAtMs": 1793071915573
-  }
+   "authorName": "Samuel",
+   "authorId": "demo-user-038",
+   "sentAtMs": 1793158315573
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-183",
@@ -6960,7 +7625,7 @@
   "district": "Saxe-Guichard, Lyon 3e",
   "lat": 45.7549,
   "lng": 4.85298,
-  "date": "2026-10-28",
+  "date": "2026-10-29",
   "startTime": "19:00",
   "endTime": "21:00",
   "capacity": 15,
@@ -6980,13 +7645,16 @@
   "organizerName": "Sophie Bonnet",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1791154800000,
+  "createdAtMs": 1791241200000,
   "demo": true,
   "lastMessage": {
    "text": "J’ai partagé l’activité avec mon colocataire, il s’est inscrit.",
    "authorName": "Karim",
-   "sentAtMs": 1791225258247
-  }
+   "authorId": "demo-user-092",
+   "sentAtMs": 1791311658247
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-184",
@@ -7002,7 +7670,7 @@
   "district": "Croix-Rousse, Lyon 4e",
   "lat": 45.77858,
   "lng": 4.83472,
-  "date": "2027-01-06",
+  "date": "2027-01-07",
   "startTime": "18:00",
   "endTime": "21:00",
   "capacity": 12,
@@ -7020,13 +7688,16 @@
   "organizerName": "Julie Martin",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792537200000,
+  "createdAtMs": 1792623600000,
   "demo": true,
   "lastMessage": {
    "text": "Petit rappel : pensez à prévenir si vous ne pouvez plus venir, la liste d’attente est longue.",
    "authorName": "Julie",
-   "sentAtMs": 1792765574119
-  }
+   "authorId": "demo-user-001",
+   "sentAtMs": 1792851974119
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-185",
@@ -7042,7 +7713,7 @@
   "district": "Croix-Rousse, Lyon 4e",
   "lat": 45.7808,
   "lng": 4.8248,
-  "date": "2026-10-12",
+  "date": "2026-10-13",
   "startTime": "19:00",
   "endTime": "20:00",
   "capacity": 12,
@@ -7061,13 +7732,16 @@
   "organizerName": "Arthur Bonnet",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1789768800000,
+  "createdAtMs": 1789855200000,
   "demo": true,
   "lastMessage": {
    "text": "Bienvenue à toutes et à tous dans le groupe !",
    "authorName": "Arthur",
-   "sentAtMs": 1790269635016
-  }
+   "authorId": "demo-user-094",
+   "sentAtMs": 1790356035016
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-186",
@@ -7083,7 +7757,7 @@
   "district": "Jean Macé, Lyon 7e",
   "lat": 45.74136,
   "lng": 4.84164,
-  "date": "2026-12-09",
+  "date": "2026-12-10",
   "startTime": "19:00",
   "endTime": "21:00",
   "capacity": 20,
@@ -7096,13 +7770,16 @@
   "organizerName": "Arthur Bonnet",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792450800000,
+  "createdAtMs": 1792537200000,
   "demo": true,
   "lastMessage": {
    "text": "Est-ce qu’il reste de la place pour une personne de plus ?",
    "authorName": "Ethan",
-   "sentAtMs": 1792672877426
-  }
+   "authorId": "demo-user-050",
+   "sentAtMs": 1792759277426
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-187",
@@ -7118,7 +7795,7 @@
   "district": "Vaise, Lyon 9e",
   "lat": 45.772,
   "lng": 4.81,
-  "date": "2026-12-10",
+  "date": "2026-12-11",
   "startTime": "18:00",
   "endTime": "20:00",
   "capacity": 12,
@@ -7132,19 +7809,28 @@
    "demo-user-050",
    "demo-user-093",
    "demo-user-090",
-   "demo-user-083"
+   "demo-user-083",
+   "demo-user-073",
+   "demo-user-071"
   ],
   "organizerId": "demo-user-025",
   "organizerName": "Nina Rossi",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792623600000,
+  "createdAtMs": 1792710000000,
   "demo": true,
   "lastMessage": {
    "text": "J’ai mis mes photos dans l’album, allez voir !",
-   "authorName": "Ethan",
-   "sentAtMs": 1792824458904
-  }
+   "authorName": "Mathilde",
+   "authorId": "demo-user-093",
+   "sentAtMs": 1792910858904
+  },
+  "waitlistIds": [
+   "demo-user-054",
+   "demo-user-022",
+   "demo-user-120"
+  ],
+  "offer": null
  },
  {
   "id": "demo-act-188",
@@ -7160,7 +7846,7 @@
   "district": "Croix-Rousse, Lyon 4e",
   "lat": 45.7745,
   "lng": 4.8318,
-  "date": "2026-10-21",
+  "date": "2026-10-22",
   "startTime": "12:00",
   "endTime": "13:00",
   "capacity": 10,
@@ -7178,13 +7864,16 @@
   "organizerName": "Omar Morel",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1791496800000,
+  "createdAtMs": 1791583200000,
   "demo": true,
   "lastMessage": {
    "text": "Est-ce qu’il reste de la place pour une personne de plus ?",
    "authorName": "Louis",
-   "sentAtMs": 1791686745053
-  }
+   "authorId": "demo-user-082",
+   "sentAtMs": 1791773145053
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-189",
@@ -7200,9 +7889,9 @@
   "district": "Confluence, Lyon 2e",
   "lat": 45.74402,
   "lng": 4.81965,
-  "date": "2027-01-01",
-  "startTime": "19:00",
-  "endTime": "20:00",
+  "date": "2027-01-02",
+  "startTime": "15:00",
+  "endTime": "16:00",
   "capacity": 15,
   "participantIds": [
    "demo-user-025",
@@ -7223,13 +7912,16 @@
   "organizerName": "Louis Muller",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792623600000,
+  "createdAtMs": 1792710000000,
   "demo": true,
   "lastMessage": {
    "text": "Merci pour ce super moment, on remet ça quand ?",
    "authorName": "Victor",
-   "sentAtMs": 1792741239532
-  }
+   "authorId": "demo-user-042",
+   "sentAtMs": 1792827639532
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-190",
@@ -7245,7 +7937,7 @@
   "district": "Gerland, Lyon 7e",
   "lat": 45.72625,
   "lng": 4.83423,
-  "date": "2027-01-05",
+  "date": "2027-01-06",
   "startTime": "19:00",
   "endTime": "20:00",
   "capacity": 20,
@@ -7268,13 +7960,16 @@
   "organizerName": "Sophie Perrin",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792969200000,
+  "createdAtMs": 1793055600000,
   "demo": true,
   "lastMessage": {
    "text": "Trop bien, ça va être top.",
    "authorName": "Victor",
-   "sentAtMs": 1793226957321
-  }
+   "authorId": "demo-user-042",
+   "sentAtMs": 1793313357321
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-191",
@@ -7290,9 +7985,9 @@
   "district": "Part-Dieu, Lyon 3e",
   "lat": 45.76283,
   "lng": 4.85862,
-  "date": "2026-10-25",
-  "startTime": "10:00",
-  "endTime": "13:00",
+  "date": "2026-10-26",
+  "startTime": "12:00",
+  "endTime": "15:00",
   "capacity": 12,
   "participantIds": [
    "demo-user-016",
@@ -7307,13 +8002,16 @@
   "organizerName": "Salomé Lambert",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1791410400000,
+  "createdAtMs": 1791500400000,
   "demo": true,
   "lastMessage": {
    "text": "Super, j’ai hâte !",
    "authorName": "Arthur",
-   "sentAtMs": 1791722366381
-  }
+   "authorId": "demo-user-034",
+   "sentAtMs": 1791812366381
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-192",
@@ -7329,9 +8027,9 @@
   "district": "Bellecour, Lyon 2e",
   "lat": 45.75615,
   "lng": 4.83031,
-  "date": "2027-01-01",
-  "startTime": "19:00",
-  "endTime": "21:30",
+  "date": "2027-01-02",
+  "startTime": "15:00",
+  "endTime": "17:30",
   "capacity": 10,
   "participantIds": [
    "demo-user-047",
@@ -7346,13 +8044,16 @@
   "organizerName": "Bastien Nguyen",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1793055600000,
+  "createdAtMs": 1793142000000,
   "demo": true,
   "lastMessage": {
    "text": "Merci pour l’organisation !",
    "authorName": "Louise",
-   "sentAtMs": 1793328473269
-  }
+   "authorId": "demo-user-047",
+   "sentAtMs": 1793414873269
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-193",
@@ -7368,7 +8069,7 @@
   "district": "Bron",
   "lat": 45.73807,
   "lng": 4.90943,
-  "date": "2026-10-10",
+  "date": "2026-10-11",
   "startTime": "10:00",
   "endTime": "13:00",
   "capacity": 8,
@@ -7383,13 +8084,16 @@
   "organizerName": "Omar Mercier",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1789855200000,
+  "createdAtMs": 1789941600000,
   "demo": true,
   "lastMessage": {
    "text": "On se retrouve directement sur place ?",
    "authorName": "Ethan",
-   "sentAtMs": 1790234588832
-  }
+   "authorId": "demo-user-110",
+   "sentAtMs": 1790320988832
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-194",
@@ -7405,7 +8109,7 @@
   "district": "Confluence, Lyon 2e",
   "lat": 45.7396,
   "lng": 4.8168,
-  "date": "2026-12-07",
+  "date": "2026-12-08",
   "startTime": "12:00",
   "endTime": "14:30",
   "capacity": 8,
@@ -7419,13 +8123,16 @@
   "organizerName": "Sophie Bonnet",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792278000000,
+  "createdAtMs": 1792364400000,
   "demo": true,
   "lastMessage": {
    "text": "Je serai peut-être 5 minutes en retard, désolé d’avance.",
    "authorName": "Bastien",
-   "sentAtMs": 1792647610340
-  }
+   "authorId": "demo-user-046",
+   "sentAtMs": 1792734010340
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-195",
@@ -7441,7 +8148,7 @@
   "district": "Tête d’Or, Lyon 6e",
   "lat": 45.77394,
   "lng": 4.85528,
-  "date": "2026-11-02",
+  "date": "2026-11-03",
   "startTime": "20:00",
   "endTime": "23:00",
   "capacity": 12,
@@ -7460,13 +8167,16 @@
   "organizerName": "Arthur Bonnet",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792537200000,
+  "createdAtMs": 1792623600000,
   "demo": true,
   "lastMessage": {
    "text": "Hâte de voir ce qu’on va créer ensemble.",
    "authorName": "Lina",
-   "sentAtMs": 1792778642280
-  }
+   "authorId": "demo-user-079",
+   "sentAtMs": 1792865042280
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-196",
@@ -7482,9 +8192,9 @@
   "district": "Bron",
   "lat": 45.7355,
   "lng": 4.9074,
-  "date": "2026-10-18",
-  "startTime": "14:00",
-  "endTime": "15:00",
+  "date": "2026-10-19",
+  "startTime": "18:00",
+  "endTime": "19:00",
   "capacity": 6,
   "participantIds": [
    "demo-user-036",
@@ -7495,13 +8205,16 @@
   "organizerName": "Salomé Fontaine",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1791410400000,
+  "createdAtMs": 1791496800000,
   "demo": true,
   "lastMessage": {
    "text": "Hâte de voir ce qu’on va créer ensemble.",
    "authorName": "Jules",
-   "sentAtMs": 1791607043116
-  }
+   "authorId": "demo-user-036",
+   "sentAtMs": 1791693443116
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-197",
@@ -7517,7 +8230,7 @@
   "district": "Bellecour, Lyon 2e",
   "lat": 45.75615,
   "lng": 4.83031,
-  "date": "2026-10-31",
+  "date": "2026-11-01",
   "startTime": "10:00",
   "endTime": "12:00",
   "capacity": 10,
@@ -7532,13 +8245,16 @@
   "organizerName": "Elsa Guerin",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792018800000,
+  "createdAtMs": 1792105200000,
   "demo": true,
   "lastMessage": {
    "text": "Merci pour ce super moment, on remet ça quand ?",
    "authorName": "Fatou",
-   "sentAtMs": 1792393149160
-  }
+   "authorId": "demo-user-051",
+   "sentAtMs": 1792479549160
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-198",
@@ -7554,9 +8270,9 @@
   "district": "Bron",
   "lat": 45.73631,
   "lng": 4.91178,
-  "date": "2026-10-30",
-  "startTime": "19:00",
-  "endTime": "21:00",
+  "date": "2026-10-31",
+  "startTime": "15:00",
+  "endTime": "17:00",
   "capacity": 20,
   "participantIds": [
    "demo-user-063",
@@ -7582,13 +8298,16 @@
   "organizerName": "Romain Vincent",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792623600000,
+  "createdAtMs": 1792710000000,
   "demo": true,
   "lastMessage": {
    "text": "Super, j’ai hâte !",
    "authorName": "Samuel",
-   "sentAtMs": 1792782160128
-  }
+   "authorId": "demo-user-038",
+   "sentAtMs": 1792868560128
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-199",
@@ -7604,9 +8323,9 @@
   "district": "Croix-Rousse, Lyon 4e",
   "lat": 45.7808,
   "lng": 4.8248,
-  "date": "2026-12-13",
-  "startTime": "14:00",
-  "endTime": "15:00",
+  "date": "2026-12-14",
+  "startTime": "18:00",
+  "endTime": "19:00",
   "capacity": 15,
   "participantIds": [
    "demo-user-091",
@@ -7618,13 +8337,16 @@
   "organizerName": "Nina Rossi",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792623600000,
+  "createdAtMs": 1792710000000,
   "demo": true,
   "lastMessage": {
    "text": "Merci pour l’organisation !",
    "authorName": "Anaïs",
-   "sentAtMs": 1792905777299
-  }
+   "authorId": "demo-user-091",
+   "sentAtMs": 1792992177299
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-200",
@@ -7640,9 +8362,9 @@
   "district": "Oullins-Pierre-Bénite",
   "lat": 45.71412,
   "lng": 4.81025,
-  "date": "2026-10-16",
-  "startTime": "12:00",
-  "endTime": "13:30",
+  "date": "2026-10-17",
+  "startTime": "10:00",
+  "endTime": "11:30",
   "capacity": 8,
   "participantIds": [
    "demo-user-071",
@@ -7657,13 +8379,16 @@
   "organizerName": "Bastien Benali",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1790978400000,
+  "createdAtMs": 1791064800000,
   "demo": true,
   "lastMessage": {
    "text": "Trop bien, ça va être top.",
    "authorName": "Adam",
-   "sentAtMs": 1791099603274
-  }
+   "authorId": "demo-user-086",
+   "sentAtMs": 1791186003274
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-201",
@@ -7679,9 +8404,9 @@
   "district": "États-Unis, Lyon 8e",
   "lat": 45.7324,
   "lng": 4.86028,
-  "date": "2026-12-20",
-  "startTime": "10:00",
-  "endTime": "11:00",
+  "date": "2026-12-21",
+  "startTime": "12:00",
+  "endTime": "13:00",
   "capacity": 20,
   "participantIds": [
    "demo-user-004",
@@ -7700,13 +8425,16 @@
   "organizerName": "Lina Girard",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792278000000,
+  "createdAtMs": 1792364400000,
   "demo": true,
   "lastMessage": {
    "text": "Rendez-vous 10 minutes avant le début pour s’installer.",
    "authorName": "Lina",
-   "sentAtMs": 1792467938906
-  }
+   "authorId": "demo-user-019",
+   "sentAtMs": 1792554338906
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-202",
@@ -7722,7 +8450,7 @@
   "district": "États-Unis, Lyon 8e",
   "lat": 45.7322,
   "lng": 4.8619,
-  "date": "2026-12-10",
+  "date": "2026-12-11",
   "startTime": "20:00",
   "endTime": "21:00",
   "capacity": 12,
@@ -7742,13 +8470,16 @@
   "organizerName": "Louis Muller",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792105200000,
+  "createdAtMs": 1792191600000,
   "demo": true,
   "lastMessage": {
    "text": "Rendez-vous 10 minutes avant le début pour s’installer.",
    "authorName": "Louis",
-   "sentAtMs": 1792361053904
-  }
+   "authorId": "demo-user-082",
+   "sentAtMs": 1792447453904
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-203",
@@ -7764,7 +8495,7 @@
   "district": "Croix-Rousse, Lyon 4e",
   "lat": 45.77402,
   "lng": 4.82841,
-  "date": "2026-11-18",
+  "date": "2026-11-19",
   "startTime": "20:00",
   "endTime": "23:30",
   "capacity": 10,
@@ -7778,13 +8509,16 @@
   "organizerName": "Ibrahim Petit",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1793228400000,
+  "createdAtMs": 1793314800000,
   "demo": true,
   "lastMessage": {
    "text": "Rendez-vous 10 minutes avant le début pour s’installer.",
    "authorName": "Ibrahim",
-   "sentAtMs": 1793439157741
-  }
+   "authorId": "demo-user-040",
+   "sentAtMs": 1793525557741
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-204",
@@ -7800,7 +8534,7 @@
   "district": "Bellecour, Lyon 2e",
   "lat": 45.75615,
   "lng": 4.83031,
-  "date": "2026-10-17",
+  "date": "2026-10-18",
   "startTime": "14:00",
   "endTime": "16:00",
   "capacity": 20,
@@ -7827,13 +8561,16 @@
   "organizerName": "Anaïs Bernard",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1790373600000,
+  "createdAtMs": 1790460000000,
   "demo": true,
   "lastMessage": {
    "text": "Trop bien, ça va être top.",
    "authorName": "Ibrahim",
-   "sentAtMs": 1790641418157
-  }
+   "authorId": "demo-user-040",
+   "sentAtMs": 1790727818157
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-205",
@@ -7849,7 +8586,7 @@
   "district": "Croix-Rousse, Lyon 4e",
   "lat": 45.77374,
   "lng": 4.82576,
-  "date": "2026-12-26",
+  "date": "2026-12-27",
   "startTime": "14:00",
   "endTime": "17:00",
   "capacity": 6,
@@ -7864,13 +8601,16 @@
   "organizerName": "Hugo Moreau",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792796400000,
+  "createdAtMs": 1792882800000,
   "demo": true,
   "lastMessage": {
    "text": "Rendez-vous 10 minutes avant le début pour s’installer.",
    "authorName": "Hugo",
-   "sentAtMs": 1793147694221
-  }
+   "authorId": "demo-user-070",
+   "sentAtMs": 1793234094221
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-206",
@@ -7886,7 +8626,7 @@
   "district": "Terreaux, Lyon 1er",
   "lat": 45.7697,
   "lng": 4.8302,
-  "date": "2026-12-05",
+  "date": "2026-12-06",
   "startTime": "15:00",
   "endTime": "18:30",
   "capacity": 10,
@@ -7905,13 +8645,16 @@
   "organizerName": "Hugo Moreau",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792105200000,
+  "createdAtMs": 1792191600000,
   "demo": true,
   "lastMessage": {
    "text": "Super, j’ai hâte !",
    "authorName": "Margaux",
-   "sentAtMs": 1792245521156
-  }
+   "authorId": "demo-user-039",
+   "sentAtMs": 1792331921156
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-207",
@@ -7927,7 +8670,7 @@
   "district": "Bellecour, Lyon 2e",
   "lat": 45.75861,
   "lng": 4.83089,
-  "date": "2026-10-19",
+  "date": "2026-10-20",
   "startTime": "12:00",
   "endTime": "15:30",
   "capacity": 6,
@@ -7940,13 +8683,16 @@
   "organizerName": "Romain Muller",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1790373600000,
+  "createdAtMs": 1790460000000,
   "demo": true,
   "lastMessage": {
    "text": "Trop bien, ça va être top.",
    "authorName": "Rose",
-   "sentAtMs": 1790537591195
-  }
+   "authorId": "demo-user-101",
+   "sentAtMs": 1790623991195
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-208",
@@ -7962,7 +8708,7 @@
   "district": "Jean Macé, Lyon 7e",
   "lat": 45.74136,
   "lng": 4.84164,
-  "date": "2026-12-01",
+  "date": "2026-12-02",
   "startTime": "12:00",
   "endTime": "14:00",
   "capacity": 10,
@@ -7973,13 +8719,16 @@
   "organizerName": "Ibrahim Petit",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792710000000,
+  "createdAtMs": 1792796400000,
   "demo": true,
   "lastMessage": {
    "text": "On se retrouve directement sur place ?",
    "authorName": "Rose",
-   "sentAtMs": 1793083080248
-  }
+   "authorId": "demo-user-041",
+   "sentAtMs": 1793169480248
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-209",
@@ -7995,9 +8744,9 @@
   "district": "Confluence, Lyon 2e",
   "lat": 45.74374,
   "lng": 4.8136,
-  "date": "2026-12-18",
-  "startTime": "20:00",
-  "endTime": "22:00",
+  "date": "2026-12-19",
+  "startTime": "16:00",
+  "endTime": "18:00",
   "capacity": 20,
   "participantIds": [
    "demo-user-064"
@@ -8006,13 +8755,16 @@
   "organizerName": "Arthur Perrin",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792450800000,
+  "createdAtMs": 1792537200000,
   "demo": true,
   "lastMessage": {
    "text": "Pas besoin d’apporter de matériel, tout est prévu.",
    "authorName": "Arthur",
-   "sentAtMs": 1792570201513
-  }
+   "authorId": "demo-user-034",
+   "sentAtMs": 1792656601513
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-210",
@@ -8028,9 +8780,9 @@
   "district": "Bron",
   "lat": 45.73393,
   "lng": 4.9118,
-  "date": "2026-11-22",
-  "startTime": "15:00",
-  "endTime": "16:30",
+  "date": "2026-11-23",
+  "startTime": "19:00",
+  "endTime": "20:30",
   "capacity": 12,
   "participantIds": [
    "demo-user-005",
@@ -8045,13 +8797,16 @@
   "organizerName": "Manon Lambert",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792796400000,
+  "createdAtMs": 1792882800000,
   "demo": true,
   "lastMessage": {
    "text": "Je confirme ma présence 👍",
    "authorName": "Camille",
-   "sentAtMs": 1793003009464
-  }
+   "authorId": "demo-user-006",
+   "sentAtMs": 1793089409464
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-211",
@@ -8067,7 +8822,7 @@
   "district": "Croix-Rousse, Lyon 4e",
   "lat": 45.7745,
   "lng": 4.8318,
-  "date": "2026-10-17",
+  "date": "2026-10-18",
   "startTime": "14:00",
   "endTime": "16:00",
   "capacity": 10,
@@ -8082,13 +8837,16 @@
   "organizerName": "Ibrahim Petit",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1790719200000,
+  "createdAtMs": 1790805600000,
   "demo": true,
   "lastMessage": {
    "text": "Pas besoin d’apporter de matériel, tout est prévu.",
    "authorName": "Ibrahim",
-   "sentAtMs": 1790921097494
-  }
+   "authorId": "demo-user-040",
+   "sentAtMs": 1791007497494
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-212",
@@ -8104,7 +8862,7 @@
   "district": "Bellecour, Lyon 2e",
   "lat": 45.7632,
   "lng": 4.8312,
-  "date": "2026-12-26",
+  "date": "2026-12-27",
   "startTime": "15:00",
   "endTime": "18:00",
   "capacity": 15,
@@ -8128,13 +8886,16 @@
   "organizerName": "Lina Girard",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792537200000,
+  "createdAtMs": 1792623600000,
   "demo": true,
   "lastMessage": {
    "text": "J’ai partagé l’activité avec mon colocataire, il s’est inscrit.",
    "authorName": "Sophie",
-   "sentAtMs": 1792654489213
-  }
+   "authorId": "demo-user-064",
+   "sentAtMs": 1792740889213
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-213",
@@ -8150,7 +8911,7 @@
   "district": "Part-Dieu, Lyon 3e",
   "lat": 45.76372,
   "lng": 4.85951,
-  "date": "2026-11-26",
+  "date": "2026-11-27",
   "startTime": "20:00",
   "endTime": "21:00",
   "capacity": 6,
@@ -8164,13 +8925,16 @@
   "organizerName": "Bastien Benali",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792191600000,
+  "createdAtMs": 1792278000000,
   "demo": true,
   "lastMessage": {
    "text": "Bonne idée le thème de cette fois !",
    "authorName": "Théo",
-   "sentAtMs": 1792463565955
-  }
+   "authorId": "demo-user-020",
+   "sentAtMs": 1792549965955
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-214",
@@ -8186,7 +8950,7 @@
   "district": "Gerland, Lyon 7e",
   "lat": 45.72625,
   "lng": 4.83423,
-  "date": "2026-12-14",
+  "date": "2026-12-15",
   "startTime": "20:00",
   "endTime": "21:30",
   "capacity": 20,
@@ -8205,19 +8969,31 @@
    "demo-user-006",
    "demo-user-013",
    "demo-user-003",
-   "demo-user-079"
+   "demo-user-079",
+   "demo-user-055",
+   "demo-user-041",
+   "demo-user-005",
+   "demo-user-068",
+   "demo-user-009"
   ],
   "organizerId": "demo-user-004",
   "organizerName": "Sophie Perrin",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792882800000,
+  "createdAtMs": 1792969200000,
   "demo": true,
   "lastMessage": {
    "text": "Parfait ! Je viendrai avec une amie si c’est possible.",
-   "authorName": "Mehdi",
-   "sentAtMs": 1792906679586
-  }
+   "authorName": "Amina",
+   "authorId": "demo-user-105",
+   "sentAtMs": 1792993079586
+  },
+  "waitlistIds": [
+   "demo-user-047",
+   "demo-user-010",
+   "demo-user-114"
+  ],
+  "offer": null
  },
  {
   "id": "demo-act-215",
@@ -8233,7 +9009,7 @@
   "district": "Croix-Rousse, Lyon 4e",
   "lat": 45.7757,
   "lng": 4.8314,
-  "date": "2026-12-16",
+  "date": "2026-12-17",
   "startTime": "18:00",
   "endTime": "19:30",
   "capacity": 10,
@@ -8249,13 +9025,16 @@
   "organizerName": "Lina Girard",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792450800000,
+  "createdAtMs": 1792537200000,
   "demo": true,
   "lastMessage": {
    "text": "Trop bien, ça va être top.",
    "authorName": "Romain",
-   "sentAtMs": 1792658789156
-  }
+   "authorId": "demo-user-112",
+   "sentAtMs": 1792745189156
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-216",
@@ -8271,7 +9050,7 @@
   "district": "Part-Dieu, Lyon 3e",
   "lat": 45.75682,
   "lng": 4.85843,
-  "date": "2026-11-03",
+  "date": "2026-11-04",
   "startTime": "19:00",
   "endTime": "21:00",
   "capacity": 10,
@@ -8289,13 +9068,16 @@
   "organizerName": "Julie Bernard",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792796400000,
+  "createdAtMs": 1792882800000,
   "demo": true,
   "lastMessage": {
    "text": "Bonne idée le thème de cette fois !",
    "authorName": "Omar",
-   "sentAtMs": 1792946221268
-  }
+   "authorId": "demo-user-118",
+   "sentAtMs": 1793032621268
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-217",
@@ -8311,7 +9093,7 @@
   "district": "Vaise, Lyon 9e",
   "lat": 45.77379,
   "lng": 4.80719,
-  "date": "2026-10-17",
+  "date": "2026-10-18",
   "startTime": "16:00",
   "endTime": "17:00",
   "capacity": 8,
@@ -8327,13 +9109,16 @@
   "organizerName": "Lina Girard",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1790719200000,
+  "createdAtMs": 1790805600000,
   "demo": true,
   "lastMessage": {
    "text": "Il annonce un peu de vent, pensez à une veste.",
    "authorName": "Antoine",
-   "sentAtMs": 1791089035524
-  }
+   "authorId": "demo-user-005",
+   "sentAtMs": 1791175435524
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-218",
@@ -8349,7 +9134,7 @@
   "district": "Croix-Rousse, Lyon 4e",
   "lat": 45.77657,
   "lng": 4.82841,
-  "date": "2026-11-09",
+  "date": "2026-11-10",
   "startTime": "20:00",
   "endTime": "21:00",
   "capacity": 10,
@@ -8366,13 +9151,16 @@
   "organizerName": "Nina Rossi",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792364400000,
+  "createdAtMs": 1792450800000,
   "demo": true,
   "lastMessage": {
    "text": "Merci pour l’organisation !",
    "authorName": "Lucas",
-   "sentAtMs": 1792575497246
-  }
+   "authorId": "demo-user-074",
+   "sentAtMs": 1792661897246
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-219",
@@ -8388,9 +9176,9 @@
   "district": "Terreaux, Lyon 1er",
   "lat": 45.76628,
   "lng": 4.83187,
-  "date": "2026-11-22",
-  "startTime": "14:00",
-  "endTime": "16:00",
+  "date": "2026-11-23",
+  "startTime": "18:00",
+  "endTime": "20:00",
   "capacity": 15,
   "participantIds": [
    "demo-user-044",
@@ -8401,13 +9189,16 @@
   "organizerName": "Salomé Lambert",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1792450800000,
+  "createdAtMs": 1792537200000,
   "demo": true,
   "lastMessage": {
    "text": "Merci d’être venus aussi nombreux, c’était génial !",
    "authorName": "Salomé",
-   "sentAtMs": 1792743022450
-  }
+   "authorId": "demo-user-043",
+   "sentAtMs": 1792829422450
+  },
+  "waitlistIds": [],
+  "offer": null
  },
  {
   "id": "demo-act-220",
@@ -8423,7 +9214,7 @@
   "district": "Bellecour, Lyon 2e",
   "lat": 45.75975,
   "lng": 4.83463,
-  "date": "2026-10-21",
+  "date": "2026-10-22",
   "startTime": "18:00",
   "endTime": "19:00",
   "capacity": 10,
@@ -8440,12 +9231,15 @@
   "organizerName": "Hugo Petit",
   "organizerPhoto": "",
   "status": "published",
-  "createdAtMs": 1791064800000,
+  "createdAtMs": 1791151200000,
   "demo": true,
   "lastMessage": {
    "text": "Merci pour l’organisation !",
    "authorName": "Yanis",
-   "sentAtMs": 1791355132351
-  }
+   "authorId": "demo-user-076",
+   "sentAtMs": 1791441532351
+  },
+  "waitlistIds": [],
+  "offer": null
  }
 ]

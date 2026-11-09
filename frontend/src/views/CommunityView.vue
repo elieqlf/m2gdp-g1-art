@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
-import { ChevronLeft, MapPin } from '@lucide/vue'
+import { ChevronLeft, MapPin, MessageCircle } from '@lucide/vue'
 import UsersMap from '@/components/UsersMap.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
-import { loadMembers, store } from '@/lib/store'
+import { loadMembers, store, uid } from '@/lib/store'
 import { goBack } from '@/lib/router'
 
 // Communauté : écran « Utilisateurs inscrits » de la première version, conservé.
@@ -24,6 +24,7 @@ onMounted(() => loadMembers())
           <UserAvatar :name="[m.firstName, m.lastName].filter(Boolean).join(' ') || 'Membre'" :photo="m.photoUrl" size="md" />
           <div><h2>{{ m.firstName ? `${m.firstName} ${m.lastName || ''}` : 'Membre' }}</h2><span class="soft-tag">{{ m.userType === 'organisateur' ? 'Organisateur' : m.userType === 'participant' ? 'Participant' : 'Profil à compléter' }}</span>
             <p v-if="m.address" class="member-tile__address"><MapPin aria-hidden="true" />{{ m.address.split(',').slice(-2).join(',').trim() }}</p></div>
+          <a v-if="m.uid !== uid" :href="`#/messages/${encodeURIComponent(m.uid)}`" class="icon-button member-tile__write" :aria-label="`Écrire à ${m.firstName || 'ce membre'}`"><MessageCircle aria-hidden="true" /></a>
         </li>
       </ul>
     </template>
