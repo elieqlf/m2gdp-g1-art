@@ -51,7 +51,7 @@ Les notifications vues sont mémorisées sur l'appareil. Pas de notification pus
 | # | Critère d'acceptation | Test |
 |---|---|---|
 | CA1 | Fiche activité : « Contacter <prénom> » ouvre une conversation privée avec l'organisateur, sans être inscrit | `scenario.spec.ts` |
-| CA2 | Bouton « Écrire » sur chaque participant de la fiche et sur chaque membre de la communauté | idem |
+| CA2 | Bouton « Écrire » sur chaque participant de la fiche et sur chaque membre de la communauté ; dans un groupe, toucher le prénom ou l'avatar d'un membre ouvre la conversation privée avec lui | idem |
 | CA3 | Une seule conversation par paire de membres ; l'activité d'origine est rappelée (« À propos de… ») | idem |
 | CA4 | Conversations : onglets Groupes / Privées / Archivés ; non-lus signalés (point, pastille sur l'onglet de navigation, Notifications) | idem |
 | CA5 | Seuls les deux membres lisent et écrivent ; chacun ne met à jour que sa propre lecture | `docs/firestore.rules` |

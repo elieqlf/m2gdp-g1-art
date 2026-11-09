@@ -586,3 +586,9 @@
 /* Trois onglets sur petit téléphone : texte plus compact */
 .tabs button { padding: 0 .35rem; font-size: .86rem; line-height: 1.2; }
 @media (min-width: 26rem) { .tabs button { font-size: 1rem; } }
+
+/* Groupe → conversation privée : prénom et avatar cliquables */
+.message__avatar-link { flex: none; border-radius: 50%; }
+.message__author--link { text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, var(--primary) 45%, transparent); text-underline-offset: .2em; border-radius: .3rem; }
+.message__author--link:hover, .message__author--link:focus-visible { color: var(--primary); text-decoration: underline; text-underline-offset: .15em; }
+.messages__hint { justify-self: center; margin: -.3rem 0 .2rem; color: color-mix(in srgb, var(--foreground) 55%, transparent); font-size: .8rem; text-align: center; }

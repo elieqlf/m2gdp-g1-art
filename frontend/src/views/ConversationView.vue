@@ -33,6 +33,8 @@ const rows = computed(() => messages.value.map((m, index) => {
   const previous = messages.value[index - 1]
   return { ...m, mine: m.authorId === uid.value, separator: !previous || dayLabel(previous.sentAtMs) !== dayLabel(m.sentAtMs) ? dayLabel(m.sentAtMs) : '' }
 }))
+// Toucher le prénom ou l'avatar d'un membre ouvre une conversation privée avec lui.
+const privateLink = (authorId: string) => `#/messages/${encodeURIComponent(authorId)}?activite=${encodeURIComponent(props.id)}`
 async function scrollDown() { await nextTick(); list.value?.lastElementChild?.scrollIntoView({ block: 'end' }) }
 
 watch(() => props.id, async id => {
@@ -73,12 +75,13 @@ async function send() {
       <template v-else>
         <ol ref="list" class="messages" aria-label="Messages du groupe" aria-live="polite">
           <li v-if="!rows.length" class="messages__empty">Aucun message pour l’instant. Dis bonjour au groupe !</li>
+          <li v-else class="messages__hint">Touche le prénom de quelqu’un pour lui écrire en privé.</li>
           <template v-for="m in rows" :key="m.id">
             <li v-if="m.separator" class="messages__day"><span>{{ m.separator }}</span></li>
             <li class="message" :class="{ 'message--mine': m.mine }">
-              <UserAvatar v-if="!m.mine" :name="m.authorName" :photo="m.authorPhoto || store.members[m.authorId]?.photoUrl" size="md" />
+              <a v-if="!m.mine" :href="privateLink(m.authorId)" class="message__avatar-link" tabindex="-1" aria-hidden="true"><UserAvatar :name="m.authorName" :photo="m.authorPhoto || store.members[m.authorId]?.photoUrl" size="md" /></a>
               <div class="message__content">
-                <p class="message__meta"><span v-if="!m.mine" class="message__author">{{ m.authorName }}</span><time>{{ hour(m.sentAtMs) }}</time></p>
+                <p class="message__meta"><a v-if="!m.mine" :href="privateLink(m.authorId)" class="message__author message__author--link" :aria-label="`${m.authorName} : écrire en privé`">{{ m.authorName }}</a><time>{{ hour(m.sentAtMs) }}</time></p>
                 <p class="message__bubble">{{ m.text }}</p>
               </div>
             </li>

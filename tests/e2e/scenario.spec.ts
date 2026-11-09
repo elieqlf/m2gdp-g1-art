@@ -193,6 +193,19 @@ test('Contact : message privé reçu, non lu puis lu', async ({ page }, testInfo
   await expect(page.getByRole('link', { name: 'Conversations', exact: true })).toBeVisible()
 })
 
+test('Contact : depuis le groupe, toucher un prénom ouvre la conversation privée', async ({ page }) => {
+  const { activities, messages, users } = demoData()
+  const group = activities.find(a => a.participantIds.includes(ME.uid) && messages.some(m => m.activityId === a.id && (m as { authorId?: string }).authorId !== ME.uid))!
+  const message = messages.find(m => m.activityId === group.id && (m as { authorId?: string }).authorId !== ME.uid) as { authorId: string; authorName: string }
+  const author = users.find(u => u.uid === message.authorId)!
+  await openApp(page, 'app', `#/conversations/${group.id}`)
+  await expect(page.getByText('Touche le prénom de quelqu’un pour lui écrire en privé.')).toBeVisible()
+  await page.getByRole('link', { name: `${message.authorName} : écrire en privé` }).first().click()
+  await expect(page).toHaveURL(new RegExp(`#/messages/${author.uid}`))
+  await expect(page.getByRole('heading', { name: `${author.firstName} ${author.lastName}` })).toBeVisible()
+  await expect(page.getByRole('link', { name: `À propos de « ${group.title} »` })).toBeVisible()
+})
+
 test('US-08 : modifier son activité sans descendre sous le nombre d’inscrits, puis la supprimer', async ({ page }, testInfo) => {
   const mine = demoData().activities.find(a => a.organizerId === ME.uid)!
   await openApp(page, 'app', `#/activite/${mine.id}/modifier`)
