@@ -335,11 +335,11 @@
 .auth-layout--status .form-title {
   margin: 0;
   color: var(--novart-red);
-  font-family: var(--font-sans);
-  font-size: clamp(1.65rem, 6.8vw, 2.15rem);
-  font-weight: 600;
-  letter-spacing: -.035em;
-  line-height: 1.18;
+  font-family: 'Caveat', cursive;
+  font-size: clamp(2.25rem, 9vw, 2.8rem);
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1;
   text-align: center;
 }
 
@@ -352,10 +352,11 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: .35rem;
 }
 
 .auth-layout--sent .wordmark--stacked { width: clamp(5.5rem, 20vw, 6.5rem); }
-.auth-layout--sent .brand-slogan { margin: .2rem auto .4rem; font-size: 1.1rem; }
+.auth-layout--sent .brand-slogan { display: none; }
 .auth-layout--sent .auth-mascot { width: 7.25rem; }
 
 .novart-app .auth-layout--sent .auth-panel {
@@ -419,7 +420,6 @@
 @media (max-height: 740px) {
   .auth-layout--sent { gap: .45rem; padding-block: .45rem; }
   .auth-layout--sent .wordmark--stacked { width: 5.25rem; }
-  .auth-layout--sent .brand-slogan { margin: .1rem auto .25rem; }
   .auth-layout--sent .auth-mascot { width: 6.25rem; }
   .auth-sent-content { gap: .5rem; }
 }
