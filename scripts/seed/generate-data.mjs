@@ -231,6 +231,8 @@ export function buildDataset(baseDate = new Date()) {
   const activities = []
   const messages = []
   const base = new Date(baseDate.getFullYear(), baseDate.getMonth(), baseDate.getDate())
+  // Tirage séparé : ajouter les listes d'attente ne change pas le reste du jeu de données.
+  const queueRand = prng(20261109)
   for (let i = 0; i < 220; i++) {
     const discipline = catalog.disciplines[i % catalog.disciplines.length]
     const titles = titleIdeas[discipline.id]
@@ -290,6 +292,23 @@ export function buildDataset(baseDate = new Date()) {
       createdAtMs,
       demo: true,
       lastMessage: null,
+      waitlistIds: [],
+      offer: null,
+    }
+    // Liste d'attente (sujet ART) : une partie des activités complètes à venir a 1 à 4 personnes en attente.
+    // Quelques activités à venir très demandées affichent complet.
+    if (dayOffset >= 0 && queueRand() < 0.15) {
+      while (participantIds.length < capacity) {
+        const u = users[Math.floor(queueRand() * users.length)]
+        if (u.uid !== organizer.uid && !participantIds.includes(u.uid)) participantIds.push(u.uid)
+      }
+    }
+    if (dayOffset >= 0 && participantIds.length === capacity && queueRand() < 0.7) {
+      const size = 1 + Math.floor(queueRand() * 4)
+      while (activity.waitlistIds.length < size) {
+        const u = users[Math.floor(queueRand() * users.length)]
+        if (u.uid !== organizer.uid && !participantIds.includes(u.uid) && !activity.waitlistIds.includes(u.uid)) activity.waitlistIds.push(u.uid)
+      }
     }
     // Conversation de groupe : quelques messages d'organisateur et de participants.
     const count = 2 + Math.floor(rand() * 6)
@@ -302,7 +321,7 @@ export function buildDataset(baseDate = new Date()) {
       at += Math.floor((1 + rand() * 30) * 3600000)
       if (at > base.getTime() + 9 * 3600000) break
       messages.push({ activityId: id, authorId: author.uid, authorName: author.firstName, authorPhoto: '', text, sentAtMs: at, demo: true })
-      activity.lastMessage = { text, authorName: author.firstName, sentAtMs: at }
+      activity.lastMessage = { text, authorName: author.firstName, authorId: author.uid, sentAtMs: at }
     }
     activities.push(activity)
   }

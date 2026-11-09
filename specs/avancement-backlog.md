@@ -13,17 +13,17 @@
 | US-07 | Créer une activité | Livré, 4 étapes, modèles, lieux suggérés | Créer |
 | US-08 | Modifier / supprimer son activité | Livré | Modifier |
 | US-09 | S'inscrire à une activité | Livré, capacité garantie | Fiche, Tu participes ! |
-| US-10 | Gérer sa participation | Livré (se désinscrire, Mes activités) | Fiche, Mes activités |
+| US-10 | Gérer sa participation | Livré (se désinscrire, Mes activités, liste d'attente) | Fiche, Mes activités, Notifications |
 | US-11 | Accéder au groupe de l'activité | Livré | Conversations |
 | US-12 | Envoyer un message au groupe | Livré, temps réel | Conversation |
 | US-13 | Consulter son profil | Livré | Profil |
 | US-14 | Modifier ses informations | Livré | Mes informations |
 
-En plus : favoris, communauté, rappel agenda `.ics`, partage. Application mobile-first (colonne de téléphone sur grand écran).
+En plus : liste d'attente avec confirmation (sujet ART), notifications (13), favoris, communauté, rappel agenda `.ics`, partage. Application mobile-first (colonne de téléphone sur grand écran).
 
 Site vitrine : `landing/` (accueil, fonctionnement, FAQ, contact, pages légales), voir `landing/README.md`. Reste la vidéo d'animation.
 
-Non développé (maquettes existantes) : notifications (13), assistance IA à la création (22), étapes « centres d'intérêt » et « personnalisation » de l'inscription (02-03, les centres d'intérêt sont dans le profil), envoi de photos personnelles, liste d'attente, avis, connexion Apple/Google, PWA installable.
+Non développé (maquettes existantes) : notifications push, assistance IA à la création (22), étapes « centres d'intérêt » et « personnalisation » de l'inscription (02-03, les centres d'intérêt sont dans le profil), envoi de photos personnelles, avis, connexion Apple/Google, PWA installable.
 
 ## Démonstration J5 (parcours conseillé)
 

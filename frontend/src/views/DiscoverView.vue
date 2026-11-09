@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { computed, nextTick, ref } from 'vue'
-import { ChevronDown, ChevronRight, ChevronUp, LocateFixed, Search, SlidersHorizontal } from '@lucide/vue'
+import { Bell, ChevronDown, ChevronRight, ChevronUp, LocateFixed, Search, SlidersHorizontal } from '@lucide/vue'
 import ActivityCard from '@/components/ActivityCard.vue'
 import ActivityMap from '@/components/ActivityMap.vue'
 import DisciplineIcon from '@/components/DisciplineIcon.vue'
 import MascotState from '@/components/MascotState.vue'
 import { activityDistance, disciplines, formatDistance, isFull, isPast, placesLeft, sortActivities, startsAt } from '@/lib/activity'
-import { loadActivities, notifyPositionFallback, origin, originLabel, requestPosition, store } from '@/lib/store'
+import { loadActivities, notifyPositionFallback, origin, originLabel, requestPosition, store, unreadNotifications } from '@/lib/store'
 import { navigate } from '@/lib/router'
 
 // US-03 : accueil « Découvrir ». La carte s'affiche dès l'ouverture (à la manière
@@ -73,6 +73,7 @@ function dragEnd(event: PointerEvent) {
           <input v-model="query" type="search" placeholder="Rechercher une activité, un lieu…" enterkeyhint="search" />
         </label>
         <a href="#/rechercher?filtres=1" class="icon-button icon-button--floating" aria-label="Ouvrir les filtres"><SlidersHorizontal aria-hidden="true" /></a>
+        <a href="#/notifications" class="icon-button icon-button--floating has-badge" :aria-label="unreadNotifications ? `Notifications, ${unreadNotifications} nouvelle${unreadNotifications > 1 ? 's' : ''}` : 'Notifications'"><Bell aria-hidden="true" /><span v-if="unreadNotifications" class="count-badge" aria-hidden="true">{{ unreadNotifications > 9 ? '9+' : unreadNotifications }}</span></a>
       </form>
       <div class="chip-scroller chip-scroller--tight" role="group" aria-label="Filtrer par discipline">
         <button type="button" class="pill pill--floating" :class="{ 'is-selected': !discipline }" :aria-pressed="!discipline" @click="discipline = ''">Tous</button>

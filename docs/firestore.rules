@@ -23,22 +23,47 @@ service cloud.firestore {
           && data.capacity is int && data.capacity >= 2 && data.capacity <= 100
           && data.participantIds is list && data.participantIds.size() <= data.capacity;
       }
-      // Inscription ou désinscription : un membre n'ajoute ou ne retire que lui-même,
-      // sans dépasser la capacité.
-      function joinsOrLeaves() {
-        let before = resource.data.participantIds;
-        let after = request.resource.data.participantIds;
-        return changed().hasOnly(['participantIds', 'updatedAtMs'])
-          && after.size() <= resource.data.capacity
-          && ((after.size() == before.size() + 1 && after.hasAll(before) && request.auth.uid in after && !(request.auth.uid in before))
-            || (after.size() == before.size() - 1 && before.hasAll(after) && request.auth.uid in before && !(request.auth.uid in after)));
+      // Inscription, désinscription et liste d'attente (sujet ART).
+      // Chaque membre n'ajoute ou ne retire que lui-même ; une place libérée est
+      // proposée au premier de la file, qui a au plus 24 h pour confirmer.
+      function now() { return request.time.toMillis(); }
+      function bp() { return resource.data.participantIds; }
+      function ap() { return request.resource.data.participantIds; }
+      function bw() { return resource.data.get('waitlistIds', []); }
+      function aw() { return request.resource.data.get('waitlistIds', []); }
+      function bo() { return resource.data.get('offer', null); }
+      function ao() { return request.resource.data.get('offer', null); }
+      function me() { return request.auth.uid; }
+      function offerLive(o) { return o != null && o.expiresAtMs > now(); }
+      function sameQueue() { return aw() == bw() && ao() == bo(); }
+      function adds(before, after) { return after.size() == before.size() + 1 && after.hasAll(before) && me() in after && !(me() in before); }
+      function removes(before, after) { return after.size() == before.size() - 1 && before.hasAll(after) && me() in before && !(me() in after); }
+      // La place libre passe au premier de la file (ou l'offre est retirée si personne n'attend).
+      function promotes(participants) {
+        return (ao() == null && aw() == bw() && (bw().size() == 0 || participants.size() >= resource.data.capacity))
+          || (bw().size() > 0 && participants.size() < resource.data.capacity
+            && ao().keys().hasOnly(['uid', 'expiresAtMs', 'offeredAtMs']) && ao().uid == bw()[0]
+            && ao().expiresAtMs is int && ao().expiresAtMs <= now() + 86460000
+            && aw() == bw()[1:bw().size()]);
+      }
+      function joins() { return adds(bp(), ap()) && sameQueue() && bw().size() == 0 && ap().size() + (offerLive(bo()) ? 1 : 0) <= resource.data.capacity; }
+      function leaves() { return removes(bp(), ap()) && (sameQueue() || (!offerLive(bo()) && promotes(ap()))); }
+      function waits() { return ap() == bp() && ao() == bo() && !(me() in bp()) && (bo() == null || bo().uid != me()) && !(me() in bw()) && aw() == bw().concat([me()]); }
+      function stopsWaiting() { return ap() == bp() && ao() == bo() && me() in bw() && aw() == bw().removeAll([me()]); }
+      function accepts() { return bo() != null && bo().uid == me() && offerLive(bo()) && adds(bp(), ap()) && promotes(ap()); }
+      function declines() { return bo() != null && bo().uid == me() && ap() == bp() && promotes(ap()); }
+      function refreshes() { return !offerLive(bo()) && ap() == bp() && promotes(ap()); }
+      function queueUpdate() {
+        return changed().hasOnly(['participantIds', 'waitlistIds', 'offer', 'updatedAtMs'])
+          && ap().size() <= resource.data.capacity
+          && (joins() || leaves() || waits() || stopsWaiting() || accepts() || declines() || refreshes());
       }
 
       allow read: if signedIn();
       allow create: if signedIn() && request.resource.data.organizerId == request.auth.uid && validActivity(request.resource.data);
       allow update: if signedIn() && (
         (isOrganizer() && request.resource.data.organizerId == resource.data.organizerId && validActivity(request.resource.data))
-        || joinsOrLeaves()
+        || queueUpdate()
         || (isMember() && changed().hasOnly(['lastMessage']))
       );
       allow delete: if signedIn() && isOrganizer();

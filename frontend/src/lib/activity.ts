@@ -1,7 +1,9 @@
 import catalog from '@/data/catalog.json'
 
 export type LevelId = 'tous' | 'debutant' | 'intermediaire' | 'avance'
-export interface LastMessage { text: string; authorName: string; sentAtMs: number }
+export interface LastMessage { text: string; authorName: string; authorId?: string; sentAtMs: number }
+/** Place libérée proposée à la première personne de la liste d'attente, à confirmer avant expiration. */
+export interface Offer { uid: string; expiresAtMs: number; offeredAtMs?: number }
 export interface Activity {
   id: string
   title: string
@@ -21,6 +23,9 @@ export interface Activity {
   endTime: string
   capacity: number
   participantIds: string[]
+  /** Liste d'attente, dans l'ordre d'inscription. */
+  waitlistIds?: string[]
+  offer?: Offer | null
   organizerId: string
   organizerName: string
   organizerPhoto?: string
@@ -58,9 +63,33 @@ export function formatDistance(km: number | null) {
   return `${km < 10 ? km.toFixed(1).replace('.', ',') : Math.round(km)} km`
 }
 
-export const placesLeft = (a: Activity) => Math.max(0, a.capacity - a.participantIds.length)
-export const isFull = (a: Activity) => placesLeft(a) === 0
+// Une place proposée à quelqu'un de la liste d'attente reste réservée jusqu'à son expiration.
+export const activeOffer = (a: Activity, now = Date.now()) => a.offer && a.offer.expiresAtMs > now ? a.offer : null
+export const placesLeft = (a: Activity, now = Date.now()) => Math.max(0, a.capacity - a.participantIds.length - (activeOffer(a, now) ? 1 : 0))
+export const isFull = (a: Activity, now = Date.now()) => placesLeft(a, now) === 0
 export const isMember = (a: Activity, uid?: string) => !!uid && (a.organizerId === uid || a.participantIds.includes(uid))
+export const waitlistOf = (a: Activity) => a.waitlistIds ?? []
+/** Inscription directe : seulement s'il reste une place et que personne n'attend (sinon la file est prioritaire). */
+export const canJoinDirectly = (a: Activity, now = Date.now()) => !isFull(a, now) && waitlistOf(a).length === 0
+/** Une place libre attend d'être proposée (offre expirée ou désistement pendant une offre). */
+export const queueNeedsRefresh = (a: Activity, now = Date.now()) => !activeOffer(a, now) && (!!a.offer || (waitlistOf(a).length > 0 && a.participantIds.length < a.capacity))
+/** Rang dans la liste d'attente (1 = prochain servi), 0 si absent. */
+export const waitlistPosition = (a: Activity, uid?: string) => uid ? waitlistOf(a).indexOf(uid) + 1 : 0
+export const hasOfferFor = (a: Activity, uid?: string, now = Date.now()) => !!uid && activeOffer(a, now)?.uid === uid
+export const OFFER_DELAY_MS = 24 * 3600 * 1000
+/** Délai pour confirmer : 24 h, sans dépasser le début de l'activité. */
+export const offerDeadline = (a: Pick<Activity, 'date' | 'startTime'>, now = Date.now()) =>
+  Math.max(now + 3600 * 1000, Math.min(now + OFFER_DELAY_MS, new Date(`${a.date}T${a.startTime || '00:00'}:00`).getTime()))
+/** Échéance lisible : « aujourd’hui à 18h30 », « demain à 9h » ou « le 12 nov. à 14h ». */
+export function deadlineLabel(ms: number, now = Date.now()) {
+  const d = new Date(ms)
+  const time = shortHour(`${d.getHours()}:${String(d.getMinutes()).padStart(2, '0')}`)
+  const today = toIsoDay(new Date(now))
+  const tomorrow = new Date(now); tomorrow.setDate(tomorrow.getDate() + 1)
+  if (toIsoDay(d) === today) return `aujourd’hui à ${time}`
+  if (toIsoDay(d) === toIsoDay(tomorrow)) return `demain à ${time}`
+  return `le ${new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'short' }).format(d)} à ${time}`
+}
 export const startsAt = (a: Activity) => new Date(`${a.date}T${a.startTime || '00:00'}:00`)
 export const isPast = (a: Activity, now = new Date()) => new Date(`${a.date}T${a.endTime || '23:59'}:00`) < now
 
@@ -92,6 +121,25 @@ export function relativeTime(ms: number, now = Date.now()) {
   const yesterday = new Date(now); yesterday.setDate(yesterday.getDate() - 1)
   if (toIsoDay(date) === toIsoDay(yesterday)) return 'Hier'
   return new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'short' }).format(date)
+}
+
+/** « À l’instant », « Il y a 5 min », « Il y a 3 h », « Il y a 2 jours » (maquette 13). */
+export function agoLabel(ms: number, now = Date.now()) {
+  const minutes = Math.max(0, Math.round((now - ms) / 60000))
+  if (minutes < 1) return 'À l’instant'
+  if (minutes < 60) return `Il y a ${minutes} min`
+  const hours = Math.round(minutes / 60)
+  if (hours < 24) return `Il y a ${hours} h`
+  const days = Math.round(hours / 24)
+  return days < 7 ? `Il y a ${days} jour${days > 1 ? 's' : ''}` : `Le ${new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'short' }).format(new Date(ms))}`
+}
+/** « dans 2 heures », « dans 35 minutes », « demain à 9h » : pour les rappels d'activité. */
+export function startsInLabel(a: Activity, now = Date.now()) {
+  const minutes = Math.round((startsAt(a).getTime() - now) / 60000)
+  if (minutes <= 0) return 'a commencé'
+  if (minutes < 60) return `commence dans ${minutes} minute${minutes > 1 ? 's' : ''}`
+  if (minutes < 12 * 60) { const h = Math.round(minutes / 60); return `commence dans ${h} heure${h > 1 ? 's' : ''}` }
+  return `commence ${deadlineLabel(startsAt(a).getTime(), now)}`
 }
 
 export type DatePreset = 'toutes' | 'aujourdhui' | 'semaine' | 'weekend'

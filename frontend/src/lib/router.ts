@@ -2,7 +2,7 @@ import { computed, ref } from 'vue'
 
 // Navigation par ancre (#/…) : aucun paramétrage d'hébergement supplémentaire
 // et compatible avec le retour du lien magique sur /login.html.
-export type RouteName = 'decouvrir' | 'rechercher' | 'activite' | 'participation' | 'modifier' | 'creer' | 'conversations' | 'conversation' | 'mes-activites' | 'profil' | 'profil-modifier' | 'favoris' | 'communaute'
+export type RouteName = 'decouvrir' | 'rechercher' | 'activite' | 'participation' | 'modifier' | 'creer' | 'conversations' | 'conversation' | 'mes-activites' | 'profil' | 'profil-modifier' | 'favoris' | 'communaute' | 'notifications'
 export interface Route { name: RouteName; id?: string; query: Record<string, string> }
 
 export function parseRoute(hash: string): Route {
@@ -12,7 +12,7 @@ export function parseRoute(hash: string): Route {
   if (first === 'activite' && id) return { name: extra === 'participation' ? 'participation' : extra === 'modifier' ? 'modifier' : 'activite', id, query }
   if (first === 'conversations' && id) return { name: 'conversation', id, query }
   if (first === 'profil' && id === 'modifier') return { name: 'profil-modifier', query }
-  const simple: RouteName[] = ['rechercher', 'creer', 'conversations', 'mes-activites', 'profil', 'favoris', 'communaute']
+  const simple: RouteName[] = ['rechercher', 'creer', 'conversations', 'mes-activites', 'profil', 'favoris', 'communaute', 'notifications']
   return { name: simple.includes(first as RouteName) ? first as RouteName : 'decouvrir', query }
 }
 

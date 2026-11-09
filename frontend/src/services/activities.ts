@@ -1,6 +1,7 @@
-import { addDoc, arrayRemove, arrayUnion, collection, deleteDoc, doc, getDoc, getDocs, onSnapshot, orderBy, query, runTransaction, serverTimestamp, updateDoc, type DocumentData } from 'firebase/firestore'
+import { addDoc, arrayRemove, arrayUnion, collection, deleteDoc, doc, getDoc, getDocs, onSnapshot, orderBy, query, runTransaction, serverTimestamp, updateDoc, where, type DocumentData } from 'firebase/firestore'
 import { db } from './firebase'
-import type { Activity, ActivityDraft } from '@/lib/activity'
+import { canJoinDirectly, type Activity, type ActivityDraft, type Offer } from '@/lib/activity'
+import * as queue from '@/lib/waitlist'
 
 export interface Author { uid: string; name: string; photo?: string }
 export interface Message { id: string; authorId: string; authorName: string; authorPhoto?: string; text: string; sentAtMs: number }
@@ -10,6 +11,8 @@ const toActivity = (id: string, data: DocumentData): Activity => ({
   ...data,
   id,
   participantIds: Array.isArray(data.participantIds) ? data.participantIds : [],
+  waitlistIds: Array.isArray(data.waitlistIds) ? data.waitlistIds : [],
+  offer: data.offer && typeof data.offer.uid === 'string' ? data.offer as Offer : null,
   capacity: Number(data.capacity) || 0,
   lat: typeof data.lat === 'number' ? data.lat : null,
   lng: typeof data.lng === 'number' ? data.lng : null,
@@ -33,6 +36,8 @@ export async function createActivity(draft: ActivityDraft, organizer: Author): P
   const activity = {
     ...draft,
     participantIds: [] as string[],
+    waitlistIds: [] as string[],
+    offer: null,
     organizerId: organizer.uid,
     organizerName: organizer.name,
     organizerPhoto: organizer.photo || '',
@@ -58,15 +63,42 @@ export async function joinActivity(id: string, uid: string): Promise<Activity> {
     if (!snapshot.exists()) throw new Error('Activité introuvable.')
     const current = toActivity(id, snapshot.data() ?? {})
     if (current.participantIds.includes(uid)) return current
-    if (current.participantIds.length >= current.capacity) throw new ActivityFullError()
+    if (!canJoinDirectly(current)) throw new ActivityFullError()
     transaction.update(ref, { participantIds: arrayUnion(uid), updatedAtMs: Date.now() })
     return { ...current, participantIds: [...current.participantIds, uid] }
   })
 }
 
-// US-10 : désinscription.
-export async function leaveActivity(id: string, uid: string) {
-  await updateDoc(doc(db, 'activities', id), { participantIds: arrayRemove(uid), updatedAtMs: Date.now() })
+async function inTransaction(id: string, change: (a: Activity) => Partial<Activity> | null): Promise<Activity> {
+  const ref = doc(db, 'activities', id)
+  return runTransaction(db, async transaction => {
+    const snapshot = await transaction.get(ref)
+    if (!snapshot.exists()) throw new Error('Activité introuvable.')
+    const current = toActivity(id, snapshot.data() ?? {})
+    const patch = change(current)
+    if (!patch) return current
+    transaction.update(ref, { ...patch, updatedAtMs: Date.now() })
+    return { ...current, ...patch }
+  })
+}
+
+// US-10 : désinscription. La place libérée est proposée à la liste d'attente.
+export const leaveActivity = (id: string, uid: string) => inTransaction(id, a => queue.leave(a, uid))
+// Liste d'attente (sujet ART) : rejoindre, quitter, confirmer ou laisser une place proposée.
+export const joinWaitlist = (id: string, uid: string) => inTransaction(id, a => queue.wait(a, uid))
+export const leaveWaitlist = (id: string, uid: string) => inTransaction(id, a => queue.stopWaiting(a, uid))
+export const acceptOffer = (id: string, uid: string) => inTransaction(id, a => queue.accept(a, uid))
+export const declineOffer = (id: string, uid: string) => inTransaction(id, a => queue.decline(a, uid))
+/**
+ * Échéance dépassée (ou place restée libre) : la place passe à la personne suivante.
+ * Sans serveur, c'est le premier membre qui affiche l'activité qui fait avancer la file.
+ */
+export const refreshQueue = (id: string) => inTransaction(id, a => queue.refresh(a))
+/** Places proposées à cette personne, en temps réel (notifications). */
+export function watchMyOffers(uid: string, onOffers: (activities: Activity[]) => void, onError: (error: Error) => void) {
+  return onSnapshot(query(collection(db, 'activities'), where('offer.uid', '==', uid)), (snapshot: { docs: { id: string; data(): DocumentData }[] }) => {
+    onOffers(snapshot.docs.map(item => toActivity(item.id, item.data())))
+  }, onError)
 }
 
 // US-11 : groupe de l'activité, mis à jour en temps réel.
@@ -82,5 +114,5 @@ export async function sendMessage(activityId: string, author: Author, text: stri
   const sentAtMs = Date.now()
   const clean = text.trim()
   await addDoc(collection(db, 'activities', activityId, 'messages'), { authorId: author.uid, authorName: author.name, authorPhoto: author.photo || '', text: clean, sentAtMs, createdAt: serverTimestamp() })
-  await updateDoc(doc(db, 'activities', activityId), { lastMessage: { text: clean, authorName: author.name, sentAtMs } })
+  await updateDoc(doc(db, 'activities', activityId), { lastMessage: { text: clean, authorName: author.name, authorId: author.uid, sentAtMs } })
 }

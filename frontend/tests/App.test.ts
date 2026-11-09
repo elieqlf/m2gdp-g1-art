@@ -11,7 +11,7 @@ vi.mock('../src/services/firebase', () => ({
   requestSignInLink: vi.fn(), completeSignIn: vi.fn(), observeAccount: vi.fn(),
   getProfile: vi.fn(), saveProfile: vi.fn(), listMembers: vi.fn(), logout: vi.fn(), updateProfile: vi.fn(), setFavorite: vi.fn(),
 }))
-vi.mock('../src/services/activities', () => ({ listActivities: vi.fn(async () => []), getActivity: vi.fn(async () => null), ActivityFullError: class extends Error {} }))
+vi.mock('../src/services/activities', () => ({ listActivities: vi.fn(async () => []), getActivity: vi.fn(async () => null), ActivityFullError: class extends Error {}, watchMyOffers: vi.fn(() => () => {}) }))
 vi.mock('../src/services/places', () => ({ suggestAddresses: vi.fn(async () => []), resolveAddress: vi.fn() }))
 let wrapper: VueWrapper
 let observer: (user: api.Account | null) => void

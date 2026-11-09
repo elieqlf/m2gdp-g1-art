@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { CalendarDays, ChevronRight, FileText, Heart, LogOut, MessageCircleMore, Pencil, Settings, Shield, Sparkles, User, Users } from '@lucide/vue'
+import { Bell, CalendarDays, ChevronRight, FileText, Heart, LogOut, MessageCircleMore, Pencil, Settings, Shield, Sparkles, User, Users } from '@lucide/vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import { disciplineLabel, isPast } from '@/lib/activity'
-import { displayName, store, uid } from '@/lib/store'
+import { displayName, store, uid, unreadNotifications } from '@/lib/store'
 
 // US-13 : consulter son profil (maquette 24).
 const emit = defineEmits<{ logout: [] }>()
@@ -17,7 +17,7 @@ const stats = computed(() => {
 const LANDING = 'https://novart-109bf.web.app'
 const groups = [
   [{ label: 'Mes informations', href: '#/profil/modifier', icon: User }, { label: 'Mes centres d’intérêt', href: '#/profil/modifier?section=interets', icon: Sparkles }, { label: 'Mes favoris', href: '#/favoris', icon: Heart }],
-  [{ label: 'Mes activités', href: '#/mes-activites', icon: CalendarDays }, { label: 'Mes conversations', href: '#/conversations', icon: MessageCircleMore }, { label: 'Communauté', href: '#/communaute', icon: Users }],
+  [{ label: 'Notifications', href: '#/notifications', icon: Bell, badge: true }, { label: 'Mes activités', href: '#/mes-activites', icon: CalendarDays }, { label: 'Mes conversations', href: '#/conversations', icon: MessageCircleMore }, { label: 'Communauté', href: '#/communaute', icon: Users }],
   [{ label: 'Confidentialité', href: `${LANDING}/legal.html#confidentialite`, icon: Shield, external: true }, { label: 'Conditions d’utilisation', href: `${LANDING}/legal.html#cgu`, icon: FileText, external: true }],
 ]
 function logout() { busy.value = true; emit('logout') }
@@ -40,7 +40,7 @@ function logout() { busy.value = true; emit('logout') }
       </dl>
     </header>
     <nav v-for="(group, index) in groups" :key="index" class="menu-card" :aria-label="['Mon compte', 'Mon activité', 'Informations'][index]">
-      <a v-for="item in group" :key="item.label" :href="item.href" class="menu-row" :target="'external' in item ? '_blank' : undefined" :rel="'external' in item ? 'noopener' : undefined"><component :is="item.icon" aria-hidden="true" /><span>{{ item.label }}</span><ChevronRight aria-hidden="true" /></a>
+      <a v-for="item in group" :key="item.label" :href="item.href" class="menu-row" :target="'external' in item ? '_blank' : undefined" :rel="'external' in item ? 'noopener' : undefined"><component :is="item.icon" aria-hidden="true" /><span>{{ item.label }}</span><span v-if="'badge' in item && unreadNotifications" class="count-badge count-badge--inline">{{ unreadNotifications }}<span class="sr-only"> nouvelles</span></span><ChevronRight aria-hidden="true" /></a>
     </nav>
     <button type="button" class="logout-row" :disabled="busy" @click="logout"><LogOut aria-hidden="true" />Se déconnecter</button>
   </div>

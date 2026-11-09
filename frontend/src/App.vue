@@ -21,9 +21,10 @@ import ProfileView from '@/views/ProfileView.vue'
 import ProfileEditView from '@/views/ProfileEditView.vue'
 import FavoritesView from '@/views/FavoritesView.vue'
 import CommunityView from '@/views/CommunityView.vue'
+import NotificationsView from '@/views/NotificationsView.vue'
 import { isValidEmail, hasSignInLink, pendingEmail, requestSignInLink, completeSignIn, observeAccount, getProfile, saveProfile, logout, type Account, type Profile } from '@/services/firebase'
 import type { AddressSelection } from '@/services/places'
-import { loadActivities, loadMembers, notifyPositionFallback, requestPosition, resetStore, store } from '@/lib/store'
+import { loadActivities, loadMembers, notifyPositionFallback, requestPosition, resetStore, startWatchers, store } from '@/lib/store'
 import { tabOf, useRoute } from '@/lib/router'
 
 type Screen = 'loading' | 'request' | 'sent' | 'confirm' | 'expired' | 'profile' | 'app' | 'account-error'
@@ -35,7 +36,7 @@ const account = ref<Account | null>(null)
 const cooldown = ref(0)
 const route = useRoute()
 // Écrans de l'application connectée, choisis selon l'ancre (#/…).
-const views = { decouvrir: DiscoverView, rechercher: SearchView, activite: ActivityView, participation: ParticipationView, creer: CreateActivityView, modifier: EditActivityView, conversations: ConversationsView, conversation: ConversationView, 'mes-activites': MyActivitiesView, profil: ProfileView, 'profil-modifier': ProfileEditView, favoris: FavoritesView, communaute: CommunityView }
+const views = { decouvrir: DiscoverView, rechercher: SearchView, activite: ActivityView, participation: ParticipationView, creer: CreateActivityView, modifier: EditActivityView, conversations: ConversationsView, conversation: ConversationView, 'mes-activites': MyActivitiesView, profil: ProfileView, 'profil-modifier': ProfileEditView, favoris: FavoritesView, communaute: CommunityView, notifications: NotificationsView }
 const currentView = computed(() => views[route.value.name])
 const viewKey = computed(() => `${route.value.name}:${route.value.id ?? ''}`)
 const showNav = computed(() => !['participation', 'conversation'].includes(route.value.name))
@@ -66,6 +67,7 @@ function enterApp() {
   Object.assign(store.profile, { ...profile })
   void loadActivities(true)
   void loadMembers(true)
+  startWatchers()
   // Comme une application de carte, on part de la position réelle de l'appareil.
   if (store.gpsStatus === 'idle') void requestPosition().then(found => { if (!found) notifyPositionFallback() })
 }

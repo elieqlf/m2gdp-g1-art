@@ -3,7 +3,7 @@ import { ME, capture, demoData, openApp } from './fixtures'
 
 // Scénario de lancement (J5) : « Créer une activité » puis « Rechercher, s'inscrire et prendre contact ».
 const today = () => new Date().toISOString().slice(0, 10)
-function pickActivity(predicate: (a: ReturnType<typeof demoData>['activities'][number] & { capacity?: number }) => boolean) {
+function pickActivity(predicate: (a: ReturnType<typeof demoData>['activities'][number]) => boolean) {
   const { activities } = demoData()
   const titles = activities.map(a => a.title)
   return activities.find(a => a.date > today() && titles.filter(t => t === a.title).length === 1 && predicate(a))!
@@ -102,10 +102,18 @@ test('US-05 : aucun résultat, carte et réinitialisation', async ({ page }, tes
   await expect(page.locator('.map-view__sheet .activity-card')).toBeVisible()
 })
 
-test('US-09/10 : activité complète, désinscription et favoris', async ({ page }) => {
-  const full = pickActivity(a => a.participantIds.length >= (a as { capacity: number }).capacity && a.organizerId !== ME.uid && !a.participantIds.includes(ME.uid))
+test('US-09/10 : activité complète, liste d’attente, désinscription et favoris', async ({ page }, testInfo) => {
+  const full = pickActivity(a => a.participantIds.length >= a.capacity! && a.organizerId !== ME.uid && !a.participantIds.includes(ME.uid) && !a.offer && !a.waitlistIds?.includes(ME.uid))
   await openApp(page, 'app', `#/activite/${full.id}`)
-  await expect(page.getByRole('button', { name: 'Complet' })).toBeDisabled()
+  // Complet : on peut rejoindre la liste d'attente (sujet ART).
+  await page.getByRole('button', { name: 'Rejoindre la liste d’attente' }).click()
+  await expect(page.getByText('Tu es sur la liste d’attente : on te prévient si une place se libère.')).toBeVisible()
+  const rank = (full.waitlistIds?.length ?? 0) + 1
+  await expect(page.getByRole('heading', { name: `Tu es n°${rank} sur la liste d’attente` })).toBeVisible()
+  await expect(page.getByText(`${rank} personne${rank > 1 ? 's' : ''} en liste d’attente`)).toBeVisible()
+  await capture(page, testInfo, 'liste-attente')
+  await page.getByRole('button', { name: 'Quitter la liste d’attente' }).click()
+  await expect(page.getByRole('button', { name: 'Rejoindre la liste d’attente' })).toBeVisible()
   await page.getByRole('button', { name: /Ajouter « .* » aux favoris/ }).first().click()
   await page.goto('/#/favoris')
   await expect(page.getByRole('link', { name: full.title })).toBeVisible()
@@ -115,7 +123,33 @@ test('US-09/10 : activité complète, désinscription et favoris', async ({ page
   await page.getByRole('button', { name: 'Quitter l’activité' }).click()
   await page.getByRole('alertdialog').getByRole('button', { name: 'Quitter l’activité' }).click()
   await expect(page.getByText('Tu ne participes plus à cette activité.')).toBeVisible()
-  await expect(page.getByRole('button', { name: 'Participer' })).toBeVisible()
+  await expect(page.getByRole('button', { name: /^(Participer|Rejoindre la liste d’attente)$/ })).toBeVisible()
+})
+
+test('Liste d’attente : la place libérée est notifiée puis confirmée', async ({ page }, testInfo) => {
+  const offered = demoData().activities.find(a => a.offer?.uid === ME.uid)!
+  await openApp(page, 'app', '#/decouvrir')
+  // Message flottant à l'ouverture, et pastille sur la cloche.
+  await expect(page.getByText(`Une place s’est libérée pour « ${offered.title} »`)).toBeVisible()
+  await page.getByRole('link', { name: /^Notifications, \d+ nouvelles?$/ }).click()
+  await expect(page.getByRole('heading', { name: 'Notifications' })).toBeVisible()
+  const item = page.getByRole('link', { name: new RegExp(`Une place s’est libérée.*${offered.title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`) })
+  await expect(item).toBeVisible()
+  await expect(page.getByRole('link', { name: /Liste d’attente.*Tu es n°2/ })).toBeVisible()
+  await capture(page, testInfo, 'notifications')
+  await page.getByRole('tab', { name: 'Messages' }).click()
+  await expect(item).toBeHidden()
+  await page.getByRole('tab', { name: 'Toutes' }).click()
+  await item.click()
+  await expect(page.getByRole('heading', { name: 'Une place s’est libérée pour toi !' })).toBeVisible()
+  await capture(page, testInfo, 'place-proposee')
+  await page.getByRole('button', { name: 'Confirmer ma place' }).click()
+  await expect(page).toHaveURL(new RegExp(`#/activite/${offered.id}/participation`))
+  // La place confirmée disparaît des notifications ; le groupe de l'activité y apparaît désormais.
+  await page.goto('/#/notifications')
+  await expect(page.getByRole('link', { name: /Une place s’est libérée/ })).toBeHidden()
+  await page.getByRole('tab', { name: 'Messages' }).click()
+  await expect(page.getByRole('link', { name: new RegExp(`Nouveau message.*${offered.title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`) })).toBeVisible()
 })
 
 test('US-08 : modifier son activité sans descendre sous le nombre d’inscrits, puis la supprimer', async ({ page }, testInfo) => {
@@ -163,7 +197,8 @@ test('sans localisation, un message flottant prévient puis disparaît', async (
   await context.clearPermissions()
   await openApp(page, 'app', '#/decouvrir')
   const toast = page.getByRole('status').filter({ hasText: 'les distances partent de ton adresse' })
-  await expect(toast).toBeVisible()
+  // Il passe après le message « place libérée », affiché en premier à l'ouverture.
+  await expect(toast).toBeVisible({ timeout: 10000 })
   await expect(page.getByText('Distances depuis ton adresse')).toBeVisible()
   await expect(toast).toBeHidden({ timeout: 8000 })
 })

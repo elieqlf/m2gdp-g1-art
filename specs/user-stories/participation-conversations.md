@@ -16,7 +16,26 @@ Backlog original : US-09 à US-12 (MUST). Maquettes : 11, 14, 15, 17.
 | # | Critère d'acceptation | Test |
 |---|---|---|
 | CA1 | « Quitter l'activité » avec confirmation ; la place est libérée | `scenario.spec.ts` |
-| CA2 | « Mes activités » : onglets À venir / Passées, sections « J'y participe » et « J'organise » | captures |
+| CA2 | « Mes activités » : onglets À venir / Passées, sections « J'y participe », « J'organise » et « En liste d'attente » | captures |
+| CA3 | Si des personnes attendent, la place libérée est proposée à la première de la liste | `activity.test.ts` |
+
+## Liste d'attente (sujet ART : « notifié en cas de désistement, doit confirmer »)
+
+| # | Critère d'acceptation | Test |
+|---|---|---|
+| CA1 | Activité complète : « Rejoindre la liste d'attente » ; la fiche affiche « Tu es n°X » et le nombre de personnes en attente | `scenario.spec.ts` |
+| CA2 | « Quitter la liste d'attente » à tout moment | idem |
+| CA3 | Désistement : la place est proposée au n°1, réservée 24 h (jamais au-delà du début de l'activité, jamais moins d'1 h) | `activity.test.ts` |
+| CA4 | La personne est prévenue en temps réel (message flottant, pastille sur la cloche, écran Notifications) | `scenario.spec.ts` |
+| CA5 | « Confirmer ma place » l'inscrit ; « Je laisse ma place » (avec confirmation) passe la place au suivant | idem, `activity.test.ts` |
+| CA6 | Délai dépassé : la place passe au suivant dès qu'un membre ouvre la fiche (pas de serveur) | `activity.test.ts` |
+| CA7 | Tant que des personnes attendent, personne ne peut passer devant en s'inscrivant directement | idem, `docs/firestore.rules` |
+
+## Notifications (maquette 13)
+
+Écran `#/notifications` (cloche sur Découvrir, ligne « Notifications » dans Profil), onglets Toutes / Activités / Messages :
+place libérée à confirmer, rang en liste d'attente, rappel des activités qui commencent dans les 48 h, nouveaux messages des groupes (7 derniers jours).
+Les notifications vues sont mémorisées sur l'appareil. Pas de notification push (il faudrait Cloud Functions et Firebase Cloud Messaging).
 
 ## US-11 / US-12 — Groupe de l'activité
 
@@ -44,9 +63,23 @@ sequenceDiagram
   DB-->>F: onSnapshot(messages)
 ```
 
+```mermaid
+sequenceDiagram
+  participant P as Participant
+  participant W as N°1 de la liste d'attente
+  participant DB as Firestore
+  P->>DB: runTransaction(retirer P, offer = {uid: W, expiresAtMs: +24 h}, retirer W de la file)
+  DB-->>W: onSnapshot(where offer.uid == W) : message flottant + notification
+  W->>DB: runTransaction(vérifier offre valide, ajouter W, offre suivante s'il reste une place)
+  Note over DB: Délai dépassé : le premier membre qui ouvre la fiche passe l'offre au suivant (refreshQueue)
+```
+
+Les transitions de la file sont des fonctions pures (`frontend/src/lib/waitlist.ts`), testées unitairement et appliquées dans une transaction ;
+les règles Firestore (`queueUpdate`) n'autorisent que ces transitions (chacun ne s'ajoute ou ne se retire que lui-même, l'offre va toujours au premier de la file).
+Limite connue : sans Cloud Functions, l'expiration n'est traitée qu'à l'ouverture de la fiche par un membre.
+
 Choix : la messagerie utilise Firestore (sous-collection) plutôt que Realtime Database, déjà verrouillée et non nécessaire pour ce volume.
 
 ## Exclusions
 
-- Pièces jointes, réactions, messages privés, notifications push, non-lus.
-- Liste d'attente avec confirmation en cas de désistement : à arbitrer par l'équipe.
+- Pièces jointes, réactions, notifications push.

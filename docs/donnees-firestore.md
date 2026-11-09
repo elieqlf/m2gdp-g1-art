@@ -18,8 +18,10 @@ classDiagram
     placeName, address, district, lat, lng
     date (AAAA-MM-JJ), startTime, endTime
     capacity, participantIds[]
+    waitlistIds[] (ordre d'arrivée)
+    offer (uid, expiresAtMs, offeredAtMs)
     organizerId, organizerName
-    createdAtMs, lastMessage
+    createdAtMs, lastMessage (text, authorId, authorName, sentAtMs)
   }
   class Message {
     authorId, authorName, text, sentAtMs

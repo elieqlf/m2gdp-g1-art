@@ -1,7 +1,7 @@
 import { computed, reactive } from 'vue'
 import { listMembers, setFavorite, type Account, type Member, type Profile } from '@/services/firebase'
-import { getActivity, listActivities } from '@/services/activities'
-import { LYON_CENTER, type Activity, type Point } from '@/lib/activity'
+import { getActivity, listActivities, watchMyOffers } from '@/services/activities'
+import { LYON_CENTER, activeOffer, isMember, isPast, startsAt, waitlistOf, type Activity, type Point } from '@/lib/activity'
 
 // État partagé entre les écrans de l'application connectée.
 export const store = reactive({
@@ -14,6 +14,10 @@ export const store = reactive({
   gps: null as Point | null,
   gpsStatus: 'idle' as 'idle' | 'pending' | 'granted' | 'denied' | 'unavailable',
   notice: '' as string,
+  /** Activités où une place m'est proposée (temps réel). */
+  offers: [] as Activity[],
+  /** Notifications déjà vues (mémorisées sur cet appareil). */
+  seenNotifications: [] as string[],
 })
 
 export const uid = computed(() => store.account?.uid ?? '')
@@ -26,21 +30,32 @@ export const origin = computed<Point>(() => store.gps
 export const originLabel = computed(() => store.gps ? 'ta position' : typeof store.profile.addressLat === 'number' ? 'ton adresse' : 'le centre de Lyon')
 
 export function resetStore() {
-  Object.assign(store, { account: null, profile: {}, activities: [], activitiesStatus: 'idle', members: {}, membersStatus: 'idle', gps: null, gpsStatus: 'idle', notice: '' })
+  stopWatchers()
+  pending = []
+  Object.assign(store, { account: null, profile: {}, activities: [], activitiesStatus: 'idle', members: {}, membersStatus: 'idle', gps: null, gpsStatus: 'idle', notice: '', offers: [], seenNotifications: [] })
 }
 let noticeTimer: ReturnType<typeof setTimeout> | undefined
-/** Message de confirmation éphémère (« Activité publiée », etc.). */
-export function notify(text: string, duration = 3500) {
+let pending: { text: string; duration: number }[] = []
+/**
+ * Message éphémère. Une réponse à une action (« Activité publiée ») s'affiche tout de suite ;
+ * un message d'arrière-plan (place libérée, localisation) attend la fin du message en cours.
+ */
+export function notify(text: string, duration = 3500, background = false) {
+  if (background && store.notice) { pending.push({ text, duration }); return }
   store.notice = text
   clearTimeout(noticeTimer)
-  noticeTimer = setTimeout(() => { store.notice = '' }, duration)
+  noticeTimer = setTimeout(() => {
+    store.notice = ''
+    const next = pending.shift()
+    if (next) setTimeout(() => notify(next.text, next.duration), 300)
+  }, duration)
 }
 /** Message flottant quand la position de l'appareil n'a pas pu être obtenue. */
 export function notifyPositionFallback() {
   const where = typeof store.profile.addressLat === 'number' ? 'ton adresse' : 'le centre de Lyon'
   notify(store.gpsStatus === 'denied'
     ? `Localisation désactivée : les distances partent de ${where}. Tu peux l’autoriser dans les réglages de ton navigateur.`
-    : `Position introuvable : les distances partent de ${where}.`, 6000)
+    : `Position introuvable : les distances partent de ${where}.`, 6000, true)
 }
 export async function loadActivities(force = false) {
   if (!force && (store.activitiesStatus === 'loading' || store.activitiesStatus === 'ready')) return
@@ -102,4 +117,65 @@ export function requestPosition(): Promise<boolean> {
       { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 },
     )
   })
+}
+
+// ——— Liste d'attente et notifications ———
+
+let unsubscribers: (() => void)[] = []
+function stopWatchers() { unsubscribers.forEach(stop => stop()); unsubscribers = [] }
+const seenKey = () => `novart.notifications.${uid.value}`
+
+/**
+ * Écoute en temps réel les places proposées à la personne connectée : dès qu'une
+ * place se libère pour elle, un message flottant la prévient (où qu'elle soit dans l'appli).
+ */
+export function startWatchers() {
+  if (!uid.value || unsubscribers.length) return
+  try { store.seenNotifications = JSON.parse(localStorage.getItem(seenKey()) || '[]') } catch { store.seenNotifications = [] }
+  let first = true
+  const stop = watchMyOffers(uid.value, list => {
+    const known = new Set(store.offers.map(a => a.id))
+    store.offers = list
+    list.forEach(upsertActivity)
+    const fresh = list.filter(a => activeOffer(a) && !known.has(a.id))
+    if (fresh[0] && (!first || !store.seenNotifications.includes(offerKey(fresh[0]))))
+      notify(`Une place s’est libérée pour «\u00a0${fresh[0].title}\u00a0» : confirme-la dans tes notifications.`, 6000, true)
+    first = false
+  }, () => { /* hors ligne : les notifications se mettront à jour au retour du réseau */ })
+  unsubscribers.push(stop)
+}
+
+export type NotificationKind = 'offer' | 'waitlist' | 'reminder' | 'message'
+export interface AppNotification { id: string; kind: NotificationKind; activity: Activity; atMs: number; group: 'activites' | 'messages' }
+const offerKey = (a: Activity) => `offer:${a.id}:${a.offer?.expiresAtMs ?? 0}`
+const REMINDER_MS = 48 * 3600 * 1000
+const MESSAGE_WINDOW_MS = 7 * 24 * 3600 * 1000
+
+/** Fil de notifications (écran Notifications), du plus récent au plus ancien. */
+export const notifications = computed<AppNotification[]>(() => {
+  const now = Date.now()
+  const list: AppNotification[] = []
+  const seen = new Set<string>()
+  for (const a of [...store.offers, ...store.activities]) {
+    if (seen.has(a.id)) continue
+    seen.add(a.id)
+    if (activeOffer(a, now)?.uid === uid.value) list.push({ id: offerKey(a), kind: 'offer', activity: a, atMs: a.offer?.offeredAtMs ?? now, group: 'activites' })
+    if (waitlistOf(a).includes(uid.value)) list.push({ id: `waitlist:${a.id}`, kind: 'waitlist', activity: a, atMs: 0, group: 'activites' })
+    const last = a.lastMessage
+    if (last && isMember(a, uid.value) && !isPast(a) && (last.authorId ? last.authorId !== uid.value : last.authorName !== me.value.name) && now - last.sentAtMs < MESSAGE_WINDOW_MS)
+      list.push({ id: `message:${a.id}:${last.sentAtMs}`, kind: 'message', activity: a, atMs: last.sentAtMs, group: 'messages' })
+    const start = startsAt(a).getTime()
+    if ((a.participantIds.includes(uid.value) || a.organizerId === uid.value) && !isPast(a) && start - now < REMINDER_MS)
+      list.push({ id: `reminder:${a.id}`, kind: 'reminder', activity: a, atMs: start - REMINDER_MS, group: 'activites' })
+  }
+  // Places à confirmer d'abord, puis du plus récent au plus ancien ; les rangs en file d'attente à la fin.
+  return list.sort((x, y) => Number(y.kind === 'offer') - Number(x.kind === 'offer') || y.atMs - x.atMs)
+})
+/** Pastille de la cloche : notifications jamais vues (la position dans la file n'en est pas une). */
+export const unreadNotifications = computed(() => notifications.value.filter(n => n.kind !== 'waitlist' && !store.seenNotifications.includes(n.id)).length)
+export function markNotificationsSeen() {
+  const ids = notifications.value.map(n => n.id)
+  if (ids.every(id => store.seenNotifications.includes(id))) return
+  store.seenNotifications = [...new Set([...store.seenNotifications, ...ids])].slice(-200)
+  try { localStorage.setItem(seenKey(), JSON.stringify(store.seenNotifications)) } catch { /* navigation privée */ }
 }

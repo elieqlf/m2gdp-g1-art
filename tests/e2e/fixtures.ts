@@ -9,7 +9,7 @@ export type Mode = 'request' | 'profile' | 'app'
 export const ME = { uid: 'preview-user', email: 'preview@example.com' }
 
 interface DemoUser { uid: string; firstName: string; lastName: string }
-interface DemoActivity { id: string; participantIds: string[]; organizerId: string; date: string; title: string }
+interface DemoActivity { id: string; participantIds: string[]; organizerId: string; date: string; title: string; capacity: number; waitlistIds?: string[]; offer?: { uid: string; expiresAtMs: number; offeredAtMs?: number } | null }
 interface DemoMessage { activityId: string }
 
 export function demoData() {
@@ -21,6 +21,12 @@ export function demoData() {
   upcoming[1]?.participantIds.splice(0, 1, ME.uid)
   upcoming[4]?.participantIds.splice(0, 1, ME.uid)
   if (upcoming[6]) Object.assign(upcoming[6], { organizerId: ME.uid, organizerName: 'Camille Martin' })
+  // Liste d'attente : une place libérée attend sa confirmation, et il est n°2 dans une autre file.
+  // Échéance fixe dans la journée (demain 19 h) : les rechargements de page gardent la même offre.
+  const offerEnd = new Date().setHours(19, 0, 0, 0) + 24 * 3600 * 1000
+  const full = upcoming.slice(8).filter(a => a.participantIds.length === a.capacity && a.organizerId !== ME.uid && a.date > new Date().toISOString().slice(0, 10))
+  if (full[0]) Object.assign(full[0], { participantIds: full[0].participantIds.slice(1), offer: { uid: ME.uid, expiresAtMs: offerEnd, offeredAtMs: Date.now() - 2 * 3600 * 1000 } })
+  if (full[1]) full[1].waitlistIds = [full[1].waitlistIds?.[0] ?? 'demo-user-001', ME.uid]
   const ids = new Set(activities.map(a => a.id))
   return { users: data.users, activities, messages: data.messages.filter(m => ids.has(m.activityId)) }
 }
@@ -53,29 +59,40 @@ const activities = ${JSON.stringify(activities)};
 const messages = ${JSON.stringify(messages)};
 let counter = 0;
 const clone = value => JSON.parse(JSON.stringify(value));
+import * as queue from '/src/lib/waitlist.ts';
+import { canJoinDirectly } from '/src/lib/activity.ts';
 export class ActivityFullError extends Error { constructor() { super('Cette activité est complète.'); } }
+const offerWatchers = new Set();
+const emitOffers = () => offerWatchers.forEach(w => w.callback(clone(activities.filter(a => a.offer?.uid === w.uid))));
+const apply = async (id, change) => { const a = activities.find(x => x.id === id); const patch = change(a); if (patch) Object.assign(a, patch); emitOffers(); return clone(a); };
+export const leaveActivity = (id, uid) => apply(id, a => queue.leave(a, uid));
+export const joinWaitlist = (id, uid) => apply(id, a => queue.wait(a, uid));
+export const leaveWaitlist = (id, uid) => apply(id, a => queue.stopWaiting(a, uid));
+export const acceptOffer = (id, uid) => apply(id, a => queue.accept(a, uid));
+export const declineOffer = (id, uid) => apply(id, a => queue.decline(a, uid));
+export const refreshQueue = id => apply(id, a => queue.refresh(a));
+export const watchMyOffers = (uid, callback) => { const w = { uid, callback }; offerWatchers.add(w); queueMicrotask(emitOffers); return () => offerWatchers.delete(w); };
 export const listActivities = async () => clone(activities);
 export const getActivity = async id => clone(activities.find(a => a.id === id) ?? null);
 export const createActivity = async (draft, organizer) => {
-  const created = { ...draft, id: 'nouvelle-' + (++counter), participantIds: [], organizerId: organizer.uid, organizerName: organizer.name, organizerPhoto: '', status: 'published', createdAtMs: Date.now(), lastMessage: null };
+  const created = { ...draft, id: 'nouvelle-' + (++counter), participantIds: [], waitlistIds: [], offer: null, organizerId: organizer.uid, organizerName: organizer.name, organizerPhoto: '', status: 'published', createdAtMs: Date.now(), lastMessage: null };
   activities.unshift(created); return clone(created);
 };
 export const updateActivity = async (id, draft) => { Object.assign(activities.find(a => a.id === id), draft); };
 export const deleteActivity = async id => { activities.splice(activities.findIndex(a => a.id === id), 1); };
 export const joinActivity = async (id, uid) => {
   const a = activities.find(x => x.id === id);
-  if (a.participantIds.length >= a.capacity) throw new ActivityFullError();
+  if (!canJoinDirectly(a)) throw new ActivityFullError();
   if (!a.participantIds.includes(uid)) a.participantIds.push(uid);
   return clone(a);
 };
-export const leaveActivity = async (id, uid) => { const a = activities.find(x => x.id === id); a.participantIds = a.participantIds.filter(p => p !== uid); };
 const listeners = new Map();
 const emit = id => listeners.get(id)?.(clone(messages.filter(m => m.activityId === id).map((m, i) => ({ id: id + '-' + i, ...m }))));
 export const watchMessages = (id, callback) => { listeners.set(id, callback); queueMicrotask(() => emit(id)); return () => listeners.delete(id); };
 export const sendMessage = async (id, author, text) => {
   const message = { activityId: id, authorId: author.uid, authorName: author.name, authorPhoto: '', text: text.trim(), sentAtMs: Date.now() };
   messages.push(message);
-  activities.find(a => a.id === id).lastMessage = { text: message.text, authorName: author.name, sentAtMs: message.sentAtMs };
+  activities.find(a => a.id === id).lastMessage = { text: message.text, authorName: author.name, authorId: author.uid, sentAtMs: message.sentAtMs };
   emit(id);
 };
 `

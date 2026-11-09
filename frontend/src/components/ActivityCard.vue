@@ -5,8 +5,8 @@ import DisciplineBadge from './DisciplineBadge.vue'
 import DisciplineIcon from './DisciplineIcon.vue'
 import FavoriteButton from './FavoriteButton.vue'
 import UserAvatar from './UserAvatar.vue'
-import { activityDistance, clockRange, dateBlock, disciplineLabel, formatDistance, isFull, shortDay, timeRange, type Activity } from '@/lib/activity'
-import { memberName, origin } from '@/lib/store'
+import { activityDistance, clockRange, dateBlock, disciplineLabel, formatDistance, hasOfferFor, isFull, shortDay, timeRange, waitlistPosition, type Activity } from '@/lib/activity'
+import { memberName, origin, uid } from '@/lib/store'
 
 // Variantes reprises des maquettes : tile (Découvrir), row (Rechercher),
 // feature (« À ne pas manquer ») et agenda (Mes activités).
@@ -15,6 +15,8 @@ const distance = computed(() => formatDistance(activityDistance(props.activity, 
 const href = computed(() => `#/activite/${encodeURIComponent(props.activity.id)}`)
 const block = computed(() => dateBlock(props.activity.date))
 const places = computed(() => `${props.activity.participantIds.length} / ${props.activity.capacity} places`)
+// Liste d'attente (Mes activités) : place à confirmer ou rang dans la file.
+const queueTag = computed(() => props.variant !== 'agenda' ? '' : hasOfferFor(props.activity, uid.value) ? 'Place à confirmer' : waitlistPosition(props.activity, uid.value) ? `N°${waitlistPosition(props.activity, uid.value)} en liste d’attente` : '')
 const place = computed(() => [props.activity.placeName, props.activity.district?.split(',')[0]].filter(Boolean).join(', '))
 </script>
 
@@ -34,7 +36,7 @@ const place = computed(() => [props.activity.placeName, props.activity.district?
       <span v-if="variant === 'feature'" class="discipline-badge discipline-badge--overlay"><DisciplineIcon :discipline="activity.discipline" />{{ disciplineLabel(activity.discipline) }}</span>
       <h3 class="activity-card__title"><a :href="href" class="stretched-link">{{ activity.title }}</a></h3>
       <p v-if="variant === 'row'" class="activity-card__discipline"><DisciplineIcon :discipline="activity.discipline" />{{ disciplineLabel(activity.discipline) }}</p>
-      <DisciplineBadge v-if="variant === 'agenda'" :discipline="activity.discipline" />
+      <span v-if="variant === 'agenda'" class="activity-card__tags"><DisciplineBadge :discipline="activity.discipline" /><span v-if="queueTag" class="soft-tag" :class="{ 'soft-tag--dark': queueTag.startsWith('Place') }">{{ queueTag }}</span></span>
       <ul class="activity-card__facts">
         <li v-if="variant === 'agenda'"><Clock aria-hidden="true" />{{ clockRange(activity) }}</li>
         <li v-else><CalendarDays aria-hidden="true" />{{ shortDay(activity.date) }} · {{ timeRange(activity) }}</li>
