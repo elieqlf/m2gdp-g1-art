@@ -213,6 +213,45 @@
 .map-view__sheet .activity-card--row .activity-card__media { width: 36%; }
 .map-view__sheet .activity-card--row .activity-card__body { gap: .25rem; padding-block: .5rem; }
 
+/* Accueil « Découvrir » : carte plein écran et panneau du bas (comme une app de transport) */
+.discover { --peek: 16.5rem; position: fixed; z-index: 1; top: 0; bottom: calc(var(--nav-height) + env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); width: min(100%, var(--app-width, 30rem)); overflow: hidden; background: var(--tint); }
+.discover__map { position: absolute; inset: 0; height: 100%; border-radius: 0; }
+.discover .leaflet-top { top: 7.8rem; }
+.discover .leaflet-bottom { bottom: var(--peek); }
+.discover__top { position: absolute; z-index: 5; top: 0; left: 0; right: 0; padding: .8rem .8rem 1.2rem; background: linear-gradient(to bottom, color-mix(in srgb, var(--background) 92%, transparent) 55%, transparent); pointer-events: none; }
+.discover__top > * { pointer-events: auto; }
+.discover__top .chip-scroller { padding-bottom: .2rem; }
+.search-field--floating { border-color: transparent; box-shadow: var(--shadow); }
+.icon-button--floating { background: var(--card); box-shadow: var(--shadow); }
+.pill--floating { background: var(--card); box-shadow: 0 2px 8px rgb(0 0 0 / .1); min-height: 2.5rem; padding-block: .35rem; }
+.discover__locate { position: absolute; z-index: 5; right: .8rem; bottom: calc(var(--peek) + 2.6rem); transition: bottom .3s ease; }
+.discover-sheet { position: absolute; z-index: 6; left: 0; right: 0; bottom: 0; height: var(--peek); display: flex; flex-direction: column; background: var(--background); border-radius: 1.4rem 1.4rem 0 0; box-shadow: 0 -6px 24px rgb(0 0 0 / .14); transition: height .3s ease; }
+.discover-sheet.is-open { height: calc(100% - 7.2rem); }
+.discover-sheet__handle { padding: .2rem 1rem .1rem; touch-action: none; cursor: grab; }
+.discover-sheet__handle .sheet__grip { margin-bottom: .4rem; }
+.discover-sheet__header { display: flex; align-items: center; justify-content: space-between; gap: .5rem; }
+.discover-sheet__toggle { border: 0; background: none; cursor: pointer; font: inherit; }
+.discover-sheet__body { flex: 1; min-height: 0; overflow-y: auto; padding: 0 1rem 1rem; }
+.discover-sheet:not(.is-open) .discover-sheet__body { overflow: hidden; }
+.discover-sheet .results-count { margin: 0 0 .4rem; }
+.discover-sheet .mascot-state { padding-top: .2rem; }
+.discover-sheet:not(.is-open) .mascot-state__image { display: none; }
+.discover-sheet__peek { display: grid; grid-auto-flow: column; grid-auto-columns: min(90%, 22rem); gap: .7rem; overflow-x: auto; padding: .15rem .15rem .6rem; scroll-snap-type: x mandatory; scrollbar-width: none; }
+.discover-sheet__peek::-webkit-scrollbar { display: none; }
+.discover-sheet__peek > * { scroll-snap-align: start; }
+/* Fiches compactes dans le panneau réduit : tout tient sans être coupé. */
+.discover-sheet__peek .activity-card--row .activity-card__media { width: 34%; margin: .4rem; }
+.discover-sheet__peek .activity-card--row .activity-card__body { gap: .25rem; padding: .55rem 2.9rem .55rem .3rem; }
+.discover-sheet__peek .activity-card__title { font-size: .96rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.discover-sheet__peek .activity-card__discipline { font-size: .85rem; }
+.discover-sheet__peek .activity-card__facts { gap: .15rem; font-size: .82rem; }
+.discover-sheet__peek .activity-card__facts li { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; }
+.discover-sheet__peek .activity-card__facts li > :last-child, .discover-sheet__peek .activity-card__facts li { min-width: 0; }
+.discover-sheet__peek .activity-card__distance { font-size: .75rem; padding: .2rem .5rem; }
+.discover-sheet__more { display: inline-flex; margin-top: .9rem; }
+.activity-card.is-highlighted { box-shadow: 0 0 0 2px var(--primary), var(--shadow); }
+@media (prefers-reduced-motion: reduce) { .discover-sheet, .discover__locate { transition: none; } }
+
 /* Feuille de filtres et boîtes de dialogue */
 .sheet-backdrop { position: fixed; inset: 0; z-index: 50; display: flex; align-items: flex-end; justify-content: center; background: rgb(84 84 84 / .45); }
 .sheet-backdrop--center { align-items: center; padding: 1rem; }

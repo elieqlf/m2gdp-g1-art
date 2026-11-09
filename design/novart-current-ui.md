@@ -26,7 +26,7 @@ sur mobile, conformément aux maquettes.
 
 | Maquette | Écran | Écarts assumés |
 | --- | --- | --- |
-| 05, 06 | Découvrir | Section « Selon tes envies » ajoutée (centres d'intérêt) |
+| 05, 06 | Découvrir | S'ouvre sur une carte plein écran centrée sur l'utilisateur (choix d'équipe, à la manière de l'app TCL) ; le flux de la maquette 05 est dans le panneau du bas, à déplier. Section « Selon tes envies » ajoutée |
 | 07 à 10 | Rechercher, filtres, carte, aucun résultat | Épingles de carte aux couleurs de la charte (pas de couleur par discipline) |
 | 11 | Tu participes ! | « Ajouter un rappel » télécharge un fichier agenda `.ics` |
 | 12 | Mes favoris | — |

@@ -22,7 +22,7 @@ test('profil : champs existants puis arrivée sur Découvrir', async ({ page }, 
   await page.getByLabel('Nom', { exact: true }).fill('Martin')
   await page.getByLabel('Adresse', { exact: true }).fill('Lyon')
   await page.getByRole('button', { name: 'Terminer mon inscription' }).click()
-  await expect(page.getByRole('heading', { name: 'Activités populaires' })).toBeVisible()
+  await expect(page.getByRole('region', { name: 'Carte des activités autour de toi' })).toBeVisible()
   await expect(page.getByRole('navigation', { name: 'Navigation principale' })).toBeVisible()
 })
 

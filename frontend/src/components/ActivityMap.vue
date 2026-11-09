@@ -6,7 +6,8 @@ import type { Point } from '@/lib/activity'
 
 // Carte Leaflet / OpenStreetMap des activités (maquettes 09 et 20).
 export interface MapPoint { id: string; lat: number | null; lng: number | null; label?: string; title?: string }
-const props = withDefaults(defineProps<{ points: MapPoint[]; origin?: Point | null; selectedId?: string; label?: string; zoom?: number }>(), { label: 'Carte des activités', zoom: 14 })
+// center : la carte s'ouvre centrée sur ce point (accueil) au lieu d'englober toutes les activités.
+const props = withDefaults(defineProps<{ points: MapPoint[]; origin?: Point | null; selectedId?: string; label?: string; zoom?: number; center?: Point | null }>(), { label: 'Carte des activités', zoom: 14 })
 const emit = defineEmits<{ select: [id: string] }>()
 const container = ref<HTMLDivElement | null>(null)
 let map: L.Map | undefined
@@ -37,6 +38,7 @@ function render(fit: boolean) {
     marker.addTo(layer)
   }
   if (!fit) return
+  if (props.center) { map.setView([props.center.lat, props.center.lng], props.zoom); return }
   if (bounds.length === 1 && !props.origin) map.setView(bounds[0]!, props.zoom)
   else if (bounds.length) map.fitBounds(L.latLngBounds(props.origin ? [...bounds, [props.origin.lat, props.origin.lng]] : bounds), { padding: [36, 36], maxZoom: 15 })
   else if (props.origin) map.setView([props.origin.lat, props.origin.lng], 13)
@@ -52,11 +54,16 @@ onMounted(() => {
   observer = new ResizeObserver(() => map?.invalidateSize())
   observer.observe(container.value)
 })
-watch(() => [props.points, props.origin], () => render(true), { deep: true })
+watch(() => props.points, () => render(!props.center), { deep: true })
+watch(() => [props.origin, props.center], () => render(true), { deep: true })
 watch(() => props.selectedId, () => {
   render(false)
   const point = props.points.find(p => p.id === props.selectedId)
   if (map && point && valid(point)) map.panTo([point.lat as number, point.lng as number])
+})
+defineExpose({
+  /** Recentre la carte (bouton « Me localiser »). */
+  recenter(point: Point, zoom = props.zoom) { map?.setView([point.lat, point.lng], zoom) },
 })
 onBeforeUnmount(() => { observer?.disconnect(); map?.remove(); map = undefined; layer = undefined })
 </script>

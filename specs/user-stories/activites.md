@@ -9,9 +9,10 @@ Code : `frontend/src/views/`, logique pure dans `frontend/src/lib/activity.ts`, 
 
 | # | Critère d'acceptation | Test |
 |---|---|---|
-| CA1 | Barre de recherche (envoie vers Rechercher) et bouton filtres | `scenario.spec.ts` US-03 |
+| CA0 | À l'ouverture, carte plein écran centrée sur l'utilisateur, épingles des activités à venir, bouton « Me localiser » | `scenario.spec.ts` US-03 |
+| CA1 | Barre de recherche (envoie vers Rechercher) et bouton filtres, posés sur la carte | `scenario.spec.ts` US-03 |
 | CA2 | Puces de discipline « Tous / Peinture / … » qui filtrent toutes les sections | idem |
-| CA3 | « Autour de toi » : activités à venir, non complètes, à moins de 8 km, triées par distance, lien « Voir la carte » | idem |
+| CA3 | Panneau du bas « Autour de toi » : activités à venir non complètes, triées par distance ; toucher une épingle met l'activité en avant ; « Tout voir » déplie le panneau (bouton ou glissement) | idem |
 | CA4 | « Selon tes envies » (centres d'intérêt du profil), « Activités populaires », « À ne pas manquer » | idem |
 | CA5 | États chargement, erreur avec « Réessayer », aucune activité avec appel à créer | `App.test.ts` |
 

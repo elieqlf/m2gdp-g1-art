@@ -9,12 +9,22 @@ function pickActivity(predicate: (a: ReturnType<typeof demoData>['activities'][n
   return activities.find(a => a.date > today() && titles.filter(t => t === a.title).length === 1 && predicate(a))!
 }
 
-test('US-03 : Découvrir affiche les sections et la navigation basse', async ({ page }, testInfo) => {
+test('US-03 : Découvrir s’ouvre sur la carte, avec le panneau des activités proches', async ({ page }, testInfo) => {
   await openApp(page, 'app', '#/decouvrir')
-  await expect(page.getByRole('heading', { name: 'Autour de toi' })).toBeVisible()
-  await expect(page.getByRole('heading', { name: 'Activités populaires' })).toBeVisible()
+  await expect(page.getByRole('region', { name: 'Carte des activités autour de toi' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Autour de toi', exact: true })).toBeVisible()
   await expect(page.getByRole('link', { name: 'Découvrir' })).toHaveAttribute('aria-current', 'page')
-  await capture(page, testInfo, 'decouvrir', '.activity-card__media img')
+  await expect(page.locator('.discover-sheet__peek .activity-card').first()).toBeVisible()
+  await capture(page, testInfo, 'decouvrir-carte', '.discover-sheet__peek .activity-card__media img')
+  // Toucher une épingle met l'activité en avant dans le panneau.
+  await page.locator('.map-pin-icon').first().click()
+  await expect(page.locator('.discover-sheet__peek .activity-card.is-highlighted')).toBeVisible()
+  // Le panneau s'ouvre sur le flux complet de la maquette 05.
+  await page.getByRole('button', { name: 'Tout voir' }).click()
+  await expect(page.getByRole('heading', { name: 'Activités populaires' })).toBeVisible()
+  await capture(page, testInfo, 'decouvrir-flux', '.discover-sheet .activity-card__media img')
+  await page.getByRole('button', { name: 'Voir la carte' }).click()
+  await expect(page.getByRole('heading', { name: 'Activités populaires' })).toBeHidden()
 })
 
 test('US-07 : créer une activité en quatre étapes puis la retrouver', async ({ page }, testInfo) => {
