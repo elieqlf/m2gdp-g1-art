@@ -348,8 +348,8 @@
 }
 
  .auth-layout--sent {
-  gap: .7rem;
-  padding-block: clamp(.65rem, 2.4vh, 1.15rem);
+  gap: .9rem;
+  padding-block: clamp(.75rem, 2.6vh, 1.25rem);
 }
 
 .auth-layout--confirm { gap: .7rem; padding-block: 1rem; }
@@ -377,51 +377,30 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: .45rem;
+  gap: .55rem;
 }
 
-.auth-layout--sent .wordmark--stacked { width: clamp(7rem, 30vw, 8.25rem); }
+.auth-layout--sent .wordmark--stacked { width: clamp(6.3rem, 26vw, 7rem); }
 .auth-layout--sent .brand-slogan { display: none; }
 .auth-layout--sent .auth-sent-illustration {
-  width: min(100%, 12.5rem);
-  height: 10rem;
+  width: min(100%, 14rem);
+  height: 11.5rem;
   max-height: none;
   aspect-ratio: auto;
-  margin-top: .1rem;
+  margin-top: .15rem;
   overflow: visible;
 }
 .auth-layout--sent .auth-sent-illustration .auth-mascot {
   position: absolute;
   z-index: 1;
-  left: 50%;
-  bottom: .8rem;
-  width: 10.25rem;
-  height: 8.55rem;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-height: 100%;
   margin: 0;
   object-fit: contain;
-  transform: translateX(-50%);
+  object-position: center bottom;
 }
-.auth-sent-box {
-  position: absolute;
-  z-index: 2;
-  left: 50%;
-  bottom: .18rem;
-  width: 9rem;
-  height: 3.6rem;
-  transform: translateX(-50%);
-  overflow: visible;
-  filter: drop-shadow(0 2px 1px rgb(118 48 37 / .08));
-}
-.auth-sent-box path { stroke: #8f2924; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
-.auth-sent-box__shadow { fill: rgb(118 48 37 / .08); }
-.auth-sent-box__flap--left, .auth-sent-box__flap--right { fill: #f5d4b5; }
-.auth-sent-box__side { fill: #e7aa7b; }
-.auth-sent-box__front { fill: url(#novart-box-front); }
-.auth-sent-box__rim { fill: #f8d9b9; }
-.auth-sent-box__rim-line { fill: none; stroke-width: 3; }
-.auth-sent-box__tape { fill: #f8e5cf; stroke: none !important; }
-.auth-sent-box__crease { fill: none; stroke: rgb(143 41 36 / .35) !important; stroke-width: 2.5 !important; }
-
 .novart-app .auth-layout--sent .auth-panel {
   width: 100%;
   padding: 0;
@@ -431,13 +410,13 @@
   box-shadow: none;
 }
 
-.auth-layout--sent .auth-panel [data-slot="card-header"] { justify-content: center; padding: .15rem 0 .45rem; margin: 0; }
+.auth-layout--sent .auth-panel [data-slot="card-header"] { justify-content: center; padding: .25rem 0 .75rem; margin: 0; }
 .auth-layout--sent .auth-panel [data-slot="card-content"] { padding: 0; }
 
 .auth-sent-content {
   display: grid;
   justify-items: center;
-  gap: .72rem;
+  gap: .9rem;
   text-align: center;
 }
 
@@ -445,7 +424,7 @@
   margin: 0;
   color: var(--novart-red);
   font-family: 'Caveat', cursive;
-  font-size: clamp(2.25rem, 8.6vw, 2.8rem);
+  font-size: clamp(2.5rem, 9.2vw, 2.9rem);
   font-weight: 700;
   letter-spacing: -.015em;
   line-height: .95;
@@ -454,7 +433,7 @@
   -webkit-font-smoothing: antialiased;
   transform: rotate(-1.5deg);
 }
-.auth-sent-lead, .auth-sent-hint, .auth-sent-cooldown, .auth-sent-address { margin: 0; }
+.auth-sent-lead, .auth-sent-hint, .auth-sent-address { margin: 0; }
 .auth-sent-lead {
   display: flex;
   align-items: baseline;
@@ -475,22 +454,18 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.auth-sent-hint { color: var(--muted-foreground); font-size: .82rem; line-height: 1.4; }
-.auth-sent-cooldown { display: flex; align-items: center; justify-content: center; gap: .4rem; color: var(--muted-foreground); font-size: .78rem; line-height: 1.35; }
-.auth-sent-cooldown svg { width: 1rem; height: 1rem; flex: 0 0 auto; color: var(--novart-red); }
-.novart-app .auth-layout--sent .auth-sent-resend { width: 100%; min-height: 3rem; margin-top: .1rem; border: 0; border-radius: .9rem; background: var(--novart-red); color: #fff; font-weight: 700; }
-.novart-app .auth-layout--sent .auth-sent-resend:hover:not(:disabled) { background: #e60000; color: #fff; }
-.novart-app .auth-layout--sent .auth-sent-resend:disabled { opacity: 1; background: var(--novart-red); color: #fff; cursor: not-allowed; }
-.novart-app .auth-layout--sent .auth-sent-change { min-height: 2.25rem; padding-block: .2rem; color: var(--novart-red); text-decoration: underline; text-underline-offset: 3px; }
+.auth-sent-hint { color: var(--muted-foreground); font-size: .9rem; line-height: 1.5; }
+.novart-app .auth-layout--sent .auth-sent-resend { width: 100%; min-height: 3.25rem; margin-top: .15rem; border: 0; border-radius: .9rem; background: var(--novart-red); color: #fff; font-weight: 700; transition: background-color 160ms ease, color 160ms ease, transform 160ms ease; }
+.novart-app .auth-layout--sent .auth-sent-resend:hover:not(:disabled) { background: #e60000; color: #fff; transform: translateY(-1px); }
+.novart-app .auth-layout--sent .auth-sent-resend:disabled { opacity: 1; border: 1px solid #d9dee4; background: #e9edf1; color: #68727d; box-shadow: none; cursor: not-allowed; transform: none; }
+.novart-app .auth-layout--sent .auth-sent-change { min-height: 2.5rem; padding-block: .25rem; color: var(--novart-red); text-decoration: underline; text-underline-offset: 3px; }
 
 @media (max-height: 740px) {
-  .auth-layout--sent { gap: .45rem; padding-block: .45rem; }
-  .auth-layout--sent .wordmark--stacked { width: 6.5rem; }
-  .auth-layout--sent .auth-sent-illustration { height: 8.9rem; }
-  .auth-layout--sent .auth-sent-illustration .auth-mascot { width: 9rem; height: 7.5rem; }
-  .auth-layout--sent .auth-sent-box { width: 8rem; height: 3.2rem; }
+  .auth-layout--sent { gap: .6rem; padding-block: .45rem; }
+  .auth-layout--sent .wordmark--stacked { width: 6rem; }
+  .auth-layout--sent .auth-sent-illustration { width: min(100%, 12rem); height: 9.2rem; }
   .auth-layout--sent .form-title { font-size: clamp(2rem, 6.5vh, 2.35rem); }
-  .auth-sent-content { gap: .58rem; }
+  .auth-sent-content { gap: .72rem; }
   .auth-layout--confirm { gap: .45rem; padding-block: .45rem; }
   .auth-layout--confirm .wordmark--stacked { width: 5.75rem; }
   .auth-layout--confirm .brand-slogan { font-size: 1.45rem; }
@@ -714,7 +689,7 @@
 .auth-home-form {
   display: flex;
   flex-direction: column;
-  gap: .85rem;
+  gap: .95rem;
 }
 
 .auth-social-buttons {
