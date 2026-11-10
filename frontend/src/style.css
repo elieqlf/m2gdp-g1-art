@@ -13,6 +13,14 @@
 }
 
 @font-face {
+  font-family: 'Fredoka';
+  src: url('/fonts/fredoka-latin.woff2') format('woff2');
+  font-weight: 500 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
   font-family: 'Poppins';
   src: url('/fonts/poppins-medium.otf') format('opentype');
   font-weight: 500;
@@ -48,7 +56,7 @@
 
 @theme inline {
     --font-sans: 'Poppins', Arial, sans-serif;
-    --font-heading: 'Caveat', cursive;
+    --font-heading: 'Fredoka', 'Poppins', Arial, sans-serif;
     --font-secondary: 'Montserrat', 'Poppins', Arial, sans-serif;
     --color-sidebar-ring: var(--sidebar-ring);
     --color-sidebar-border: var(--sidebar-border);
@@ -449,7 +457,7 @@
 
 .auth-layout--sent .form-title {
   color: var(--novart-red);
-  font-family: var(--font-sans);
+  font-family: var(--font-heading);
   font-size: clamp(1.8rem, 7vw, 2.1rem);
   font-weight: 700;
   letter-spacing: -.035em;
@@ -959,22 +967,6 @@
   .auth-account-switch { font-size: .71rem; }
 }
 
-/* Carte de la communauté (UsersMap.vue). */
-.novart-app .users-map-card {
-  margin-block: 0 1.5rem;
-  background: var(--muted);
-  box-shadow: none;
-  --tw-ring-color: transparent;
-}
-
-.novart-app .users-map-card [data-slot="card-title"] {
-  color: var(--foreground);
-  font-family: var(--font-sans);
-  font-size: 1.2rem;
-  font-weight: 600;
-  line-height: 1.4;
-}
-
 .site-footer {
   margin-top: auto;
   padding: 1rem 1.1rem 1.5rem;
@@ -1082,6 +1074,7 @@
 .onboarding-address-field .onboarding-field-icon { position: absolute; z-index: 1; top: .8rem; left: .85rem; width: 1.25rem; height: 1.25rem; color: #66727a; pointer-events: none; }
 .onboarding-address-field [data-slot="input"] { padding-left: 2.75rem; }
 .onboarding-address-field > p { display: none; }
+.onboarding-location-privacy { margin: .3rem 0 0; color: #707780; font-size: .74rem; line-height: 1.4; }
 
 .onboarding-photo-row { display: flex; align-items: center; gap: .9rem; }
 .onboarding-photo-picker {

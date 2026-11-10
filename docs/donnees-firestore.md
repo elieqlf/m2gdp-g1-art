@@ -4,12 +4,17 @@
 
 ```mermaid
 classDiagram
-  class User {
+  class UserPrivate {
     uid (id du document)
     firstName, lastName, userType
     bio, interests[], photoUrl
     address, addressLat, addressLng
     favoriteIds[], profileComplete
+  }
+  class PublicProfile {
+    uid (id du document)
+    firstName, lastName
+    bio, interests[], photoUrl
   }
   class Activity {
     id
@@ -24,8 +29,8 @@ classDiagram
   class Message {
     authorId, authorName, text, sentAtMs
   }
-  User "1" --> "*" Activity : organise
-  User "*" --> "*" Activity : participantIds
+  UserPrivate "1" --> "*" Activity : organise
+  UserPrivate "*" --> "*" Activity : participantIds
   Activity "1" --> "*" Message : activities/{id}/messages
 ```
 
@@ -47,7 +52,15 @@ Les listes métier sont dans `frontend/src/data/` : `catalog.json` (12 disciplin
 Un instantané est versionné dans `specs/data/` (`node scripts/seed/generate-data.mjs` pour le régénérer).
 Tous les documents créés portent `demo: true` ; leurs identifiants commencent par `demo-`. Les membres de démonstration n'ont pas de compte d'authentification.
 
-**RGPD** : les profils ne contiennent jamais l'adresse e-mail (règles Firestore). Pour retirer
+**RGPD** : `users/{uid}` contient les données privées et se lit uniquement par son propriétaire.
+La communauté lit `publicProfiles/{uid}` qui n'accepte que le prénom, le nom, la photo, la bio
+et les centres d'intérêt. L'adresse, le quartier et les coordonnées ne sont jamais copiés dans
+ce document ni affichés à la communauté. La ville ou le quartier est facultatif; le GPS du
+navigateur n'est demandé qu'après une action explicite. Les profils déjà complets peuvent être
+copiés vers la liste blanche avec `npm run migrate-public-profiles` depuis `scripts/seed` après
+le déploiement des règles.
+
+Les profils privés ne contiennent jamais l'adresse e-mail (règles Firestore). Pour retirer
 les e-mails des profils créés avant ce changement : `npm run purge-emails` dans `scripts/seed`
 (même clé que pour le chargement).
 
@@ -55,18 +68,24 @@ Les avis (notation) ne sont pas générés : la fonctionnalité n'est pas dans l
 
 ## Mise en ligne (à faire par l'équipe)
 
-1. **Publier les règles** (sinon la lecture des activités renvoie « permission refusée ») :
+1. **Publier les règles** avant la nouvelle version du site (les profils privés sont désormais
+   réservés à leur propriétaire et la communauté lit `publicProfiles`) :
    ```bash
    npx --yes --package firebase-tools firebase deploy --only firestore:rules --project novart-109bf
    ```
-2. **Charger les données** avec une clé de compte de service (console Firebase › Paramètres du projet › Comptes de service › Générer une nouvelle clé privée), gardée hors du dépôt :
+2. **Migrer les profils existants** avec le même compte de service, après les règles :
+   ```bash
+   cd scripts/seed
+   GOOGLE_APPLICATION_CREDENTIALS=/chemin/vers/cle.json npm run migrate-public-profiles
+   ```
+3. **Charger les données** avec une clé de compte de service (console Firebase › Paramètres du projet › Comptes de service › Générer une nouvelle clé privée), gardée hors du dépôt :
    ```bash
    cd scripts/seed
    npm install
    GOOGLE_APPLICATION_CREDENTIALS=/chemin/vers/cle.json npm run seed
    ```
    Relancer avec `npm run reseed` la veille d'une démonstration : les documents `demo: true` sont supprimés puis recréés avec des dates recalées sur le jour même. Les activités et comptes réels ne sont pas touchés.
-3. **Publier l'application** comme avant : `npx --yes --package firebase-tools firebase deploy --only hosting:app --project novart-109bf`.
+4. **Publier l'application** comme avant : `npx --yes --package firebase-tools firebase deploy --only hosting:app --project novart-109bf`.
 
 ## Services tiers utilisés par le front
 

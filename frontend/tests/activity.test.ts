@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { defaultFilters, distanceKm, filterActivities, formatDistance, isPast, validateDraft, type Activity, type ActivityDraft } from '../src/lib/activity'
+import { activityDistance, defaultFilters, distanceKm, filterActivities, formatDistance, isPast, validateDraft, type Activity, type ActivityDraft } from '../src/lib/activity'
 import { parseRoute } from '../src/lib/router'
 
 const now = new Date('2026-11-10T10:00:00')
@@ -46,6 +46,10 @@ describe('recherche et filtres (US-04/US-05)', () => {
   it('trie par date ou par popularité', () => {
     expect(filterActivities(list, { ...defaultFilters(), radiusKm: 50, sort: 'date' }, bellecour, now).map(a => a.id)).toEqual(['b', 'a', 'c'])
     expect(filterActivities(list, { ...defaultFilters(), radiusKm: 50, sort: 'popularite' }, bellecour, now)[2]!.id).toBe('b')
+  })
+  it('ne devine pas la position et désactive de fait les distances sans zone choisie', () => {
+    expect(activityDistance(base, null)).toBeNull()
+    expect(filterActivities(list, defaultFilters(), null, now).map(a => a.id)).toEqual(['b', 'a', 'c'])
   })
   it('considère une activité terminée après son heure de fin', () => {
     expect(isPast(make({ date: '2026-11-10', endTime: '09:00' }), now)).toBe(true)

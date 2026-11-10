@@ -17,11 +17,11 @@ for (const name of pages) {
       await document.fonts.ready
       return {
         broken: Array.from(document.images).filter(img => img.naturalWidth === 0).map(img => img.getAttribute('src')),
-        sigmar: Array.from(document.fonts).some(f => f.family.replaceAll('"', '') === 'Sigmar One' && f.status === 'loaded'),
+        fredoka: Array.from(document.fonts).some(f => f.family.replaceAll('"', '') === 'Fredoka' && f.status === 'loaded'),
         overflow: document.documentElement.scrollWidth > window.innerWidth,
       }
     })
-    expect(check).toEqual({ broken: [], sigmar: true, overflow: false })
+    expect(check).toEqual({ broken: [], fredoka: true, overflow: false })
     await page.screenshot({ path: testInfo.outputPath(name.replace('.html', '.png')), fullPage: true })
   })
 }

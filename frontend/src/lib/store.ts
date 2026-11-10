@@ -1,7 +1,7 @@
 import { computed, reactive } from 'vue'
 import { listMembers, setFavorite, type Account, type Member, type Profile } from '@/services/firebase'
 import { getActivity, listActivities } from '@/services/activities'
-import { LYON_CENTER, type Activity, type Point } from '@/lib/activity'
+import { type Activity, type Point } from '@/lib/activity'
 
 // État partagé entre les écrans de l'application connectée.
 export const store = reactive({
@@ -19,10 +19,10 @@ export const uid = computed(() => store.account?.uid ?? '')
 export const displayName = computed(() => [store.profile.firstName, store.profile.lastName].filter(Boolean).join(' ') || store.account?.email || 'Moi')
 export const me = computed(() => ({ uid: uid.value, name: store.profile.firstName || displayName.value, photo: store.profile.photoUrl || '' }))
 export const favorites = computed(() => store.profile.favoriteIds ?? [])
-/** Point de référence pour les distances : position demandée, sinon adresse du profil, sinon centre de Lyon. */
-export const origin = computed<Point>(() => store.gps
-  ?? (typeof store.profile.addressLat === 'number' && typeof store.profile.addressLng === 'number' ? { lat: store.profile.addressLat, lng: store.profile.addressLng } : LYON_CENTER))
-export const originLabel = computed(() => store.gps ? 'ta position' : typeof store.profile.addressLat === 'number' ? 'ton adresse' : 'le centre de Lyon')
+/** Zone privée choisie par la personne ou accordée au navigateur, sans centre géographique deviné. */
+export const origin = computed<Point | null>(() => store.gps
+  ?? (typeof store.profile.addressLat === 'number' && typeof store.profile.addressLng === 'number' ? { lat: store.profile.addressLat, lng: store.profile.addressLng } : null))
+export const originLabel = computed(() => store.gps ? 'ta position' : origin.value ? 'ta ville ou ton quartier' : 'aucune zone choisie')
 
 export function resetStore() {
   Object.assign(store, { account: null, profile: {}, activities: [], activitiesStatus: 'idle', members: {}, membersStatus: 'idle', gps: null, notice: '' })

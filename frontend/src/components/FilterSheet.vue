@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
-import { ArrowRight, Check, MapPin, X } from '@lucide/vue'
+import { ArrowRight, Check, LocateFixed, MapPin, X } from '@lucide/vue'
 import DisciplineIcon from './DisciplineIcon.vue'
 import { defaultFilters, disciplines, levels, type DatePreset, type Filters, type PlacesPreset } from '@/lib/activity'
 
 // Pop-up « Filtres » (maquette 08) : les choix ne s'appliquent qu'à la validation.
-const props = defineProps<{ filters: Filters; count: (filters: Filters) => number }>()
-const emit = defineEmits<{ apply: [filters: Filters]; close: [] }>()
+const props = withDefaults(defineProps<{ filters: Filters; count: (filters: Filters) => number; originAvailable?: boolean; locationError?: string; locating?: boolean }>(), { originAvailable: false, locationError: '', locating: false })
+const emit = defineEmits<{ apply: [filters: Filters]; close: []; locate: [] }>()
 const draft = reactive<Filters>({ ...props.filters, disciplines: [...props.filters.disciplines] })
 const panel = ref<HTMLElement | null>(null)
 const results = computed(() => props.count(draft))
@@ -17,7 +17,7 @@ const places: { id: PlacesPreset; label: string }[] = [{ id: 'tous', label: 'Peu
 function toggleDiscipline(id: string) {
   draft.disciplines = draft.disciplines.includes(id) ? draft.disciplines.filter(d => d !== id) : [...draft.disciplines, id]
 }
-function reset() { Object.assign(draft, { ...defaultFilters(), query: draft.query, sort: draft.sort }) }
+function reset() { Object.assign(draft, { ...defaultFilters(), query: draft.query, radiusKm: props.originAvailable ? 5 : 50, sort: props.originAvailable ? 'proximite' : 'date' }) }
 const onKey = (event: KeyboardEvent) => {
   if (event.key === 'Escape') { emit('close'); return }
   if (event.key !== 'Tab' || !panel.value) return
@@ -68,8 +68,9 @@ onBeforeUnmount(() => {
         </fieldset>
         <fieldset class="filter-group"><legend>Autour de moi</legend>
           <label for="filter-radius" class="radius-label"><MapPin aria-hidden="true" />Rayon : {{ draft.radiusKm >= 50 ? 'sans limite' : `${draft.radiusKm} km` }}</label>
-          <input id="filter-radius" v-model.number="draft.radiusKm" type="range" min="1" max="50" step="1" class="range" :style="{ '--fill': `${((draft.radiusKm - 1) / 49) * 100}%` }" />
+          <input id="filter-radius" v-model.number="draft.radiusKm" type="range" min="1" max="50" step="1" class="range" :disabled="!originAvailable" :style="{ '--fill': `${((draft.radiusKm - 1) / 49) * 100}%` }" />
           <div class="range-scale" aria-hidden="true"><span>1 km</span><span>50 km</span></div>
+          <div v-if="!originAvailable" class="filter-location-help"><p>Choisis une ville ou autorise ta position pour appliquer un rayon. Aucun lieu n’est deviné à ta place.</p><div><button type="button" class="link-button" :disabled="locating" @click="emit('locate')"><LocateFixed aria-hidden="true" />{{ locating ? 'Recherche…' : 'Utiliser ma position' }}</button><a href="#/profil/modifier" class="link-button">Choisir ma ville</a></div><p v-if="locationError" class="filter-location-error" role="alert">{{ locationError }}</p></div>
         </fieldset>
         <fieldset class="filter-group"><legend>Nombre de places disponibles</legend>
           <div class="chip-row chip-row--filter-presets">

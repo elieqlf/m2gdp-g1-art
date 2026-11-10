@@ -28,7 +28,7 @@ const past = computed(() => !!activity.value && isPast(activity.value))
 const distance = computed(() => activity.value ? formatDistance(activityDistance(activity.value, origin.value)) : '')
 const organizerProfile = computed(() => store.members[activity.value?.organizerId ?? ''])
 const people = computed(() => activity.value ? [activity.value.organizerId, ...activity.value.participantIds] : [])
-const point = computed(() => activity.value ? [{ id: activity.value.id, lat: activity.value.lat, lng: activity.value.lng, title: activity.value.placeName }] : [])
+const point = computed(() => activity.value ? [{ id: activity.value.id, lat: activity.value.lat, lng: activity.value.lng, title: activity.value.title, discipline: activity.value.discipline }] : [])
 const weatherIcon = computed(() => ({ sun: Sun, 'cloud-sun': CloudSun, cloud: Cloud, rain: CloudRain, snow: Snowflake, storm: CloudLightning, fog: CloudFog })[forecast.value?.icon ?? 'cloud'])
 let weatherController: AbortController | undefined
 

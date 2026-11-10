@@ -32,6 +32,9 @@ beforeEach(() => {
 afterEach(() => { wrapper?.unmount(); vi.useRealTimers() })
 async function render() { wrapper = mount(App); await flushPromises() }
 async function openProfile() { await render(); observer(user); await flushPromises() }
+async function waitForText(text: string) {
+  await vi.waitFor(() => expect(wrapper.text()).toContain(text), { timeout: 5000 })
+}
 async function fillProfile() {
   await wrapper.get('#onboarding-name').setValue('Camille')
   await wrapper.get('#onboarding-city').setValue('Paris')
@@ -98,7 +101,7 @@ describe('Parcours inscription Shadcn-Vue', () => {
     expect(api.saveProfile).toHaveBeenCalledWith('test-user', expect.objectContaining({ firstName: 'Camille', addressLat: 48.85, addressLng: 2.35 }))
     // Le profil terminé ouvre l'application : navigation basse et accueil « Découvrir ».
     expect(wrapper.find('nav[aria-label="Navigation principale"]').exists()).toBe(true)
-    expect(wrapper.text()).toContain('Sois la première personne à proposer une rencontre artistique')
+    await waitForText('Sois la première personne à proposer une rencontre artistique')
   })
   it('retire les anciennes coordonnées après une saisie manuelle', async () => {
     await openProfile(); await fillProfile()
@@ -120,10 +123,11 @@ describe('Parcours inscription Shadcn-Vue', () => {
     vi.mocked(api.logout).mockImplementation(async () => { observer(null) })
     await render(); observer(user); await flushPromises()
     navigate('communaute'); await flushPromises()
-    expect(wrapper.text()).toContain('Alex Durand')
+    await waitForText('Alex Durand')
     // RGPD : l'e-mail d'un autre membre n'est jamais affiché.
     expect(wrapper.text()).not.toContain('secret@example.com')
     navigate('profil'); await flushPromises()
+    await waitForText('Se déconnecter')
     const button = wrapper.findAll('button').find(item => item.text() === 'Se déconnecter')!
     await button.trigger('click'); await flushPromises()
     expect(wrapper.find('#email').exists()).toBe(true)

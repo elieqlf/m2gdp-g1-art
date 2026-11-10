@@ -104,7 +104,7 @@ async function remove() {
         <CapacityStepper v-model="draft.capacity" :min="Math.max(2, registered)" :invalid="!!errors.capacity" describedby="edit-capacity-hint" />
         <p id="edit-capacity-hint" class="hint">{{ registered }} personne{{ registered > 1 ? 's' : '' }} déjà inscrite{{ registered > 1 ? 's' : '' }} (minimum {{ Math.max(2, registered) }} places)</p>
         <p v-if="errors.capacity" class="field-error">{{ errors.capacity }}</p></div>
-        <aside v-if="registered > 0" class="mascot-hint"><img src="/images/novart-mascot-joy.webp" alt="" /><p>Tu ne peux pas mettre moins de places que le nombre de personnes déjà inscrites.</p></aside>
+        <aside v-if="registered > 0" class="mascot-hint"><img src="/images/novart-onboarding-complete-hd.webp" alt="" width="1536" height="1024" decoding="async" /><p>Tu ne peux pas mettre moins de places que le nombre de personnes déjà inscrites.</p></aside>
       </section>
       <p v-if="failure" class="form-alert" role="alert">{{ failure }}</p>
       <button type="submit" class="btn btn--primary btn--wide btn--big" :disabled="busy">{{ busy ? 'Enregistrement…' : 'Enregistrer les modifications' }}<ArrowRight aria-hidden="true" /></button>

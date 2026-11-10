@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
+import { computed, defineAsyncComponent, defineComponent, h, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
 import { ArrowRight, Check, ChevronLeft, Clock, GraduationCap, Heart, Lightbulb, Mail, MapPin, Sprout, Star, Upload, Users } from '@lucide/vue'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -9,19 +9,6 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import AddressInput from '@/components/AddressInput.vue'
 import DisciplineIcon from '@/components/DisciplineIcon.vue'
 import BottomNav from '@/components/BottomNav.vue'
-import DiscoverView from '@/views/DiscoverView.vue'
-import SearchView from '@/views/SearchView.vue'
-import ActivityView from '@/views/ActivityView.vue'
-import ParticipationView from '@/views/ParticipationView.vue'
-import CreateActivityView from '@/views/CreateActivityView.vue'
-import EditActivityView from '@/views/EditActivityView.vue'
-import ConversationsView from '@/views/ConversationsView.vue'
-import ConversationView from '@/views/ConversationView.vue'
-import MyActivitiesView from '@/views/MyActivitiesView.vue'
-import ProfileView from '@/views/ProfileView.vue'
-import ProfileEditView from '@/views/ProfileEditView.vue'
-import FavoritesView from '@/views/FavoritesView.vue'
-import CommunityView from '@/views/CommunityView.vue'
 import { isValidEmail, hasSignInLink, pendingEmail, pendingSocialProvider, clearPendingSocialProvider, rememberedSessionChoice, setAuthPersistence, requestSignInLink, completeSignIn, signInWithSocialProvider, consumeSocialRedirect, observeAccount, getProfile, saveOnboardingProgress, saveProfile, logout, type Account, type Profile } from '@/services/firebase'
 import type { AddressSelection } from '@/services/places'
 import { disciplines } from '@/lib/activity'
@@ -50,7 +37,32 @@ function focusPageHeading() {
   }
 }
 // Écrans de l'application connectée, choisis selon l'ancre (#/…).
-const views = { decouvrir: DiscoverView, rechercher: SearchView, activite: ActivityView, participation: ParticipationView, creer: CreateActivityView, modifier: EditActivityView, conversations: ConversationsView, conversation: ConversationView, 'mes-activites': MyActivitiesView, profil: ProfileView, 'profil-modifier': ProfileEditView, favoris: FavoritesView, communaute: CommunityView }
+const PageLoading = defineComponent({
+  setup: () => () => h('p', { class: 'loading-line', role: 'status' }, [h('span', { class: 'spinner', 'aria-hidden': 'true' }), 'Chargement de la page…']),
+})
+const PageLoadError = defineComponent({
+  setup: () => () => h('section', { class: 'form-alert', role: 'alert' }, [
+    'Cette page ne s’est pas chargée. Vérifie ta connexion puis ',
+    h('button', { class: 'link-button', type: 'button', onClick: () => window.location.reload() }, 'réessaie'),
+    '.',
+  ]),
+})
+const asyncView = (loader: () => Promise<unknown>) => defineAsyncComponent({ loader: loader as never, loadingComponent: PageLoading, errorComponent: PageLoadError, delay: 0, timeout: 15_000 })
+const views = {
+  decouvrir: asyncView(() => import('@/views/DiscoverView.vue')),
+  rechercher: asyncView(() => import('@/views/SearchView.vue')),
+  activite: asyncView(() => import('@/views/ActivityView.vue')),
+  participation: asyncView(() => import('@/views/ParticipationView.vue')),
+  creer: asyncView(() => import('@/views/CreateActivityView.vue')),
+  modifier: asyncView(() => import('@/views/EditActivityView.vue')),
+  conversations: asyncView(() => import('@/views/ConversationsView.vue')),
+  conversation: asyncView(() => import('@/views/ConversationView.vue')),
+  'mes-activites': asyncView(() => import('@/views/MyActivitiesView.vue')),
+  profil: asyncView(() => import('@/views/ProfileView.vue')),
+  'profil-modifier': asyncView(() => import('@/views/ProfileEditView.vue')),
+  favoris: asyncView(() => import('@/views/FavoritesView.vue')),
+  communaute: asyncView(() => import('@/views/CommunityView.vue')),
+}
 const currentView = computed(() => views[route.value.name])
 const viewKey = computed(() => `${route.value.name}:${route.value.id ?? ''}`)
 const showNav = computed(() => !['participation', 'conversation'].includes(route.value.name))
@@ -187,8 +199,6 @@ async function loadAccount(user: Account | null) {
     // Le drapeau historique peut être périmé : les champs obligatoires restent la référence.
     const requiredProfileReady = typeof profile.firstName === 'string'
       && profile.firstName.trim().length > 0
-      && typeof profile.address === 'string'
-      && profile.address.trim().length > 0
       && Array.isArray(profile.interests)
       && profile.interests.length > 0
     // Après authentification, les profils incomplets reprennent la bonne étape.
@@ -259,7 +269,7 @@ async function chooseProfilePhoto(event: Event) {
 }
 async function submitProfile() {
   error.value = ''
-  if (!profile.firstName.trim() || !profile.address.trim()) { error.value = 'Indique ton prénom ou pseudo et ta ville ou ton quartier.'; return }
+  if (!profile.firstName.trim()) { error.value = 'Indique ton prénom ou ton pseudo.'; return }
   if (!(profile.interests?.length)) { error.value = 'Choisis au moins un centre d’intérêt artistique.'; return }
   if (!account.value) return
   busy.value = true
@@ -333,7 +343,7 @@ async function disconnect() {
 }
 onMounted(() => {
   if (import.meta.env.MODE !== 'test') {
-    for (const src of ['/images/novart-mascot-login.webp', '/images/novart-logo-primary-vector.svg']) {
+    for (const src of ['/images/novart-mascot-login.webp', '/images/novart-onboarding-complete-hd.webp', '/images/novart-logo-primary-vector.svg']) {
       const image = new Image()
       image.src = src
     }
@@ -422,11 +432,12 @@ onBeforeUnmount(() => { unsubscribe?.(); clearInterval(countdown); accountRevisi
             <Input id="onboarding-email" v-model="email" type="email" autocomplete="email" readonly aria-readonly="true" />
           </div>
           <div class="onboarding-field">
-            <Label for="onboarding-city">Ville ou quartier <span class="required-mark">*</span></Label>
+            <Label for="onboarding-city">Ville ou quartier <span class="optional">(facultatif)</span></Label>
             <div class="onboarding-address-field">
               <MapPin class="onboarding-field-icon" aria-hidden="true" />
-              <AddressInput v-model="profile.address" input-id="onboarding-city" placeholder="Ex. : Paris, Belleville" @select="handleAddressSelection" />
+              <AddressInput v-model="profile.address" input-id="onboarding-city" placeholder="Ex. : Lyon, Croix-Rousse" @select="handleAddressSelection" />
             </div>
+            <p class="onboarding-location-privacy">Cette zone sert uniquement à adapter tes recommandations. Elle n’apparaît jamais sur ton profil.</p>
           </div>
           <div class="onboarding-field">
             <Label for="onboarding-bio">Quelques mots pour te présenter <span class="optional">(optionnel)</span></Label>
@@ -456,27 +467,28 @@ onBeforeUnmount(() => { unsubscribe?.(); clearInterval(countdown); accountRevisi
         <section class="onboarding-preference-section">
           <div class="onboarding-section-heading">
             <MapPin aria-hidden="true" />
-            <div><h2>Jusqu’où veux-tu découvrir des activités ?</h2><p>Choisis un rayon autour de ta localisation.</p></div>
+            <div><h2>Jusqu’où veux-tu découvrir des activités ?</h2><p>Choisis un rayon autour de ta zone. Tu peux aussi passer cette étape.</p></div>
           </div>
           <div class="onboarding-radius-options" role="group" aria-label="Rayon de découverte">
             <button v-for="option in radiusOptions" :key="option.label" type="button" :class="{ 'is-selected': profile.discoveryRadiusKm === option.value }" :aria-pressed="profile.discoveryRadiusKm === option.value" @click="profile.discoveryRadiusKm = option.value">{{ option.label }}</button>
           </div>
           <button type="button" class="onboarding-location-toggle" role="switch" :aria-checked="!!profile.useCurrentLocation" :disabled="busy" @click="toggleCurrentLocation">
             <span class="onboarding-location-icon" aria-hidden="true"><span></span></span>
-            <span class="onboarding-location-copy"><strong>Utiliser ma localisation actuelle</strong><small>Pour te proposer des activités près de toi.</small></span>
+            <span class="onboarding-location-copy"><strong>Utiliser ma localisation actuelle</strong><small>Uniquement si tu l’autorises, pour calculer les distances.</small></span>
             <span class="onboarding-switch" aria-hidden="true"><span></span></span>
           </button>
           <button type="button" class="onboarding-city-toggle" :aria-expanded="showCityEditor" @click="showCityEditor = !showCityEditor">
             <MapPin aria-hidden="true" />
-            <span><strong>Utiliser ma ville ou mon quartier</strong><small>{{ profile.address || 'Choisis ta zone de découverte' }}</small></span>
+            <span><strong>Utiliser ma ville ou mon quartier</strong><small>{{ profile.address || 'Facultatif · visible par toi uniquement' }}</small></span>
             <ChevronLeft aria-hidden="true" />
           </button>
           <div v-if="showCityEditor" class="onboarding-city-editor">
-            <Label for="onboarding-city-edit">Ville ou quartier</Label>
+            <Label for="onboarding-city-edit">Ville ou quartier <span class="optional">(facultatif)</span></Label>
             <div class="onboarding-address-field">
               <MapPin class="onboarding-field-icon" aria-hidden="true" />
-              <AddressInput v-model="profile.address" input-id="onboarding-city-edit" placeholder="Ex. : Paris, Belleville" @select="handleAddressSelection" />
+              <AddressInput v-model="profile.address" input-id="onboarding-city-edit" placeholder="Ex. : Lyon, Croix-Rousse" @select="handleAddressSelection" />
             </div>
+            <p class="onboarding-location-privacy">Ta ville ou ta position restent privées et ne sont jamais affichées aux autres membres.</p>
           </div>
         </section>
 
@@ -522,7 +534,7 @@ onBeforeUnmount(() => { unsubscribe?.(); clearInterval(countdown); accountRevisi
         <a href="/" class="wordmark wordmark--stacked" aria-label="Novart, accueil"><span class="brand-logo brand-logo--primary" aria-hidden="true"></span></a>
         <h1 class="brand-slogan"><span>L’art se crée ensemble</span></h1>
         <div class="auth-mascot-frame" :class="{ 'auth-sent-illustration': screen === 'sent' }">
-          <img :src="screen === 'sent' ? '/images/novart-mascot-joy.webp' : '/images/novart-mascot-login.webp'" alt="" class="auth-mascot" width="1520" height="1035" fetchpriority="high" decoding="async" />
+          <img :src="screen === 'sent' ? '/images/novart-onboarding-complete-hd.webp' : '/images/novart-mascot-login.webp'" alt="" class="auth-mascot" :width="screen === 'sent' ? 1536 : 1520" :height="screen === 'sent' ? 1024 : 1035" fetchpriority="high" decoding="async" />
           <span v-if="screen === 'sent'" class="auth-sent-box" aria-hidden="true"><span></span></span>
         </div>
       </section>
@@ -533,7 +545,7 @@ onBeforeUnmount(() => { unsubscribe?.(); clearInterval(countdown); accountRevisi
             <h2 v-else class="form-title">{{ title }}</h2>
             <CardDescription v-if="screen === 'profile'">Quelques informations pour compléter ton inscription.</CardDescription>
           </div>
-          <img v-if="screen === 'profile'" src="/images/novart-mascot-joy.webp" alt="" class="profile-mascot" width="159" height="133" />
+          <img v-if="screen === 'profile'" src="/images/novart-onboarding-profile-hd.webp" alt="" class="profile-mascot" width="1536" height="1024" />
         </CardHeader>
         <CardContent :class="screen === 'request' ? 'auth-panel-content--home' : screen === 'confirm' ? 'auth-panel-content--confirm' : 'space-y-5'">
           <form v-if="screen === 'request'" class="auth-home-form" novalidate @submit.prevent="sendLink">

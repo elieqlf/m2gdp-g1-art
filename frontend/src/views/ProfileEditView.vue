@@ -13,7 +13,7 @@ import { goBack, navigate, useRoute } from '@/lib/router'
 import { updateProfile, type Profile } from '@/services/firebase'
 import type { AddressSelection } from '@/services/places'
 
-// US-14 : modifier ses informations (photo, nom, description, centres d'intérêt, adresse).
+// US-14 : modifier ses informations (photo, nom, description, centres d'intérêt, zone privée).
 const route = useRoute()
 const form = reactive({
   firstName: store.profile.firstName ?? '', lastName: store.profile.lastName ?? '', bio: store.profile.bio ?? '',
@@ -55,7 +55,7 @@ function removePhoto() {
 }
 async function save() {
   error.value = ''
-  if (!form.firstName.trim() || !form.lastName.trim()) { error.value = 'Le prénom et le nom sont obligatoires.'; return }
+  if (!form.firstName.trim()) { error.value = 'Indique ton prénom ou ton pseudo.'; return }
   if (form.photoUrl && !isValidProfilePhoto(form.photoUrl.trim())) { error.value = 'Choisis une image JPG, PNG, WebP ou AVIF.'; return }
   const addressChanged = form.address.trim() !== (store.profile.address ?? '')
   const changes: Partial<Profile> = { firstName: form.firstName.trim(), lastName: form.lastName.trim(), bio: form.bio.trim(), photoUrl: form.photoUrl.trim(), interests: form.interests, address: form.address.trim() }
@@ -75,7 +75,7 @@ async function save() {
   <div class="page page--form">
     <div class="topbar"><button type="button" class="icon-button icon-button--plain" aria-label="Retour" @click="goBack('profil')"><ChevronLeft aria-hidden="true" /></button><h1 class="topbar__title">Mes informations</h1><span class="topbar__spacer"></span></div>
     <form class="form-step" novalidate @submit.prevent="save">
-      <div class="profile-preview"><UserAvatar :name="`${form.firstName} ${form.lastName}`" :photo="form.photoUrl" :user-id="uid" size="lg" /><p class="muted">Ta photo et ton prénom sont visibles par les membres de NOVART.</p></div>
+      <div class="profile-preview"><UserAvatar :name="`${form.firstName} ${form.lastName}`" :photo="form.photoUrl" :user-id="uid" size="lg" /><p class="muted">Les informations de ton profil sont visibles par les membres. Ta ville, ton adresse et ta position restent privées.</p></div>
       <section class="profile-photo-picker" aria-labelledby="profile-photo-title">
         <div class="profile-photo-picker__heading">
           <div><h2 id="profile-photo-title">Ma photo de profil <span class="optional">(optionnel)</span></h2><p class="hint">Ajoute une photo à toi depuis ta galerie ou tes fichiers.</p></div>
@@ -92,7 +92,7 @@ async function save() {
       </section>
       <div class="two-columns">
         <div><label for="edit-first" class="field-label">Prénom</label><input id="edit-first" v-model="form.firstName" class="text-field" autocomplete="given-name" /></div>
-        <div><label for="edit-last" class="field-label">Nom</label><input id="edit-last" v-model="form.lastName" class="text-field" autocomplete="family-name" /></div>
+        <div><label for="edit-last" class="field-label">Nom <span class="optional">(facultatif)</span></label><input id="edit-last" v-model="form.lastName" class="text-field" autocomplete="family-name" /></div>
       </div>
       <label for="edit-bio" class="field-label">Quelques mots pour te présenter <span class="optional">(optionnel)</span></label>
       <div class="counter-field"><textarea id="edit-bio" v-model="form.bio" class="text-field text-area" rows="3" maxlength="160" placeholder="Ce que tu aimes créer, partager ou découvrir…"></textarea><span class="counter">{{ form.bio.length }}/160</span></div>
@@ -100,9 +100,9 @@ async function save() {
         <p class="hint">Ils servent à te proposer des activités « Selon tes envies ».</p>
         <div class="chip-grid chip-grid--3"><button v-for="d in disciplines" :key="d.id" type="button" class="choice-chip" :class="{ 'is-selected': form.interests.includes(d.id) }" :aria-pressed="form.interests.includes(d.id)" @click="toggle(d.id)"><DisciplineIcon :discipline="d.id" />{{ d.label }}<Check v-if="form.interests.includes(d.id)" class="choice-chip__check" aria-hidden="true" /></button></div>
       </fieldset>
-      <label for="profile-address" class="field-label">Adresse</label>
-      <AddressInput v-model="form.address" input-id="profile-address" @select="selection = $event" />
-      <p class="hint">Elle sert à calculer la distance des activités et à te placer sur la carte de la communauté.</p>
+      <label for="profile-address" class="field-label">Ville ou quartier <span class="optional">(facultatif)</span></label>
+      <AddressInput v-model="form.address" input-id="profile-address" placeholder="Ex. : Lyon, Croix-Rousse" @select="selection = $event" />
+      <p class="hint">Utilisée uniquement pour adapter les distances des activités. Cette zone et ses coordonnées ne sont jamais visibles par les autres membres.</p>
       <p v-if="error" class="form-alert" role="alert">{{ error }}</p>
       <button type="submit" class="btn btn--primary btn--wide btn--big" :disabled="busy">{{ busy ? 'Enregistrement…' : 'Enregistrer' }}</button>
     </form>

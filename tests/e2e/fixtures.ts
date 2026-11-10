@@ -5,10 +5,10 @@ import { resolve } from 'node:path'
 // Les services Firebase, Places et météo sont remplacés uniquement dans le
 // navigateur de test : aucun e-mail réel, aucune écriture Firestore, aucun appel facturable.
 // Les données viennent du même générateur que le jeu de démonstration, recalculé à la date du jour.
-export type Mode = 'request' | 'profile' | 'app'
+export type Mode = 'request' | 'profile' | 'app' | 'app-no-location'
 export const ME = { uid: 'preview-user', email: 'preview@example.com' }
 
-interface DemoUser { uid: string; firstName: string; lastName: string }
+interface DemoUser { uid: string; firstName: string; lastName: string; photoUrl?: string; bio?: string; interests?: string[] }
 interface DemoActivity { id: string; participantIds: string[]; organizerId: string; date: string; title: string }
 interface DemoMessage { activityId: string }
 
@@ -22,15 +22,16 @@ export function demoData() {
   upcoming[4]?.participantIds.splice(0, 1, ME.uid)
   if (upcoming[6]) Object.assign(upcoming[6], { organizerId: ME.uid, organizerName: 'Camille Martin' })
   const ids = new Set(activities.map(a => a.id))
-  return { users: data.users, activities, messages: data.messages.filter(m => ids.has(m.activityId)) }
+  const users = data.users.map(({ uid, firstName, lastName, photoUrl, bio, interests }) => ({ uid, firstName, lastName, photoUrl, bio, interests }))
+  return { users, activities, messages: data.messages.filter(m => ids.has(m.activityId)) }
 }
 
 const firebaseModule = (mode: Mode, users: DemoUser[]) => `
 const mode = ${JSON.stringify(mode)};
 const me = ${JSON.stringify(ME)};
 let observer;
-let profile = mode === 'app'
-  ? { firstName: 'Camille', lastName: 'Martin', userType: 'participant', address: 'Croix-Rousse, Lyon 4e', addressLat: 45.7768, addressLng: 4.8312, photoUrl: '', profileComplete: true, bio: 'J’aime créer à plusieurs, surtout en plein air.', interests: ['peinture', 'dessin', 'musique'], favoriteIds: [] }
+let profile = mode.startsWith('app')
+  ? { firstName: 'Camille', lastName: 'Martin', userType: 'participant', address: mode === 'app-no-location' ? '' : 'Croix-Rousse, Lyon 4e', addressLat: mode === 'app-no-location' ? null : 45.7768, addressLng: mode === 'app-no-location' ? null : 4.8312, photoUrl: '', profileComplete: true, bio: 'J’aime créer à plusieurs, surtout en plein air.', interests: ['peinture', 'dessin', 'musique'], favoriteIds: [] }
   : { profileComplete: false };
 const members = ${JSON.stringify(users)};
 export const db = null;
@@ -51,7 +52,7 @@ export const saveProfile = async (uid, data) => { profile = { ...profile, ...dat
 export const saveOnboardingProgress = async (uid, data, step) => { profile = { ...profile, ...data, onboardingStep: step, profileComplete: false }; };
 export const updateProfile = async (uid, changes) => { profile = { ...profile, ...changes }; };
 export const setFavorite = async (uid, id, on) => { const list = profile.favoriteIds || []; profile.favoriteIds = on ? [...list, id] : list.filter(x => x !== id); };
-export const listMembers = async () => [...members, { uid: me.uid, ...profile }];
+export const listMembers = async () => [...members, { uid: me.uid, firstName: profile.firstName, lastName: profile.lastName, photoUrl: profile.photoUrl, bio: profile.bio, interests: profile.interests }];
 export const logout = async () => { observer?.(null); };
 `
 
@@ -102,14 +103,16 @@ export async function openApp(page: Page, mode: Mode, hash = '') {
 /** Vérifie polices et visuels réellement chargés, l'absence de défilement horizontal, puis enregistre une capture. */
 export async function capture(page: Page, testInfo: TestInfo, name: string, selector?: string) {
   const assets = await page.evaluate(async selector => {
+    await document.fonts.load('700 1rem Fredoka')
+    await document.fonts.load('700 1rem Caveat')
     await document.fonts.ready
     const images = selector ? Array.from(document.querySelectorAll<HTMLImageElement>(selector)) : []
     images.forEach(image => { image.loading = 'eager' })
     await Promise.all(images.map(image => image.decode().catch(() => undefined)))
     const loaded = (family: string) => Array.from(document.fonts).some(font => font.family.replaceAll('"', '') === family && font.status === 'loaded')
-    return { imagesLoaded: !selector || (images.length > 0 && images.every(image => image.naturalWidth > 0)), poppins: loaded('Poppins'), caveat: loaded('Caveat') }
+    return { imagesLoaded: !selector || (images.length > 0 && images.every(image => image.naturalWidth > 0)), poppins: loaded('Poppins'), caveat: loaded('Caveat'), fredoka: loaded('Fredoka') }
   }, selector)
-  expect(assets).toEqual({ imagesLoaded: true, poppins: true, caveat: true })
+  expect(assets).toEqual({ imagesLoaded: true, poppins: true, caveat: true, fredoka: true })
   await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
   await page.screenshot({ path: testInfo.outputPath(name + '.png'), fullPage: true })
 }

@@ -50,8 +50,8 @@ export function distanceKm(a: Point, b: Point) {
   const h = Math.sin(dLat / 2) ** 2 + Math.cos(rad(a.lat)) * Math.cos(rad(b.lat)) * Math.sin(dLng / 2) ** 2
   return 6371 * 2 * Math.asin(Math.sqrt(h))
 }
-export const activityDistance = (activity: Activity, origin: Point) =>
-  typeof activity.lat === 'number' && typeof activity.lng === 'number' ? distanceKm(origin, { lat: activity.lat, lng: activity.lng }) : null
+export const activityDistance = (activity: Activity, origin: Point | null) =>
+  origin && typeof activity.lat === 'number' && typeof activity.lng === 'number' ? distanceKm(origin, { lat: activity.lat, lng: activity.lng }) : null
 export function formatDistance(km: number | null) {
   if (km === null) return ''
   if (km < 1) return `${Math.max(50, Math.round(km * 20) * 50)} m`
@@ -133,7 +133,7 @@ function matchesPlaces(a: Activity, preset: PlacesPreset) {
   return true
 }
 /** Recherche et filtres (US-04/US-05) : seules les activités à venir sont proposées. */
-export function filterActivities(list: Activity[], f: Filters, origin: Point, now = new Date()) {
+export function filterActivities(list: Activity[], f: Filters, origin: Point | null, now = new Date()) {
   const words = normalize(f.query.trim()).split(/\s+/).filter(Boolean)
   const results = list.filter(a => {
     if (isPast(a, now)) return false
@@ -141,7 +141,7 @@ export function filterActivities(list: Activity[], f: Filters, origin: Point, no
     if (!inDateWindow(a, f, now)) return false
     if (!matchesPlaces(a, f.places)) return false
     if (f.level !== 'tous' && a.level !== f.level && a.level !== 'tous') return false
-    if (f.radiusKm < 50) { const d = activityDistance(a, origin); if (d === null || d > f.radiusKm) return false }
+    if (f.radiusKm < 50 && origin) { const d = activityDistance(a, origin); if (d === null || d > f.radiusKm) return false }
     if (words.length) {
       const haystack = normalize([a.title, a.description, a.placeName, a.address, a.district, disciplineLabel(a.discipline), a.subDiscipline, a.organizerName].filter(Boolean).join(' '))
       if (!words.every(w => haystack.includes(w))) return false
@@ -150,8 +150,9 @@ export function filterActivities(list: Activity[], f: Filters, origin: Point, no
   })
   return sortActivities(results, f.sort, origin)
 }
-export function sortActivities(list: Activity[], sort: SortKey, origin: Point) {
+export function sortActivities(list: Activity[], sort: SortKey, origin: Point | null) {
   const byDate = (a: Activity, b: Activity) => startsAt(a).getTime() - startsAt(b).getTime()
+  if (sort === 'proximite' && !origin) return [...list].sort(byDate)
   return [...list].sort((a, b) => {
     if (sort === 'date') return byDate(a, b)
     if (sort === 'popularite') return b.participantIds.length - a.participantIds.length || byDate(a, b)

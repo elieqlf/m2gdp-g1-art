@@ -2,7 +2,7 @@
 import { onBeforeUnmount, ref, watch } from 'vue'
 import { Input } from '@/components/ui/input'
 import { suggestAddresses, resolveAddress, type Prediction, type AddressSelection } from '@/services/places'
-const props = withDefaults(defineProps<{ modelValue: string; inputId?: string; placeholder?: string }>(), { inputId: 'address', placeholder: 'Commence à saisir ton adresse' })
+const props = withDefaults(defineProps<{ modelValue: string; inputId?: string; placeholder?: string }>(), { inputId: 'address', placeholder: 'Commence à saisir un lieu' })
 const emit = defineEmits<{ 'update:modelValue': [value: string]; select: [value: AddressSelection | null] }>()
 const predictions = ref<Prediction[]>([])
 const active = ref(-1)
@@ -36,7 +36,7 @@ function input(value: string | number) {
       const results = await suggestAddresses(query.trim(), session, controller.signal)
       if (requestRevision === revision) predictions.value = results
     } catch {
-      if (requestRevision === revision) hint.value = 'Suggestions indisponibles. Tu peux saisir ton adresse manuellement.'
+      if (requestRevision === revision) hint.value = 'Suggestions indisponibles. Tu peux saisir le lieu manuellement.'
     } finally {
       if (requestRevision === revision) loading.value = false
     }
@@ -81,6 +81,6 @@ onBeforeUnmount(cancel)
         <p class="border-t px-3 py-2 text-right text-xs text-muted-foreground">Powered by Google</p>
       </div>
     </div>
-    <p :id="`${inputId}-hint`" class="mt-2 text-xs text-muted-foreground" aria-live="polite">{{ loading ? 'Recherche d’adresses…' : hint || 'Choisis une suggestion ou saisis ton adresse.' }}</p>
+    <p :id="`${inputId}-hint`" class="mt-2 text-xs text-muted-foreground" aria-live="polite">{{ loading ? 'Recherche d’adresses…' : hint || 'Choisis une suggestion ou saisis un lieu.' }}</p>
   </div>
 </template>

@@ -65,10 +65,17 @@ l'application marque le profil `profileComplete: true`.
 
 ```
 match /users/{userId} {
-  allow read: if request.auth != null;
+  allow read: if request.auth != null && request.auth.uid == userId;
   allow create, update: if request.auth != null && request.auth.uid == userId;
 }
+match /publicProfiles/{userId} {
+  allow read: if request.auth != null;
+  allow create, update: if request.auth != null && request.auth.uid == userId
+    && request.resource.data.keys().hasOnly(['firstName', 'lastName', 'photoUrl', 'bio', 'interests']);
+}
 ```
+
+La version complète et ses contraintes figurent dans `docs/firestore.rules`.
 
 ## À faire manuellement (une fois)
 
