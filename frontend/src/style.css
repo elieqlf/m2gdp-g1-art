@@ -1098,54 +1098,30 @@
 .onboarding-bio-field::placeholder { color: #aaa4a2; }
 .onboarding-bio-field:focus-visible { outline: 2px solid var(--novart-red); outline-offset: 1px; }
 
-.onboarding-interest-section { min-width: 0; margin: 0; padding: 0; border: 0; }
-.onboarding-interest-section legend,
-.onboarding-goal-section legend { display: flex; align-items: center; gap: .55rem; color: var(--novart-red); font-family: 'Caveat', cursive; font-size: 1.45rem; font-weight: 700; line-height: 1; }
-.onboarding-interest-section legend { font-size: 1.68rem; font-weight: 700; line-height: 1.05; }
-.onboarding-interest-section > p,
-.onboarding-goal-section > p { margin: .2rem 0 .55rem; color: #7b8187; font-size: .82rem; line-height: 1.35; }
-.onboarding-interest-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .45rem; }
-.onboarding-interest-chip {
-  position: relative;
-  min-width: 0;
-  min-height: 2.9rem;
-  padding: .4rem .35rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: .36rem;
-  border: 1px solid transparent;
-  border-radius: .95rem;
-  background: #fff0ed;
-  color: var(--novart-red);
-  font-size: .77rem;
-  line-height: 1.15;
-  text-align: center;
-  cursor: pointer;
-  transition: background-color 140ms ease, color 140ms ease, border-color 140ms ease;
-}
-.onboarding-interest-chip > svg { width: 1.22rem; height: 1.22rem; flex: 0 0 auto; stroke-width: 1.8; }
-.onboarding-interest-chip > span:first-of-type { overflow-wrap: anywhere; }
-.onboarding-interest-chip.is-selected { border-color: var(--novart-red); background: var(--novart-red); color: #fff; }
-.onboarding-chip-check { width: 1.2rem; height: 1.2rem; flex: 0 0 auto; display: grid; place-items: center; border-radius: 50%; background: #fff; color: var(--novart-red); }
-.onboarding-chip-check svg { width: .82rem; height: .82rem; stroke-width: 3; }
+.onboarding-practice-section { min-width: 0; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .5rem; border: 0; }
+.onboarding-practice-section [data-slot="label"] { margin: 0; color: #687078; font-size: .86rem; font-weight: 600; }
+.onboarding-practice-picker { position: relative; min-width: 0; }
+.onboarding-practice-input { position: relative; }
+.onboarding-practice-search-icon { position: absolute; z-index: 1; top: 50%; left: .9rem; width: 1.15rem; height: 1.15rem; color: #78818a; transform: translateY(-50%); pointer-events: none; }
+.onboarding-practice-input [data-slot="input"] { padding-left: 2.7rem; }
+.onboarding-practice-suggestions { position: absolute; z-index: 30; top: calc(100% + .3rem); left: 0; right: 0; max-height: 15rem; margin: 0; padding: .3rem; overflow-y: auto; list-style: none; border: 1px solid #e9e1de; border-radius: .9rem; background: #fffdfa; box-shadow: 0 10px 24px rgb(40 35 32 / .12); }
+.onboarding-practice-suggestions button { width: 100%; min-height: 2.8rem; padding: .5rem .7rem; display: flex; align-items: center; justify-content: space-between; gap: .7rem; border: 0; border-radius: .6rem; background: transparent; color: var(--auth-home-ink); font: inherit; font-size: .85rem; text-align: left; cursor: pointer; }
+.onboarding-practice-suggestions button:hover,
+.onboarding-practice-suggestions button:focus-visible { outline: none; background: #f7f2f0; }
+.onboarding-practice-suggestions small { flex: 0 0 auto; color: #848a90; font-size: .72rem; }
+.onboarding-practice-tags { display: flex; flex-wrap: wrap; gap: .45rem; }
+.onboarding-practice-tag { min-height: 2.3rem; padding: .42rem .68rem; display: inline-flex; align-items: center; gap: .45rem; border: 1px solid #efd5d2; border-radius: 999px; background: #fff5f3; color: #842a33; font: inherit; font-size: .8rem; font-weight: 600; cursor: pointer; transition: background-color 140ms ease, border-color 140ms ease; }
+.onboarding-practice-tag:hover { border-color: #dfa8a5; background: #ffefec; }
+.onboarding-practice-tag > svg { width: .9rem; height: .9rem; color: #a94a51; stroke-width: 2; }
+.onboarding-practice-empty { margin: .1rem 0 0; color: #737b83; font-size: .8rem; }
+.onboarding-form--preferences { flex: 1; min-height: 0; gap: .9rem; }
+.onboarding-form--preferences > .onboarding-submit { margin-top: auto; }
 
-.onboarding-preference-section { min-width: 0; margin: 0; padding: 0; border: 0; }
-.onboarding-form--preferences { gap: .95rem; }
-
-.onboarding-goal-section { margin-top: .1rem; }
-.onboarding-goal-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .55rem; }
-.onboarding-goal-card { position: relative; min-width: 0; min-height: 4.2rem; padding: .65rem .75rem; display: flex; align-items: center; gap: .65rem; border: 1px solid transparent; border-radius: 1rem; background: #fff0ed; color: var(--novart-red); text-align: left; cursor: pointer; }
-.onboarding-goal-card > svg { width: 1.55rem; height: 1.55rem; flex: 0 0 auto; stroke-width: 1.7; }
-.onboarding-goal-card > span:first-of-type { max-width: 10rem; font-size: .81rem; line-height: 1.22; }
-.onboarding-goal-card.is-selected { background: var(--novart-red); color: #fff; }
-.onboarding-goal-card .onboarding-chip-check { margin-left: auto; }
-
-.onboarding-complete { display: flex; flex: 1; flex-direction: column; gap: 1rem; }
-.onboarding-email-card { padding: 1.1rem; display: flex; flex-direction: column; align-items: center; border-radius: 1.3rem; background: #fff4f1; text-align: center; }
-.onboarding-email-card h2 { margin: 0 0 .25rem; color: var(--novart-red); font-family: 'Caveat', cursive; font-size: 1.8rem; font-weight: 700; line-height: 1; }
-.onboarding-email-card p { max-width: 19rem; margin: 0; color: #777e85; font-size: .9rem; line-height: 1.45; }
-.onboarding-email-address { margin-top: .65rem; display: block; color: var(--auth-home-ink); font-size: .9rem; font-weight: 700; line-height: 1.35; overflow-wrap: anywhere; }
+.onboarding-complete { display: flex; flex: 1; flex-direction: column; gap: 1.1rem; padding-block: .25rem .1rem; }
+.onboarding-email-card { padding: 1.15rem 1rem; display: flex; flex-direction: column; align-items: center; gap: .38rem; border-radius: 1.3rem; background: #fff4f1; text-align: center; }
+.onboarding-email-card h2 { margin: 0; color: var(--novart-red); font-family: 'Caveat', cursive; font-size: 1.8rem; font-weight: 700; line-height: 1.08; }
+.onboarding-email-card p { width: 100%; max-width: none; margin: 0; color: #777e85; font-size: clamp(.72rem, 3.4vw, .86rem); line-height: 1.3; white-space: nowrap; }
+.onboarding-email-address { margin-top: .1rem; display: block; color: var(--auth-home-ink); font-size: .9rem; font-weight: 700; line-height: 1.35; overflow-wrap: anywhere; }
 
 .onboarding-timeline { position: relative; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .9rem; list-style: none; }
 .onboarding-timeline::before { position: absolute; top: 1.7rem; bottom: 1.65rem; left: 1.1rem; width: 2px; background: #f1d9d5; content: ''; }
@@ -1172,11 +1148,10 @@
   .onboarding-fields { gap: .45rem; }
   .onboarding-photo-picker { width: 4.5rem; height: 4.5rem; }
   .onboarding-screen [data-slot="input"] { min-height: 2.65rem; height: 2.65rem; }
-  .onboarding-interest-chip { min-height: 2.55rem; padding: .32rem .24rem; font-size: .72rem; }
-  .onboarding-interest-chip > svg { width: 1.05rem; height: 1.05rem; }
-  .onboarding-goal-card { min-height: 3.55rem; padding: .5rem .55rem; }
-  .onboarding-complete { gap: .75rem; }
-  .onboarding-email-card { padding: .8rem; }
+  .onboarding-form--preferences { gap: .75rem; }
+  .onboarding-practice-suggestions { max-height: 12rem; }
+  .onboarding-complete { gap: .85rem; }
+  .onboarding-email-card { padding: .95rem .8rem; }
   .onboarding-email-card h2 { font-size: 1.6rem; }
   .onboarding-timeline { gap: .65rem; }
   .onboarding-timeline-mark { width: 2rem; height: 2rem; }
@@ -1189,10 +1164,6 @@
   .onboarding-intro { grid-template-columns: minmax(0, 1fr) 5.2rem; }
   .onboarding-intro h1 { font-size: 2.15rem; }
   .onboarding-mascot { width: 5.2rem; }
-  .onboarding-interest-grid { gap: .32rem; }
-  .onboarding-interest-chip { gap: .22rem; font-size: .68rem; }
-  .onboarding-chip-check { width: 1rem; height: 1rem; }
-  .onboarding-goal-card { gap: .4rem; padding-inline: .45rem; }
-  .onboarding-goal-card > svg { width: 1.3rem; height: 1.3rem; }
-  .onboarding-goal-card > span:first-of-type { font-size: .75rem; }
+  .onboarding-practice-tags { gap: .32rem; }
+  .onboarding-practice-tag { min-height: 2.1rem; padding-inline: .55rem; font-size: .74rem; }
 }

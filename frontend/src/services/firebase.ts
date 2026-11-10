@@ -21,6 +21,7 @@ export interface Profile {
   profileComplete?: boolean
   bio?: string
   interests?: string[]
+  practiceTags?: string[]
   favoriteIds?: string[]
   discoveryRadiusKm?: number | null
   useCurrentLocation?: boolean

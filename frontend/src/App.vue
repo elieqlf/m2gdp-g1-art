@@ -1,13 +1,12 @@
 <script setup lang="ts">
 import { computed, defineAsyncComponent, defineComponent, h, nextTick, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
-import { ArrowRight, Check, ChevronLeft, GraduationCap, Heart, Lightbulb, Mail, MapPin, Sprout, Star, Users } from '@lucide/vue'
+import { ArrowRight, Check, ChevronLeft, Mail, MapPin, Search, X } from '@lucide/vue'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import AddressInput from '@/components/AddressInput.vue'
-import DisciplineIcon from '@/components/DisciplineIcon.vue'
 import BottomNav from '@/components/BottomNav.vue'
 import { isValidEmail, hasSignInLink, pendingEmail, pendingSocialProvider, clearPendingSocialProvider, rememberedSessionChoice, setAuthPersistence, requestSignInLink, completeSignIn, signInWithSocialProvider, consumeSocialRedirect, observeAccount, getProfile, saveOnboardingProgress, saveProfile, logout, type Account, type Profile } from '@/services/firebase'
 import type { AddressSelection } from '@/services/places'
@@ -77,22 +76,32 @@ const cityDetectionMessage = computed(() => {
   if (cityDetectionStatus.value === 'unavailable') return 'La détection est indisponible. Tu peux saisir ta zone manuellement.'
   return ''
 })
-const blankProfile = (): Profile => ({ firstName: '', lastName: '', userType: 'participant', address: '', addressLat: null, addressLng: null, photoUrl: '', bio: '', interests: [], discoveryRadiusKm: 10, useCurrentLocation: false, onboardingGoals: [], onboardingStep: 1 })
+const blankProfile = (): Profile => ({ firstName: '', lastName: '', userType: 'participant', address: '', addressLat: null, addressLng: null, photoUrl: '', bio: '', interests: [], practiceTags: [], discoveryRadiusKm: 10, useCurrentLocation: false, onboardingGoals: [], onboardingStep: 1 })
 const profile = reactive<Profile>(blankProfile())
 const isOnboardingScreen = computed(() => ['profile', 'preferences', 'complete'].includes(screen.value))
 const onboardingStep = computed(() => screen.value === 'preferences' ? 2 : screen.value === 'complete' ? 3 : 1)
-const signupDisciplines = computed(() => disciplines.filter(d => ['peinture', 'dessin', 'musique', 'danse', 'photo', 'theatre', 'street-art', 'artisanat', 'autre'].includes(d.id)))
-const goalOptions = [
-  { id: 'meet-people', label: 'Rencontrer du monde', icon: Users },
-  { id: 'discover', label: 'Découvrir de nouvelles pratiques', icon: Sprout },
-  { id: 'create', label: 'Créer ensemble', icon: Heart },
-  { id: 'learn', label: 'Apprendre', icon: GraduationCap },
-  { id: 'go-out', label: 'Sortir et se divertir', icon: Star },
-  { id: 'inspiration', label: 'Être inspiré·e', icon: Lightbulb },
-]
+type PracticeOption = { key: string; label: string; disciplineId: string; disciplineLabel: string }
+const normalizePractice = (value: string) => value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('fr')
+const practiceOptions = computed<PracticeOption[]>(() => disciplines.flatMap((discipline) => [
+  { key: 'discipline:' + discipline.id, label: discipline.label, disciplineId: discipline.id, disciplineLabel: discipline.label },
+  ...(discipline.subs ?? []).map((label: string) => ({ key: 'practice:' + discipline.id + ':' + normalizePractice(label).replace(/\s+/g, '-'), label, disciplineId: discipline.id, disciplineLabel: discipline.label })),
+]))
+const practiceQuery = ref('')
+const practiceSuggestionsOpen = ref(false)
+const selectedPracticeOptions = computed(() => {
+  const selected = new Set(profile.practiceTags ?? [])
+  return practiceOptions.value.filter(option => selected.has(option.key))
+})
+const matchingPracticeOptions = computed(() => {
+  const query = normalizePractice(practiceQuery.value.trim())
+  if (!query) return []
+  const selected = new Set(profile.practiceTags ?? [])
+  return practiceOptions.value.filter(option => !selected.has(option.key) && normalizePractice(option.label + ' ' + option.disciplineLabel).includes(query)).slice(0, 6)
+})
 const photoInput = ref<HTMLInputElement | null>(null)
 const photoBusy = ref(false)
 const photoError = ref('')
+const photoPreviewFailed = ref(false)
 let unsubscribe: (() => void) | undefined
 let countdown: ReturnType<typeof setInterval> | undefined
 let accountRevision = 0
@@ -178,7 +187,7 @@ async function loadAccount(user: Account | null) {
   const revision = ++accountRevision
   account.value = user
   if (!user) {
-    resetStore(); Object.assign(profile, blankProfile()); selection.value = null; cityDetectionRevision++; cityPrefillAttempted = false; cityDetectionStatus.value = 'idle'; screen.value = 'request'
+    resetStore(); Object.assign(profile, blankProfile()); selection.value = null; photoPreviewFailed.value = false; practiceQuery.value = ''; practiceSuggestionsOpen.value = false; cityDetectionRevision++; cityPrefillAttempted = false; cityDetectionStatus.value = 'idle'; screen.value = 'request'
     error.value = pendingSocialError
     pendingSocialError = ''
     return
@@ -191,6 +200,15 @@ async function loadAccount(user: Account | null) {
     const saved = await getProfile(user)
     if (revision !== accountRevision) return
     Object.assign(profile, blankProfile(), saved)
+    photoPreviewFailed.value = false
+    practiceQuery.value = ''
+    practiceSuggestionsOpen.value = false
+    if (!profile.practiceTags?.length && profile.interests?.length) {
+      const legacyTags = profile.interests
+        .map(id => practiceOptions.value.find(option => option.key === 'discipline:' + id)?.key)
+        .filter((key): key is string => Boolean(key))
+      profile.practiceTags = [...new Set(legacyTags)]
+    }
     if (!profile.firstName && user.displayName) profile.firstName = user.displayName
     if (!profile.photoUrl && user.photoURL) profile.photoUrl = user.photoURL
     if (profile.photoUrl) rememberProfilePhoto(user.uid, profile.photoUrl)
@@ -238,13 +256,22 @@ async function finishLink() {
     } else { screen.value = 'confirm'; error.value = 'Connexion impossible. Vérifie ton e-mail et ta connexion, puis réessaie.' }
   } finally { busy.value = false }
 }
-function toggleInterest(id: string) {
-  const selected = profile.interests ?? []
-  profile.interests = selected.includes(id) ? selected.filter(item => item !== id) : [...selected, id]
+function selectPractice(option: PracticeOption) {
+  const tags = new Set(profile.practiceTags ?? [])
+  tags.add(option.key)
+  profile.practiceTags = [...tags]
+  profile.interests = [...new Set([...(profile.interests ?? []), option.disciplineId])]
+  practiceQuery.value = ''
+  practiceSuggestionsOpen.value = false
 }
-function toggleGoal(id: string) {
-  const selected = profile.onboardingGoals ?? []
-  profile.onboardingGoals = selected.includes(id) ? selected.filter(item => item !== id) : [...selected, id]
+function selectFirstPractice() {
+  const first = matchingPracticeOptions.value[0]
+  if (first) selectPractice(first)
+}
+function removePractice(key: string) {
+  profile.practiceTags = (profile.practiceTags ?? []).filter(tag => tag !== key)
+  const selectedCategories = new Set(practiceOptions.value.filter(option => profile.practiceTags?.includes(option.key)).map(option => option.disciplineId))
+  profile.interests = [...new Set((profile.interests ?? []).filter(id => selectedCategories.has(id)))]
 }
 function startAutomaticCityDetection() {
   if (cityPrefillAttempted || profile.address.trim()) return
@@ -303,6 +330,7 @@ async function chooseProfilePhoto(event: Event) {
   photoBusy.value = true
   try {
     const photo = await prepareImageUpload(file, 'profile')
+    photoPreviewFailed.value = false
     profile.photoUrl = photo
     rememberProfilePhoto(account.value?.uid, photo)
   } catch (cause) { photoError.value = imageUploadError(cause, 'profile') }
@@ -324,10 +352,11 @@ async function submitProfile() {
 async function savePreferences() {
   if (!account.value) return
   error.value = ''
-  if (!(profile.interests?.length)) { error.value = 'Choisis au moins un domaine artistique.'; return }
+  if (!(profile.practiceTags?.length)) { error.value = 'Ajoute au moins une pratique artistique.'; return }
   busy.value = true
   try {
-    const saved: Partial<Profile> = { discoveryRadiusKm: profile.discoveryRadiusKm ?? 10, useCurrentLocation: !!profile.useCurrentLocation, interests: [...(profile.interests ?? [])], onboardingGoals: [...(profile.onboardingGoals ?? [])] }
+    const interests = [...new Set([...(profile.interests ?? []), ...selectedPracticeOptions.value.map(option => option.disciplineId)])]
+    const saved: Partial<Profile> = { discoveryRadiusKm: profile.discoveryRadiusKm ?? 10, useCurrentLocation: !!profile.useCurrentLocation, interests, practiceTags: [...(profile.practiceTags ?? [])] }
     await saveOnboardingProgress(account.value.uid, saved, 3)
     Object.assign(profile, saved, { onboardingStep: 3 })
     screen.value = 'complete'
@@ -424,7 +453,7 @@ onBeforeUnmount(() => { unsubscribe?.(); clearInterval(countdown); accountRevisi
         <div class="onboarding-intro-copy">
           <h1>{{ title }}</h1>
           <p v-if="screen === 'profile'">Rejoins la communauté NOVART et découvre des activités artistiques près de chez toi.</p>
-          <p v-else-if="screen === 'preferences'">Tes pratiques, tes envies.</p>
+          <p v-else-if="screen === 'preferences'">Ajoute les pratiques qui te plaisent.</p>
           <p v-else>Un dernier petit pas pour rejoindre NOVART.</p>
         </div>
         <img
@@ -440,8 +469,8 @@ onBeforeUnmount(() => { unsubscribe?.(); clearInterval(countdown); accountRevisi
 
       <form v-if="screen === 'profile'" class="onboarding-form onboarding-form--profile" novalidate @submit.prevent="submitProfile">
         <div class="onboarding-photo-row">
-          <button type="button" class="onboarding-photo-picker" :class="{ 'has-photo': !!profile.photoUrl }" :disabled="photoBusy"  :aria-label="profile.photoUrl ? 'Modifier la photo de profil' : 'Choisir une photo depuis la galerie ou les fichiers'" @click="photoInput?.click()">
-            <img v-if="profile.photoUrl" :src="profile.photoUrl" alt="" />
+          <button type="button" class="onboarding-photo-picker" :class="{ 'has-photo': !!profile.photoUrl && !photoPreviewFailed }" :disabled="photoBusy" :aria-label="profile.photoUrl && !photoPreviewFailed ? 'Modifier la photo de profil' : 'Choisir une photo depuis la galerie ou les fichiers'" @click="photoInput?.click()">
+            <img v-if="profile.photoUrl && !photoPreviewFailed" :src="profile.photoUrl" alt="" @error="photoPreviewFailed = true" />
             <svg v-else class="onboarding-avatar-placeholder" viewBox="0 0 64 64" aria-hidden="true">
               <path class="onboarding-avatar-shadow" transform="translate(1.4 2.2)" d="M13 30 10.5 12.3c-.2-1.6 1.5-2.4 2.8-1.6l12 7.9a23 23 0 0 1 13.4 0l12-7.9c1.3-.8 3 .1 2.8 1.6L51 30c4.2 5 5.2 10.7 3 16-3.1 7.4-11.2 11.8-22 11.8S13.1 53.4 10 46c-2.2-5.3-1.2-11 3-16Z" />
               <path class="onboarding-avatar-cat" d="M13 30 10.5 12.3c-.2-1.6 1.5-2.4 2.8-1.6l12 7.9a23 23 0 0 1 13.4 0l12-7.9c1.3-.8 3 .1 2.8 1.6L51 30c4.2 5 5.2 10.7 3 16-3.1 7.4-11.2 11.8-22 11.8S13.1 53.4 10 46c-2.2-5.3-1.2-11 3-16Z" />
@@ -489,27 +518,40 @@ onBeforeUnmount(() => { unsubscribe?.(); clearInterval(countdown); accountRevisi
       </form>
 
       <form v-else-if="screen === 'preferences'" class="onboarding-form onboarding-form--preferences" novalidate @submit.prevent="savePreferences">
-        <fieldset class="onboarding-interest-section">
-          <legend>Tes pratiques artistiques</legend>
-          <p>Choisis au moins un domaine qui t’intéresse.</p>
-          <div class="onboarding-interest-grid">
-            <button v-for="discipline in signupDisciplines" :key="discipline.id" type="button" class="onboarding-interest-chip" :class="{ 'is-selected': profile.interests?.includes(discipline.id) }" :aria-pressed="profile.interests?.includes(discipline.id) ?? false" @click="toggleInterest(discipline.id)">
-              <DisciplineIcon :discipline="discipline.id" />
-              <span>{{ discipline.label }}</span>
+        <fieldset class="onboarding-practice-section">
+          <Label for="onboarding-practice">Ajouter une pratique</Label>
+          <div class="onboarding-practice-picker" @focusout="event => { if (!(event.currentTarget as HTMLElement).contains(event.relatedTarget as Node)) practiceSuggestionsOpen = false }">
+            <div class="onboarding-practice-input">
+              <Search class="onboarding-practice-search-icon" aria-hidden="true" />
+              <Input
+                id="onboarding-practice"
+                v-model="practiceQuery"
+                type="text"
+                role="combobox"
+                aria-autocomplete="list"
+                aria-controls="onboarding-practice-options"
+                :aria-expanded="practiceSuggestionsOpen && matchingPracticeOptions.length > 0"
+                placeholder="Ex. : aquarelle, hip-hop…"
+                autocomplete="off"
+                @focus="practiceSuggestionsOpen = true"
+                @keydown.enter.prevent="selectFirstPractice"
+                @keydown.escape.stop="practiceSuggestionsOpen = false"
+              />
+            </div>
+            <ul v-if="practiceSuggestionsOpen && matchingPracticeOptions.length" id="onboarding-practice-options" class="onboarding-practice-suggestions" role="listbox" aria-label="Pratiques suggérées">
+              <li v-for="option in matchingPracticeOptions" :key="option.key" role="presentation">
+                <button type="button" role="option" :aria-selected="false" @mousedown.prevent @click="selectPractice(option)">
+                  <span>{{ option.label }}</span><small>{{ option.disciplineLabel }}</small>
+                </button>
+              </li>
+            </ul>
+          </div>
+          <div v-if="selectedPracticeOptions.length" class="onboarding-practice-tags" aria-label="Pratiques choisies">
+            <button v-for="option in selectedPracticeOptions" :key="option.key" type="button" class="onboarding-practice-tag" :aria-label="'Retirer ' + option.label" @click="removePractice(option.key)">
+              <span>{{ option.label }}</span><X aria-hidden="true" />
             </button>
           </div>
-        </fieldset>
-
-        <fieldset class="onboarding-preference-section onboarding-goal-section">
-          <legend>Ce que tu recherches sur NOVART</legend>
-          <p>Tu peux choisir plusieurs options.</p>
-          <div class="onboarding-goal-grid">
-            <button v-for="goal in goalOptions" :key="goal.id" type="button" class="onboarding-goal-card" :class="{ 'is-selected': profile.onboardingGoals?.includes(goal.id) }" :aria-pressed="profile.onboardingGoals?.includes(goal.id) ?? false" @click="toggleGoal(goal.id)">
-              <component :is="goal.icon" aria-hidden="true" />
-              <span>{{ goal.label }}</span>
-              <span v-if="profile.onboardingGoals?.includes(goal.id)" class="onboarding-chip-check"><Check aria-hidden="true" /></span>
-            </button>
-          </div>
+          <p v-if="practiceQuery && practiceSuggestionsOpen && !matchingPracticeOptions.length" class="onboarding-practice-empty">Aucune pratique trouvée.</p>
         </fieldset>
 
         <p v-if="error" class="onboarding-error" role="alert">{{ error }}</p>
@@ -521,7 +563,7 @@ onBeforeUnmount(() => { unsubscribe?.(); clearInterval(countdown); accountRevisi
       <section v-else class="onboarding-complete">
         <div class="onboarding-email-card">
           <h2>{{ account?.emailVerified ? 'Ton adresse est confirmée' : 'Ta connexion est confirmée' }}</h2>
-          <p>{{ account?.emailVerified ? 'Elle a été vérifiée lors de ta connexion sécurisée.' : 'Ton compte est prêt à rejoindre la communauté.' }}</p>
+          <p>{{ account?.emailVerified ? 'Adresse confirmée à ta connexion.' : 'Ton compte est prêt pour NOVART.' }}</p>
           <span class="onboarding-email-address">{{ account?.email }}</span>
         </div>
         <ol class="onboarding-timeline">
