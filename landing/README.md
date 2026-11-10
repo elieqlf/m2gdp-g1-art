@@ -7,7 +7,7 @@ Publié par la cible Firebase Hosting `landing` : https://novart-109bf.web.app
 
 | Page | Contenu (attendus du cours) |
 | --- | --- |
-| `index.html` | Marque et bannière, application, vidéo (emplacement), solution, présentation, disciplines, pour qui, tarifs, parcours utilisateurs, lieux et partenaires, appel à l'action |
+| `index.html` | Marque et bannière, application, vidéo de présentation (`assets/video/`), solution, présentation, disciplines, pour qui, tarifs, parcours utilisateurs, lieux et partenaires, appel à l'action |
 | `fonctionnement.html` | Comment ça marche : étapes participant et organisateur avec captures de l'app, confiance |
 | `faq.html` | Foire aux questions : participants, organisateurs, compte et données |
 | `contact.html` | Formulaire de contact (vérification de la saisie) et accès à l'application |
@@ -38,7 +38,6 @@ npx --yes --package firebase-tools firebase deploy --only hosting:landing --proj
 
 ## Reste à faire
 
-- **Vidéo d'animation (2 min)** : remplacer l'emplacement de la section « NOVART en deux minutes » (`index.html`, commentaire dans le code).
 - **Formulaire de contact** : il vérifie la saisie mais n'envoie rien ; le message de confirmation le dit. À brancher sur un service d'envoi si besoin.
 - **Tarifs, parcours et textes légaux** : à relire et valider par l'équipe (grille indicative, portraits imaginés à partir des personas, documents sans valeur contractuelle).
 - Les tests Playwright `tests/e2e/landing.spec.ts` vérifient les cinq pages aux trois tailles d'écran.

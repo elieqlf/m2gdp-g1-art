@@ -60,15 +60,16 @@
 
 <section class="section" aria-labelledby="video-title">
   <div class="wrap">
-    <div class="center reveal"><span class="eyebrow">En vidéo</span><h2 id="video-title">NOVART en deux minutes</h2></div>
-    <!-- Pour publier la vidéo : remplacer le contenu de .video par
-         <video controls preload="none" poster="assets/img/video-poster.jpg"><source src="assets/video/novart.mp4" type="video/mp4"></video>
-         ou par l’iframe de la plateforme d’hébergement. -->
-    <div class="video reveal" role="img" aria-label="Emplacement de la vidéo de présentation, bientôt disponible">
-      <img src="assets/img/mascotte-concentration.webp" alt="" width="170" height="142" loading="lazy" />
-      <span class="video__play" aria-hidden="true"><svg class="icon"><use href="#i-play"/></svg></span>
-      <p><strong>La vidéo de présentation arrive bientôt.</strong><br />Notre mascotte est en plein montage !</p>
-    </div>
+    <div class="center reveal"><span class="eyebrow">En vidéo</span><h2 id="video-title">NOVART en une minute</h2></div>
+    <!-- Vidéo de présentation (54 s, 848 × 480, H.264/AAC, lecture progressive) : seules les métadonnées
+         sont chargées avant la lecture. Si une voix off est ajoutée, prévoir des sous-titres (<track kind="captions">). -->
+    <figure class="video video--player reveal">
+      <video controls playsinline preload="metadata" poster="assets/img/video-poster.webp" width="848" height="480" aria-describedby="video-desc">
+        <source src="assets/video/novart-presentation.mp4" type="video/mp4" />
+        <a href="assets/video/novart-presentation.mp4">Télécharger la vidéo de présentation (MP4, 7 Mo)</a>
+      </video>
+    </figure>
+    <p id="video-desc" class="video__caption center">Nouvelle à Lyon ? Découvre les activités autour de toi sur la carte, inscris-toi, échange avec le groupe et crée ta propre activité en quatre étapes.</p>
   </div>
 </section>
 
