@@ -566,16 +566,16 @@ onBeforeUnmount(() => { unsubscribe?.(); clearInterval(countdown); accountRevisi
           <p v-if="practiceQuery && practiceSuggestionsOpen && !matchingPracticeOptions.length" class="onboarding-practice-empty">Aucune pratique trouvée.</p>
         </fieldset>
 
-        <fieldset class="onboarding-goal-section">
-          <legend>Ce que tu recherches sur NOVART</legend>
+        <section class="onboarding-goal-section" aria-labelledby="onboarding-goal-title">
+          <h2 id="onboarding-goal-title" class="onboarding-goal-heading">Qu’aimerais-tu trouver sur NOVART ?</h2>
           <p>Tu peux choisir plusieurs options.</p>
-          <div class="onboarding-goal-grid">
+          <div class="onboarding-goal-grid" role="group" aria-labelledby="onboarding-goal-title">
             <button v-for="goal in goalOptions" :key="goal.id" type="button" class="onboarding-goal-card" :class="{ 'is-selected': profile.onboardingGoals?.includes(goal.id) }" :aria-pressed="profile.onboardingGoals?.includes(goal.id) ?? false" @click="toggleGoal(goal.id)">
               <component :is="goal.icon" aria-hidden="true" />
               <span>{{ goal.label }}</span>
             </button>
           </div>
-        </fieldset>
+        </section>
 
         <p v-if="error" class="onboarding-error" role="alert">{{ error }}</p>
         <button type="submit" class="onboarding-submit" :disabled="busy">
