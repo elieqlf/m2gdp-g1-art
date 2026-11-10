@@ -61,7 +61,7 @@ const activeCount = computed(() => activeFilterCount(filters))
 const selected = computed(() => results.value.find(a => a.id === selectedId.value) ?? results.value[0])
 // Étiquettes de distance seulement sur les 6 premiers résultats et la sélection, pour garder la carte lisible.
 const points = computed(() => results.value.slice(0, 150).map((a, index) => ({ id: a.id, lat: a.lat, lng: a.lng, title: a.title, label: index < 6 || a.id === selected.value?.id ? formatDistance(activityDistance(a, origin.value)) : undefined })))
-const heading = computed(() => filters.query ? `Résultats pour « ${filters.query} »` : filters.radiusKm < 50 || filters.sort === 'proximite' ? 'Activités autour de moi' : 'Toutes les activités')
+const heading = computed(() => filters.query ? `Résultats pour « ${filters.query} »` : filters.radiusKm < 50 ? 'Activités autour de moi' : 'Toutes les activités')
 const dateLabel = computed(() => filters.day ? new Date(`${filters.day}T12:00:00`).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }) : ({ toutes: 'Date', aujourdhui: 'Aujourd’hui', semaine: 'Cette semaine', weekend: 'Ce week-end' })[filters.datePreset])
 const disciplineChip = computed(() => filters.disciplines.length === 1 ? disciplineLabel(filters.disciplines[0] ?? '') : filters.disciplines.length > 1 ? `${filters.disciplines.length} disciplines` : 'Discipline')
 const placesChip = computed(() => ({ tous: 'Places', '1-5': '1 à 5 places', '6-10': '6 à 10 places', '10+': '10+ places' })[filters.places])
@@ -101,31 +101,38 @@ async function locate() {
       </div>
     </header>
 
-    <p v-if="store.activitiesStatus === 'loading' || store.activitiesStatus === 'idle'" class="loading-line" role="status"><span class="spinner" aria-hidden="true"></span>Chargement des activités…</p>
-    <MascotState v-else-if="store.activitiesStatus === 'error'" title="Oups, pas de connexion" text="Impossible de charger les activités. Vérifie ta connexion puis réessaie.">
-      <button type="button" class="btn btn--primary" @click="loadActivities(true)">Réessayer</button>
-    </MascotState>
-    <MascotState v-else-if="!results.length" title="Aucune activité trouvée par ici" text="Essaie d’élargir ta zone, de modifier tes filtres ou de chercher un autre mot-clé.">
-      <button type="button" class="btn btn--primary" @click="sheetOpen = true"><SlidersHorizontal aria-hidden="true" />Modifier mes filtres</button>
-      <button type="button" class="btn btn--soft" @click="resetAll"><Search aria-hidden="true" />Voir toutes les activités</button>
-    </MascotState>
-    <template v-else-if="view === 'liste'">
-      <div class="results-header">
-        <h2 class="section-title">{{ heading }}</h2>
-        <label class="sort-select">Tri :
-          <select v-model="filters.sort" aria-label="Trier les activités"><option value="proximite">Proximité</option><option value="date">Date</option><option value="popularite">Popularité</option></select>
-          <ChevronDown aria-hidden="true" />
-        </label>
-      </div>
-      <p class="results-count sr-only" aria-live="polite">{{ results.length }} activité{{ results.length > 1 ? 's' : '' }} · distances depuis {{ originLabel }}</p>
-      <div class="result-list"><ActivityCard v-for="a in results" :key="a.id" :activity="a" variant="row" /></div>
+    <template v-if="view === 'carte'">
+      <section class="map-view" aria-label="Résultats sur la carte">
+        <ActivityMap :points="points" :origin="origin" :selected-id="selected?.id" label="Carte des activités" @select="selectedId = $event" />
+        <button type="button" class="map-view__locate icon-button icon-button--round" :disabled="locating" aria-label="Me localiser" @click="locate"><LocateFixed aria-hidden="true" /></button>
+        <p class="results-count map-view__count" aria-live="polite">{{ results.length }} activité{{ results.length > 1 ? 's' : '' }}<template v-if="locateError"> · {{ locateError }}</template></p>
+        <div v-if="store.activitiesStatus === 'loading' || store.activitiesStatus === 'idle'" class="map-view__state" role="status"><span class="spinner" aria-hidden="true"></span>Chargement des activités…</div>
+        <div v-else-if="store.activitiesStatus === 'error'" class="map-view__empty" role="alert"><h2>La carte n’a pas pu charger</h2><p>Vérifie ta connexion puis réessaie.</p><button type="button" class="btn btn--primary" @click="loadActivities(true)">Réessayer</button></div>
+        <div v-else-if="!results.length" class="map-view__empty"><h2>Aucune activité trouvée par ici</h2><p>Élargis la zone ou ajuste tes filtres.</p><button type="button" class="btn btn--primary" @click="sheetOpen = true"><SlidersHorizontal aria-hidden="true" />Modifier mes filtres</button><button type="button" class="btn btn--soft" @click="resetAll(); view = 'liste'"><Search aria-hidden="true" />Voir toutes les activités</button></div>
+        <div v-else-if="selected" class="map-view__sheet"><span class="sheet__grip" aria-hidden="true"></span><ActivityCard :activity="selected" variant="row" /></div>
+      </section>
     </template>
-    <section v-else class="map-view" aria-label="Résultats sur la carte">
-      <ActivityMap :points="points" :origin="origin" :selected-id="selected?.id" label="Carte des activités" @select="selectedId = $event" />
-      <button type="button" class="map-view__locate icon-button icon-button--round" :disabled="locating" aria-label="Me localiser" @click="locate"><LocateFixed aria-hidden="true" /></button>
-      <p class="results-count map-view__count" aria-live="polite">{{ results.length }} activité{{ results.length > 1 ? 's' : '' }}<template v-if="locateError"> · {{ locateError }}</template></p>
-      <div v-if="selected" class="map-view__sheet"><span class="sheet__grip" aria-hidden="true"></span><ActivityCard :activity="selected" variant="row" /></div>
-    </section>
+    <template v-else>
+      <p v-if="store.activitiesStatus === 'loading' || store.activitiesStatus === 'idle'" class="loading-line" role="status"><span class="spinner" aria-hidden="true"></span>Chargement des activités…</p>
+      <MascotState v-else-if="store.activitiesStatus === 'error'" title="Oups, pas de connexion" text="Impossible de charger les activités. Vérifie ta connexion puis réessaie.">
+        <button type="button" class="btn btn--primary" @click="loadActivities(true)">Réessayer</button>
+      </MascotState>
+      <MascotState v-else-if="!results.length" title="Aucune activité trouvée par ici" text="Essaie d’élargir ta zone, de modifier tes filtres ou de chercher un autre mot-clé.">
+        <button type="button" class="btn btn--primary" @click="sheetOpen = true"><SlidersHorizontal aria-hidden="true" />Modifier mes filtres</button>
+        <button type="button" class="btn btn--soft" @click="resetAll"><Search aria-hidden="true" />Voir toutes les activités</button>
+      </MascotState>
+      <template v-else>
+        <div class="results-header">
+          <h2 class="section-title">{{ heading }}</h2>
+          <label class="sort-select">Tri :
+            <select v-model="filters.sort" aria-label="Trier les activités"><option value="proximite">Proximité</option><option value="date">Date</option><option value="popularite">Popularité</option></select>
+            <ChevronDown aria-hidden="true" />
+          </label>
+        </div>
+        <p class="results-count sr-only" aria-live="polite">{{ results.length }} activité{{ results.length > 1 ? 's' : '' }} · distances depuis {{ originLabel }}</p>
+        <div class="result-list"><ActivityCard v-for="a in results" :key="a.id" :activity="a" variant="row" /></div>
+      </template>
+    </template>
 
     <FilterSheet v-if="sheetOpen" :filters="filters" :count="count" @apply="apply" @close="sheetOpen = false" />
   </div>

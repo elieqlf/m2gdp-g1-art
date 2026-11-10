@@ -357,6 +357,12 @@
 .page--map .map-view__sheet { left: .55rem; right: .55rem; bottom: calc(.45rem + env(safe-area-inset-bottom)); padding: .4rem; border-radius: 1.2rem; }
 .page--map .map-view__sheet .activity-card--row .activity-card__media { width: 39%; min-height: 6rem; }
 .page--map .map-view__sheet .activity-card--row .activity-card__body { padding-right: 2.25rem; }
+.map-view__empty { position: absolute; z-index: 6; left: .75rem; right: .75rem; bottom: calc(.65rem + env(safe-area-inset-bottom)); width: min(100% - 1.5rem, 27rem); display: grid; gap: .55rem; margin-inline: auto; padding: 1.1rem; border: 1px solid var(--line); border-radius: 1.2rem; background: color-mix(in srgb, var(--card) 96%, transparent); box-shadow: 0 8px 28px rgb(35 40 48 / .18); text-align: center; }
+.map-view__empty h2 { color: var(--primary); font-size: 1.15rem; font-weight: 700; }
+.map-view__empty p { margin: 0 0 .25rem; color: var(--muted-foreground); font-size: .88rem; line-height: 1.4; }
+.map-view__empty .btn { width: 100%; min-height: 2.9rem; }
+.map-view__state { position: absolute; z-index: 6; top: 50%; left: 50%; transform: translate(-50%, -50%); display: flex; align-items: center; gap: .65rem; max-width: calc(100% - 2rem); padding: .85rem 1rem; border-radius: 1rem; background: var(--card); box-shadow: var(--shadow); color: var(--foreground); }
+.page--map .map-view__empty[role="alert"] { text-align: left; }
 
 /* Feuille de filtres et boîtes de dialogue */
 .sheet-backdrop { position: fixed; inset: 0; z-index: 50; display: flex; align-items: flex-end; justify-content: center; background: rgb(84 84 84 / .45); }
@@ -614,6 +620,7 @@
 .profile-stats > div + div { border-left: 1px solid var(--line); }
 .profile-stats dd { font-size: 1.6rem; font-weight: 600; color: var(--ink); }
 .profile-stats dt { font-size: .82rem; line-height: 1.25; }
+.profile-stats__status { grid-column: 1 / -1; margin: -.55rem 0 0; color: var(--muted-foreground); font-size: .8rem; text-align: center; }
 .menu-card { display: grid; margin-bottom: 1rem; padding: .2rem 1rem; border: 1px solid var(--line); border-radius: 1.1rem; background: var(--card); }
 .menu-row { display: flex; align-items: center; gap: 1rem; padding: .95rem 0; color: var(--ink); text-decoration: none; font-size: 1.02rem; }
 .menu-row + .menu-row { border-top: 1px solid var(--line); }

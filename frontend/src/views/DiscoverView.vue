@@ -13,11 +13,32 @@ const query = ref('')
 const discipline = ref('')
 const now = new Date()
 const upcoming = computed(() => store.activities.filter(a => !isPast(a, now) && (!discipline.value || a.discipline === discipline.value)))
-const nearby = computed(() => sortActivities(upcoming.value.filter(a => !isFull(a) && (activityDistance(a, origin.value) ?? 99) < 8), 'proximite', origin.value).slice(0, 2))
-const popular = computed(() => sortActivities(upcoming.value.filter(a => !isFull(a)), 'popularite', origin.value).filter(a => !nearby.value.some(n => n.id === a.id)).slice(0, 6))
+function uniqueCovers<T extends { coverUrl: string }>(activities: T[], limit: number): T[] {
+  const covers = new Set<string>()
+  return activities.filter(activity => {
+    if (covers.has(activity.coverUrl)) return false
+    covers.add(activity.coverUrl)
+    return true
+  }).slice(0, limit)
+}
+const nearby = computed(() => uniqueCovers(sortActivities(upcoming.value.filter(a => !isFull(a) && (activityDistance(a, origin.value) ?? 99) < 8), 'proximite', origin.value), 2))
+const forYou = computed(() => {
+  const interests = store.profile.interests ?? []
+  if (!interests.length) return []
+  const usedIds = new Set(nearby.value.map(a => a.id))
+  const usedCovers = new Set(nearby.value.map(a => a.coverUrl))
+  return uniqueCovers(sortActivities(upcoming.value.filter(a => interests.includes(a.discipline) && !isFull(a) && !usedIds.has(a.id) && !usedCovers.has(a.coverUrl)), 'popularite', origin.value), 6)
+})
+const popular = computed(() => {
+  const usedIds = new Set([...nearby.value, ...forYou.value].map(a => a.id))
+  const usedCovers = new Set([...nearby.value, ...forYou.value].map(a => a.coverUrl))
+  return uniqueCovers(sortActivities(upcoming.value.filter(a => !isFull(a) && !usedIds.has(a.id) && !usedCovers.has(a.coverUrl)), 'popularite', origin.value), 6)
+})
 const highlight = computed(() => {
   const soon = upcoming.value.filter(a => startsAt(a).getTime() - now.getTime() < 10 * 86400000 && placesLeft(a) >= 3)
-  return [...soon].filter(a => !nearby.value.some(n => n.id === a.id) && !popular.value.some(p => p.id === a.id)).sort((a, b) => b.capacity - a.capacity)[0]
+  const usedIds = new Set([...nearby.value, ...forYou.value, ...popular.value].map(a => a.id))
+  const usedCovers = new Set([...nearby.value, ...forYou.value, ...popular.value].map(a => a.coverUrl))
+  return [...soon].filter(a => !usedIds.has(a.id) && !usedCovers.has(a.coverUrl)).sort((a, b) => b.capacity - a.capacity)[0]
 })
 const chips = computed(() => disciplines.filter(d => d.id !== 'autre'))
 function search() { navigate('rechercher', { q: query.value.trim() }) }
@@ -48,6 +69,10 @@ function search() { navigate('rechercher', { q: query.value.trim() }) }
       <section v-if="nearby.length" class="feed-section" aria-labelledby="nearby-title">
         <header class="section-header"><h2 id="nearby-title" class="section-title">Autour de toi</h2><a href="#/rechercher?vue=carte" class="section-link"><MapPin aria-hidden="true" />Voir la carte<ChevronRight aria-hidden="true" /></a></header>
         <div class="card-scroller card-scroller--nearby"><ActivityCard v-for="a in nearby" :key="a.id" :activity="a" /></div>
+      </section>
+      <section v-if="forYou.length" class="feed-section" aria-labelledby="for-you-title">
+        <header class="section-header"><h2 id="for-you-title" class="section-title">Selon tes envies</h2><a href="#/rechercher" class="section-link">Voir tout<ChevronRight aria-hidden="true" /></a></header>
+        <div class="card-scroller card-scroller--compact"><ActivityCard v-for="a in forYou" :key="a.id" :activity="a" /></div>
       </section>
       <section class="feed-section" aria-labelledby="popular-title">
         <header class="section-header"><h2 id="popular-title" class="section-title">Activités populaires</h2><a href="#/rechercher?tri=popularite" class="section-link">Voir tout<ChevronRight aria-hidden="true" /></a></header>

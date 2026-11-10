@@ -28,11 +28,20 @@ function fill(a: Activity) {
   const { title, discipline, subDiscipline = '', description, level, equipment = '', coverUrl, placeName, address, district = '', lat, lng, date, startTime, endTime, capacity } = a
   Object.assign(draft, { title, discipline, subDiscipline, description, level, equipment, coverUrl, placeName, address, district, lat, lng, date, startTime, endTime, capacity })
 }
-watch(() => props.id, async id => {
+let loadRevision = 0
+async function loadActivity(id = props.id) {
+  const revision = ++loadRevision
   status.value = 'loading'
-  try { const a = await ensureActivity(id); if (a) { fill(a); status.value = 'ready' } else status.value = 'missing' }
-  catch { status.value = 'error' }
-}, { immediate: true })
+  failure.value = ''
+  try {
+    const a = await ensureActivity(id)
+    if (revision !== loadRevision) return
+    if (a) { fill(a); status.value = 'ready' } else status.value = 'missing'
+  } catch {
+    if (revision === loadRevision) status.value = 'error'
+  }
+}
+watch(() => props.id, id => { void loadActivity(id) }, { immediate: true })
 
 async function save() {
   // Une date déjà passée reste acceptée si elle n'a pas été modifiée.
@@ -65,7 +74,8 @@ async function remove() {
   <div class="page page--form">
     <div class="topbar"><button type="button" class="icon-button icon-button--plain" aria-label="Retour" @click="goBack()"><ChevronLeft aria-hidden="true" /></button><h1 class="topbar__title">Modifier l’activité</h1><span class="topbar__spacer"></span></div>
     <p v-if="status === 'loading'" class="loading-line" role="status"><span class="spinner" aria-hidden="true"></span>Chargement…</p>
-    <MascotState v-else-if="status !== 'ready' || !activity" title="Activité introuvable" text="Elle a peut-être été supprimée."><a href="#/mes-activites" class="btn btn--primary">Mes activités</a></MascotState>
+    <MascotState v-else-if="status === 'missing' || (status === 'ready' && !activity)" title="Activité introuvable" text="Elle a peut-être été supprimée ou son lien n’est plus valide."><a href="#/mes-activites" class="btn btn--primary">Mes activités</a></MascotState>
+    <MascotState v-else-if="status === 'error'" title="Impossible de charger l’activité" text="Vérifie ta connexion. Le formulaire n’a pas encore été ouvert."><button type="button" class="btn btn--primary" @click="loadActivity()">Réessayer</button><a href="#/mes-activites" class="btn btn--soft">Mes activités</a></MascotState>
     <MascotState v-else-if="!owner" title="Modification réservée" text="Seule la personne qui organise cette activité peut la modifier."><a :href="`#/activite/${encodeURIComponent(id)}`" class="btn btn--primary">Voir l’activité</a></MascotState>
     <form v-else class="edit-form" novalidate @submit.prevent="save">
       <div class="edit-cover"><img :src="draft.coverUrl" alt="" /><button type="button" class="edit-cover__button" :aria-expanded="changingCover" @click="changingCover = !changingCover">{{ changingCover ? 'Fermer' : 'Changer la photo' }}</button></div>

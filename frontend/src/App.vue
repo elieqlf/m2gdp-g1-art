@@ -352,7 +352,7 @@ onBeforeUnmount(() => { unsubscribe?.(); clearInterval(countdown); accountRevisi
 
 <template>
   <main v-if="splashVisible" class="novart-splash-screen" role="status" aria-label="Chargement de Novart">
-    <img src="/images/novart-logo-submark-vivid.svg?v=ff0000-1" class="novart-splash-mark" width="952" height="887" alt="Logo Novart" fetchpriority="high" />
+    <img src="/images/novart-logo-submark-vivid.svg" class="novart-splash-mark" width="952" height="887" alt="Logo Novart" fetchpriority="high" />
     <span class="novart-splash-spinner" aria-hidden="true"></span>
     <span class="sr-only">Préparation de l’application…</span>
   </main>

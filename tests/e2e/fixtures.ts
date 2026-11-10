@@ -36,12 +36,19 @@ const members = ${JSON.stringify(users)};
 export const db = null;
 export const isValidEmail = email => /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email.trim());
 export const hasSignInLink = () => false;
+export const pendingSocialProvider = () => null;
+export const clearPendingSocialProvider = () => {};
+export const rememberedSessionChoice = () => false;
+export const setAuthPersistence = async () => {};
 export const pendingEmail = () => '';
 export const requestSignInLink = async () => {};
 export const completeSignIn = async () => {};
+export const signInWithSocialProvider = async () => null;
+export const consumeSocialRedirect = async () => null;
 export const observeAccount = callback => { observer = callback; queueMicrotask(() => callback(mode === 'request' ? null : me)); return () => {}; };
 export const getProfile = async () => ({ ...profile });
 export const saveProfile = async (uid, data) => { profile = { ...profile, ...data, profileComplete: true }; };
+export const saveOnboardingProgress = async (uid, data, step) => { profile = { ...profile, ...data, onboardingStep: step, profileComplete: false }; };
 export const updateProfile = async (uid, changes) => { profile = { ...profile, ...changes }; };
 export const setFavorite = async (uid, id, on) => { const list = profile.favoriteIds || []; profile.favoriteIds = on ? [...list, id] : list.filter(x => x !== id); };
 export const listMembers = async () => [...members, { uid: me.uid, ...profile }];
@@ -100,9 +107,9 @@ export async function capture(page: Page, testInfo: TestInfo, name: string, sele
     images.forEach(image => { image.loading = 'eager' })
     await Promise.all(images.map(image => image.decode().catch(() => undefined)))
     const loaded = (family: string) => Array.from(document.fonts).some(font => font.family.replaceAll('"', '') === family && font.status === 'loaded')
-    return { imagesLoaded: !selector || (images.length > 0 && images.every(image => image.naturalWidth > 0)), poppins: loaded('Poppins'), sigmar: loaded('Sigmar One') }
+    return { imagesLoaded: !selector || (images.length > 0 && images.every(image => image.naturalWidth > 0)), poppins: loaded('Poppins'), caveat: loaded('Caveat') }
   }, selector)
-  expect(assets).toEqual({ imagesLoaded: true, poppins: true, sigmar: true })
+  expect(assets).toEqual({ imagesLoaded: true, poppins: true, caveat: true })
   await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
   await page.screenshot({ path: testInfo.outputPath(name + '.png'), fullPage: true })
 }

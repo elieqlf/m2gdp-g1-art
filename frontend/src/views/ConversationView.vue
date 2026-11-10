@@ -15,13 +15,16 @@ const status = ref<'loading' | 'ready' | 'missing' | 'error'>('loading')
 const messages = ref<Message[]>([])
 const text = ref('')
 const sending = ref(false)
-const failure = ref('')
+const sendFailure = ref('')
+const streamStatus = ref<'loading' | 'ready' | 'error'>('loading')
+const streamFailure = ref('')
 const list = ref<HTMLElement | null>(null)
 const unreadMessages = ref(0)
 const followNextMessage = ref(false)
 const activity = computed(() => store.activities.find(a => a.id === props.id))
 const member = computed(() => !!activity.value && isMember(activity.value, uid.value))
 let stop: (() => void) | undefined
+let loadRevision = 0
 
 const dayLabel = (ms: number) => {
   const day = toIsoDay(new Date(ms))
@@ -47,32 +50,61 @@ async function scrollDown() {
 }
 function handleMessageScroll() { if (isNearBottom()) unreadMessages.value = 0 }
 
-watch(() => props.id, async id => {
-  stop?.(); messages.value = []; status.value = 'loading'
-  try { if (!(await ensureActivity(id))) { status.value = 'missing'; return } } catch { status.value = 'error'; return }
-  status.value = 'ready'
-  void loadMembers()
-  if (!member.value) return
+function stopWatching() {
+  stop?.()
+  stop = undefined
+}
+function startWatching(id = props.id) {
+  stopWatching()
+  messages.value = []
+  streamStatus.value = 'loading'
+  streamFailure.value = ''
   stop = watchMessages(id, data => {
     const previousCount = messages.value.length
     const shouldFollow = previousCount === 0 || followNextMessage.value || isNearBottom()
     messages.value = data
+    streamStatus.value = 'ready'
+    streamFailure.value = ''
     if (shouldFollow) void scrollDown()
     else if (data.length > previousCount) unreadMessages.value += data.length - previousCount
-  }, () => { failure.value = 'Messages indisponibles pour le moment.' })
-}, { immediate: true })
-onBeforeUnmount(() => stop?.())
+  }, () => {
+    streamStatus.value = 'error'
+    streamFailure.value = 'La connexion au groupe a été interrompue.'
+  })
+}
+async function loadConversation(id = props.id) {
+  const revision = ++loadRevision
+  stopWatching()
+  messages.value = []
+  status.value = 'loading'
+  streamStatus.value = 'loading'
+  try {
+    if (!(await ensureActivity(id))) {
+      if (revision === loadRevision) status.value = 'missing'
+      return
+    }
+  } catch {
+    if (revision === loadRevision) status.value = 'error'
+    return
+  }
+  if (revision !== loadRevision) return
+  status.value = 'ready'
+  void loadMembers()
+  if (member.value) startWatching(id)
+}
+watch(() => props.id, id => { void loadConversation(id) }, { immediate: true })
+onBeforeUnmount(stopWatching)
 
 async function send() {
   const content = text.value.trim()
   if (!content || !activity.value) return
-  sending.value = true; failure.value = ''
+  sending.value = true; sendFailure.value = ''
   followNextMessage.value = true
   try {
     await sendMessage(props.id, me.value, content)
     text.value = ''
     upsertActivity({ ...activity.value, lastMessage: { text: content, authorName: me.value.name, sentAtMs: Date.now() } })
-  } catch { followNextMessage.value = false; failure.value = 'Message non envoyé. Vérifie ta connexion et réessaie.' }
+  } catch { followNextMessage.value = false; sendFailure.value = 'Message non envoyé. Vérifie ta connexion et réessaie.' }
   finally { sending.value = false }
 }
 </script>
@@ -81,8 +113,9 @@ async function send() {
   <div class="page page--chat">
     <div class="topbar"><button type="button" class="icon-button icon-button--plain" aria-label="Retour" @click="goBack('conversations')"><ChevronLeft aria-hidden="true" /></button><h1 class="sr-only">Groupe de discussion{{ activity ? ` : ${activity.title}` : '' }}</h1></div>
     <p v-if="status === 'loading'" class="loading-line" role="status"><span class="spinner" aria-hidden="true"></span>Chargement…</p>
-    <MascotState v-else-if="status !== 'ready' || !activity" title="Conversation introuvable" text="L’activité a peut-être été supprimée."><a href="#/conversations" class="btn btn--primary">Mes conversations</a></MascotState>
-    <template v-else>
+    <MascotState v-else-if="status === 'missing' || (status === 'ready' && !activity)" title="Cette conversation n’est plus disponible" text="L’activité a peut-être été supprimée."><a href="#/conversations" class="btn btn--primary">Mes conversations</a><a href="#/rechercher" class="btn btn--soft">Découvrir les activités</a></MascotState>
+    <MascotState v-else-if="status === 'error'" title="Impossible de charger cette conversation" text="Vérifie ta connexion puis réessaie."><button type="button" class="btn btn--primary" @click="loadConversation()">Réessayer</button><a href="#/conversations" class="btn btn--soft">Mes conversations</a></MascotState>
+    <template v-else-if="activity">
       <a :href="`#/activite/${encodeURIComponent(activity.id)}`" class="chat-activity">
         <img :src="activity.coverUrl" alt="" />
         <span><strong>{{ activity.title }}</strong><DisciplineBadge :discipline="activity.discipline" /><small><CalendarDays aria-hidden="true" />{{ longDay(activity.date) }} · {{ clockRange(activity) }}</small><small><MapPin aria-hidden="true" />{{ activity.placeName }}</small></span>
@@ -93,7 +126,9 @@ async function send() {
         <div class="messages-region">
           <button v-if="unreadMessages" type="button" class="messages-jump" @click="scrollDown">{{ unreadMessages }} nouveau{{ unreadMessages > 1 ? 'x' : '' }} message{{ unreadMessages > 1 ? 's' : '' }} ↓</button>
           <ol ref="list" class="messages" aria-label="Messages du groupe" aria-live="polite" aria-relevant="additions" @scroll="handleMessageScroll">
-            <li v-if="!rows.length" class="messages__empty">Aucun message pour l’instant. Dis bonjour au groupe !</li>
+            <li v-if="streamStatus === 'loading'" class="messages__empty" role="status">Chargement des messages…</li>
+            <li v-else-if="streamStatus === 'error' && !rows.length" class="messages__empty">Les messages ne sont pas disponibles.</li>
+            <li v-else-if="streamStatus === 'ready' && !rows.length" class="messages__empty">Aucun message pour l’instant. Dis bonjour au groupe !</li>
             <template v-for="m in rows" :key="m.id">
               <li v-if="m.separator" class="messages__day"><span>{{ m.separator }}</span></li>
               <li class="message" :class="{ 'message--mine': m.mine }">
@@ -106,13 +141,15 @@ async function send() {
             </template>
           </ol>
         </div>
+        <p v-if="streamFailure" class="form-alert chat-stream-alert" role="alert">{{ streamFailure }} <button type="button" class="link-button" @click="startWatching()">Reconnexion</button></p>
         <form class="composer" @submit.prevent="send">
           <label for="message" class="sr-only">Écrire un message</label>
           <input id="message" v-model="text" class="composer__input" placeholder="Écrire un message…" maxlength="1000" autocomplete="off" />
           <button type="submit" class="composer__send" :disabled="sending || !text.trim()" aria-label="Envoyer le message"><SendHorizontal aria-hidden="true" /></button>
         </form>
-        <p v-if="failure" class="form-alert" role="alert">{{ failure }}</p>
+        <p v-if="sendFailure" class="form-alert" role="alert">{{ sendFailure }}</p>
       </template>
     </template>
+    <MascotState v-else title="Cette conversation n’est plus disponible" text="L’activité a peut-être été supprimée."><a href="#/conversations" class="btn btn--primary">Mes conversations</a></MascotState>
   </div>
 </template>

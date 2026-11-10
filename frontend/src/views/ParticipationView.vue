@@ -1,24 +1,42 @@
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { ArrowRight, Bell, CalendarDays, Check, ChevronRight, MapPin, MessageCircleMore, Share2, Users, X } from '@lucide/vue'
 import ConfettiBurst from '@/components/ConfettiBurst.vue'
 import DisciplineBadge from '@/components/DisciplineBadge.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import { shortDay, timeRange } from '@/lib/activity'
 import { ensureActivity, loadMembers, memberName, notify, store, uid } from '@/lib/store'
-import { useRoute } from '@/lib/router'
+import { replaceRoute, useRoute } from '@/lib/router'
 import { downloadReminder, shareActivity } from '@/lib/share'
 
 // Confirmation après l'inscription (maquette 11).
 const props = defineProps<{ id: string }>()
 const route = useRoute()
-const showConfetti = computed(() => route.value.query.celebrate === '1')
+const status = ref<'loading' | 'ready' | 'missing' | 'error'>('loading')
+const showConfetti = ref(false)
 const activity = computed(() => store.activities.find(a => a.id === props.id))
 const others = computed(() => activity.value ? [activity.value.organizerId, ...activity.value.participantIds.filter(id => id !== uid.value)] : [])
 const organizerProfile = computed(() => store.members[activity.value?.organizerId ?? ''])
 const detailHref = computed(() => `#/activite/${encodeURIComponent(props.id)}`)
 const groupHref = computed(() => `#/conversations/${encodeURIComponent(props.id)}`)
-onMounted(() => { void ensureActivity(props.id); void loadMembers() })
+let loadRevision = 0
+async function loadActivity(id = props.id) {
+  const revision = ++loadRevision
+  status.value = 'loading'
+  try {
+    const found = await ensureActivity(id)
+    if (revision !== loadRevision) return
+    status.value = found ? 'ready' : 'missing'
+  } catch {
+    if (revision === loadRevision) status.value = 'error'
+  }
+}
+onMounted(() => {
+  showConfetti.value = route.value.query.celebrate === '1'
+  if (showConfetti.value) replaceRoute(`activite/${encodeURIComponent(props.id)}/participation`)
+  void loadActivity()
+  void loadMembers()
+})
 function remind() { if (activity.value) { downloadReminder(activity.value); notify('Rappel téléchargé : ouvre le fichier pour l’ajouter à ton agenda.') } }
 async function share() { if (activity.value) { const message = await shareActivity(activity.value); if (message) notify(message) } }
 </script>
@@ -27,8 +45,10 @@ async function share() { if (activity.value) { const message = await shareActivi
   <div class="page page--confirm">
     <ConfettiBurst v-if="showConfetti" />
     <a :href="detailHref" class="icon-button icon-button--plain confirm-close" aria-label="Fermer et revenir à l’activité"><X aria-hidden="true" /></a>
-    <p v-if="!activity" class="loading-line" role="status"><span class="spinner" aria-hidden="true"></span>Chargement…</p>
-    <template v-else>
+    <p v-if="status === 'loading'" class="loading-line" role="status"><span class="spinner" aria-hidden="true"></span>Chargement de ta confirmation…</p>
+    <MascotState v-else-if="status === 'missing'" title="Cette activité n’est plus disponible" text="Elle a peut-être été supprimée. Tu peux retrouver d’autres activités à découvrir."><a href="#/rechercher" class="btn btn--primary">Découvrir les activités</a><a href="#/mes-activites" class="btn btn--soft">Mes activités</a></MascotState>
+    <MascotState v-else-if="status === 'error'" title="Ta confirmation ne s’affiche pas" text="Un problème de connexion empêche de charger les détails. Réessaie, ta participation n’est pas annulée."><button type="button" class="btn btn--primary" @click="loadActivity()">Réessayer</button><a :href="detailHref" class="btn btn--soft">Retour à l’activité</a></MascotState>
+    <template v-else-if="activity">
       <header class="confirm-hero">
         <span class="confirm-hero__badge" aria-hidden="true"><Check /></span>
         <h1 class="display-title">Tu participes !</h1>
@@ -67,5 +87,6 @@ async function share() { if (activity.value) { const message = await shareActivi
         <a href="#/mes-activites" class="btn btn--outline btn--wide"><CalendarDays aria-hidden="true" />Voir toutes mes activités<ArrowRight aria-hidden="true" /></a>
       </div>
     </template>
+    <MascotState v-else title="Cette activité n’est plus disponible" text="Elle a peut-être été supprimée. Tu peux retrouver d’autres activités à découvrir."><a href="#/rechercher" class="btn btn--primary">Découvrir les activités</a></MascotState>
   </div>
 </template>
