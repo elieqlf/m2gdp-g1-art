@@ -7,7 +7,7 @@ import DisciplineBadge from '@/components/DisciplineBadge.vue'
 import DisciplineIcon from '@/components/DisciplineIcon.vue'
 import PlacePicker from '@/components/PlacePicker.vue'
 import StepIndicator from '@/components/StepIndicator.vue'
-import { clockRange, defaultCover, disciplines, levelLabel, levels, longDay, templates, toIsoDay, validateDraft, type ActivityDraft, type DraftErrors } from '@/lib/activity'
+import { clockRange, disciplines, levelLabel, levels, longDay, templates, toIsoDay, validateDraft, type ActivityDraft, type DraftErrors } from '@/lib/activity'
 import { me, notify, upsertActivity } from '@/lib/store'
 import { navigate } from '@/lib/router'
 import { createActivity } from '@/services/activities'
@@ -19,7 +19,14 @@ const levelIcons = { debutant: SignalLow, intermediaire: SignalMedium, avance: S
 const nextSaturday = () => { const d = new Date(); d.setDate(d.getDate() + ((6 - d.getDay() + 7) % 7 || 7)); return toIsoDay(d) }
 const blank = (): ActivityDraft => ({ title: '', discipline: '', subDiscipline: '', description: '', level: 'tous', equipment: '', coverUrl: '', placeName: '', address: '', district: '', lat: null, lng: null, date: nextSaturday(), startTime: '14:00', endTime: '17:00', capacity: 8 })
 function restore(): ActivityDraft | null {
-  try { const saved = JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null'); return saved?.title || saved?.discipline ? { ...blank(), ...saved } : null } catch { return null }
+  try {
+    const saved = JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null')
+    if (!saved?.title && !saved?.discipline) return null
+    const restored = { ...blank(), ...saved }
+    // Les brouillons antérieurs avaient une photo d'exemple choisie automatiquement.
+    if (typeof restored.coverUrl === 'string' && restored.coverUrl.startsWith('/images/activities/')) restored.coverUrl = ''
+    return restored
+  } catch { return null }
 }
 const saved = restore()
 const draft = reactive<ActivityDraft>(saved ?? blank())
@@ -30,11 +37,7 @@ const busy = ref(false)
 const publishError = ref('')
 const subs = computed(() => disciplines.find(d => d.id === draft.discipline)?.subs ?? [])
 watch(draft, value => { try { localStorage.setItem(DRAFT_KEY, JSON.stringify(value)) } catch { /* stockage indisponible */ } }, { deep: true })
-watch(() => draft.discipline, (value, previous) => {
-  // La photo suit la discipline tant qu'aucune photo personnelle n'est choisie.
-  const oldCover = previous ? defaultCover(previous) : ''
-  const oldIllustration = previous ? new RegExp(`/images/activities/${previous}-\\d\\.svg$`).test(draft.coverUrl) : false
-  if (!draft.coverUrl || draft.coverUrl === oldCover || oldIllustration) draft.coverUrl = value ? defaultCover(value) : ''
+watch(() => draft.discipline, () => {
   if (draft.subDiscipline && !subs.value.includes(draft.subDiscipline)) draft.subDiscipline = ''
 })
 
@@ -111,7 +114,7 @@ function close() { navigate('decouvrir') }
       <h1 class="display-title">Ajouter des médias</h1>
       <p class="lead">Une belle image donne envie de participer !</p>
       <p class="field-label">Photo principale <span class="required" aria-hidden="true">*</span></p>
-      <CoverPicker v-model="draft.coverUrl" :discipline="draft.discipline" :invalid="!!errors.coverUrl" />
+      <CoverPicker v-model="draft.coverUrl" :invalid="!!errors.coverUrl" />
       <p v-if="errors.coverUrl" class="field-error" role="alert">{{ errors.coverUrl }}</p>
       <aside class="tips-box">
         <p class="tips-box__title"><Lightbulb aria-hidden="true" />Astuces pour de belles photos</p>

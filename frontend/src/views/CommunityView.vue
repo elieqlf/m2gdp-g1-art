@@ -13,7 +13,7 @@ onMounted(() => loadMembers())
 <template>
   <div class="page page--wide">
     <div class="topbar"><button type="button" class="icon-button icon-button--plain" aria-label="Retour" @click="goBack('profil')"><ChevronLeft aria-hidden="true" /></button></div>
-    <header class="page-header page-header--row"><div><p class="eyebrow">Notre communauté</p><h1 class="display-title">Utilisateurs inscrits</h1><p class="lead">Découvre les participants et les organisateurs de Novart.</p></div><span class="soft-tag">{{ members.length }} membre{{ members.length > 1 ? 's' : '' }}</span></header>
+    <header class="page-header page-header--row"><div><p class="eyebrow">Notre communauté</p><h1 class="display-title">Utilisateurs inscrits</h1><p class="lead">Fais connaissance avec les membres de NOVART.</p></div><span class="soft-tag">{{ members.length }} membre{{ members.length > 1 ? 's' : '' }}</span></header>
     <p v-if="store.membersStatus === 'loading'" class="loading-line" role="status"><span class="spinner" aria-hidden="true"></span>Chargement des utilisateurs…</p>
     <div v-else-if="store.membersStatus === 'error'" class="form-alert" role="alert">Impossible de charger les utilisateurs. <button type="button" class="link-button" @click="loadMembers(true)">Réessayer</button></div>
     <template v-else>
@@ -22,7 +22,7 @@ onMounted(() => loadMembers())
       <ul v-else class="member-list">
         <li v-for="m in members" :key="m.uid" class="member-tile">
           <UserAvatar :name="[m.firstName, m.lastName].filter(Boolean).join(' ') || 'Membre'" :photo="m.photoUrl" :user-id="m.uid" size="md" />
-          <div><h2>{{ m.firstName ? `${m.firstName} ${m.lastName || ''}` : 'Membre' }}</h2><span class="soft-tag">{{ m.userType === 'organisateur' ? 'Organisateur' : m.userType === 'participant' ? 'Participant' : 'Profil à compléter' }}</span>
+          <div class="member-tile__content"><h2>{{ m.firstName ? `${m.firstName} ${m.lastName || ''}` : 'Membre' }}</h2><p v-if="m.bio" class="member-tile__bio">{{ m.bio }}</p>
             <p v-if="m.address" class="member-tile__address"><MapPin aria-hidden="true" />{{ m.address.split(',').slice(-2).join(',').trim() }}</p></div>
         </li>
       </ul>

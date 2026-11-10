@@ -173,7 +173,8 @@ export function validateDraft(d: ActivityDraft, step: 1 | 2 | 3 | 'all', registe
   }
   if (step === 2 || step === 'all') {
     if (!d.coverUrl) e.coverUrl = 'Choisis une photo principale.'
-    else if (!d.coverUrl.startsWith('/images/') && !/^https:\/\/\S+$/i.test(d.coverUrl)) e.coverUrl = 'Le lien de la photo doit commencer par https://.'
+    else if (!d.coverUrl.startsWith('/images/') && !/^https:\/\/\S+$/i.test(d.coverUrl) && !/^data:image\/webp;base64,[\w+/]+=*$/i.test(d.coverUrl)) e.coverUrl = 'Choisis une image JPG, PNG, WebP ou AVIF depuis ton appareil.'
+    else if (d.coverUrl.length > 700_000) e.coverUrl = 'Cette photo est trop lourde. Choisis une image plus légère.'
   }
   if (step === 3 || step === 'all') {
     if (!d.placeName.trim() && !d.address.trim()) e.place = 'Indique le lieu de l’activité.'

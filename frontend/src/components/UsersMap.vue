@@ -68,16 +68,12 @@ function updateMarkers(){
         'Utilisateur'
 
 
-        const role = document.createElement('p')
-        role.textContent = 
-        user.userType === 'organisateur'
-        ? 'Organisateur'
-        : user.userType === 'participant'
-          ? 'Participant'
-          : 'Membre'
-
-
-          popup.append(name,role)
+        popup.append(name)
+        if (user.bio?.trim()) {
+          const bio = document.createElement('p')
+          bio.textContent = user.bio.trim()
+          popup.append(bio)
+        }
 
           // Chaque point représente un utilisateur sur la carte
 

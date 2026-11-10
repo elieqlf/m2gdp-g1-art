@@ -69,7 +69,7 @@ async function remove() {
     <MascotState v-else-if="!owner" title="Modification réservée" text="Seule la personne qui organise cette activité peut la modifier."><a :href="`#/activite/${encodeURIComponent(id)}`" class="btn btn--primary">Voir l’activité</a></MascotState>
     <form v-else class="edit-form" novalidate @submit.prevent="save">
       <div class="edit-cover"><img :src="draft.coverUrl" alt="" /><button type="button" class="edit-cover__button" :aria-expanded="changingCover" @click="changingCover = !changingCover">{{ changingCover ? 'Fermer' : 'Changer la photo' }}</button></div>
-      <section v-if="changingCover" class="edit-block"><CoverPicker v-model="draft.coverUrl" :discipline="draft.discipline" :invalid="!!errors.coverUrl" /><p v-if="errors.coverUrl" class="field-error">{{ errors.coverUrl }}</p></section>
+      <section v-if="changingCover" class="edit-block"><CoverPicker v-model="draft.coverUrl" :invalid="!!errors.coverUrl" /><p v-if="errors.coverUrl" class="field-error">{{ errors.coverUrl }}</p></section>
       <section class="edit-block"><Pencil class="edit-block__icon" aria-hidden="true" /><div>
         <label for="edit-title" class="field-label field-label--accent">Titre de l’activité <span aria-hidden="true">*</span></label>
         <input id="edit-title" v-model="draft.title" class="text-field" maxlength="60" :aria-invalid="!!errors.title" /><span class="counter counter--below">{{ draft.title.length }}/60</span>

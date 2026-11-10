@@ -8,6 +8,9 @@ export const profilePhotoChoices = Array.from({ length: 8 }, (_, index) => ({
 const profilePhotoPaths = new Set(profilePhotoChoices.map(photo => photo.url))
 
 export const isProfilePhotoPath = (value: string) => profilePhotoPaths.has(value)
+export const isValidProfilePhoto = (value: string) => isProfilePhotoPath(value)
+  || /^https?:\/\/\S+$/i.test(value)
+  || /^data:image\/webp;base64,[\w+/]+=*$/i.test(value)
 
 const demoPhotos = demoProfilePhotoMap as Record<string, string>
 

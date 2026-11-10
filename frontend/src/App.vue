@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
-import { ArrowRight, Camera, Check, ChevronLeft, GraduationCap, Heart, Lightbulb, Mail, MapPin, Sprout, Star, Users } from '@lucide/vue'
+import { ArrowRight, Check, ChevronLeft, GraduationCap, Heart, Lightbulb, Mail, MapPin, Sprout, Star, Upload, Users } from '@lucide/vue'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -25,6 +25,8 @@ import CommunityView from '@/views/CommunityView.vue'
 import { isValidEmail, hasSignInLink, pendingEmail, pendingSocialProvider, clearPendingSocialProvider, rememberedSessionChoice, setAuthPersistence, requestSignInLink, completeSignIn, signInWithSocialProvider, consumeSocialRedirect, observeAccount, getProfile, saveOnboardingProgress, saveProfile, logout, type Account, type Profile } from '@/services/firebase'
 import type { AddressSelection } from '@/services/places'
 import { disciplines } from '@/lib/activity'
+import { imageUploadError, prepareImageUpload } from '@/lib/image-upload'
+import { rememberProfilePhoto } from '@/lib/profile-photo-history'
 import { loadActivities, loadMembers, requestPosition, resetStore, store } from '@/lib/store'
 import { tabOf, useRoute } from '@/lib/router'
 
@@ -53,7 +55,7 @@ const currentView = computed(() => views[route.value.name])
 const viewKey = computed(() => `${route.value.name}:${route.value.id ?? ''}`)
 const showNav = computed(() => !['participation', 'conversation'].includes(route.value.name))
 const selection = ref<AddressSelection | null>(null)
-const blankProfile = (): Profile => ({ firstName: '', lastName: '', userType: 'participant', address: '', addressLat: null, addressLng: null, photoUrl: '', interests: [], discoveryRadiusKm: 10, useCurrentLocation: false, onboardingGoals: [], onboardingStep: 1 })
+const blankProfile = (): Profile => ({ firstName: '', lastName: '', userType: 'participant', address: '', addressLat: null, addressLng: null, photoUrl: '', bio: '', interests: [], discoveryRadiusKm: 10, useCurrentLocation: false, onboardingGoals: [], onboardingStep: 1 })
 const profile = reactive<Profile>(blankProfile())
 const isOnboardingScreen = computed(() => ['profile', 'preferences', 'complete'].includes(screen.value))
 const onboardingStep = computed(() => screen.value === 'preferences' ? 2 : screen.value === 'complete' ? 3 : 1)
@@ -74,6 +76,8 @@ const radiusOptions = [
   { label: 'Toute la ville', value: null },
 ]
 const photoInput = ref<HTMLInputElement | null>(null)
+const photoBusy = ref(false)
+const photoError = ref('')
 const showCityEditor = ref(false)
 let unsubscribe: (() => void) | undefined
 let countdown: ReturnType<typeof setInterval> | undefined
@@ -177,6 +181,7 @@ async function loadAccount(user: Account | null) {
     Object.assign(profile, blankProfile(), saved)
     if (!profile.firstName && user.displayName) profile.firstName = user.displayName
     if (!profile.photoUrl && user.photoURL) profile.photoUrl = user.photoURL
+    if (profile.photoUrl) rememberProfilePhoto(user.uid, profile.photoUrl)
     store.profile = { ...saved }
     if (profile.useCurrentLocation) void requestPosition()
     // Le drapeau historique peut être périmé : les champs obligatoires restent la référence.
@@ -243,23 +248,14 @@ async function chooseProfilePhoto(event: Event) {
   const file = input.files?.[0]
   input.value = ''
   if (!file) return
-  if (!file.type.startsWith('image/')) { error.value = 'Choisis un fichier image.'; return }
-  if (file.size > 10 * 1024 * 1024) { error.value = 'Cette image est trop lourde (10 Mo maximum).'; return }
-  error.value = ''
-  const url = URL.createObjectURL(file)
+  photoError.value = ''
+  photoBusy.value = true
   try {
-    const image = new Image()
-    await new Promise<void>((resolve, reject) => { image.onload = () => resolve(); image.onerror = () => reject(new Error('invalid-image')); image.src = url })
-    const side = Math.min(image.naturalWidth, image.naturalHeight)
-    const canvas = document.createElement('canvas')
-    canvas.width = 384
-    canvas.height = 384
-    const context = canvas.getContext('2d')
-    if (!context) throw new Error('canvas-unavailable')
-    context.drawImage(image, (image.naturalWidth - side) / 2, (image.naturalHeight - side) / 2, side, side, 0, 0, 384, 384)
-    profile.photoUrl = canvas.toDataURL('image/webp', .84)
-  } catch { error.value = 'Cette image n’a pas pu être chargée. Réessaie avec un autre fichier.' }
-  finally { URL.revokeObjectURL(url) }
+    const photo = await prepareImageUpload(file, 'profile')
+    profile.photoUrl = photo
+    rememberProfilePhoto(account.value?.uid, photo)
+  } catch (cause) { photoError.value = imageUploadError(cause, 'profile') }
+  finally { photoBusy.value = false }
 }
 async function submitProfile() {
   error.value = ''
@@ -268,7 +264,7 @@ async function submitProfile() {
   if (!account.value) return
   busy.value = true
   try {
-    const saved: Partial<Profile> = { firstName: profile.firstName.trim(), lastName: profile.lastName.trim(), userType: 'participant', address: profile.address.trim(), photoUrl: profile.photoUrl, addressLat: profile.addressLat, addressLng: profile.addressLng, interests: [...(profile.interests ?? [])] }
+    const saved: Partial<Profile> = { firstName: profile.firstName.trim(), lastName: profile.lastName.trim(), bio: profile.bio?.trim() ?? '', userType: 'participant', address: profile.address.trim(), photoUrl: profile.photoUrl, addressLat: profile.addressLat, addressLng: profile.addressLng, interests: [...(profile.interests ?? [])] }
     await saveOnboardingProgress(account.value.uid, saved, 2)
     Object.assign(profile, saved, { onboardingStep: 2 })
     screen.value = 'preferences'
@@ -306,7 +302,7 @@ async function finishOnboarding() {
   error.value = ''
   busy.value = true
   try {
-    const saved: Profile = { ...profile, firstName: profile.firstName.trim(), lastName: profile.lastName.trim(), userType: 'participant', address: profile.address.trim(), addressLat: profile.addressLat, addressLng: profile.addressLng, photoUrl: profile.photoUrl, interests: [...(profile.interests ?? [])], discoveryRadiusKm: profile.discoveryRadiusKm ?? 10, useCurrentLocation: !!profile.useCurrentLocation, onboardingGoals: [...(profile.onboardingGoals ?? [])], onboardingStep: 3, profileComplete: true }
+    const saved: Profile = { ...profile, firstName: profile.firstName.trim(), lastName: profile.lastName.trim(), bio: profile.bio?.trim() ?? '', userType: 'participant', address: profile.address.trim(), addressLat: profile.addressLat, addressLng: profile.addressLng, photoUrl: profile.photoUrl, interests: [...(profile.interests ?? [])], discoveryRadiusKm: profile.discoveryRadiusKm ?? 10, useCurrentLocation: !!profile.useCurrentLocation, onboardingGoals: [...(profile.onboardingGoals ?? [])], onboardingStep: 3, profileComplete: true }
     await saveProfile(account.value.uid, saved)
     Object.assign(profile, saved)
     enterApp()
@@ -406,14 +402,15 @@ onBeforeUnmount(() => { unsubscribe?.(); clearInterval(countdown); accountRevisi
 
       <form v-if="screen === 'profile'" class="onboarding-form onboarding-form--profile" novalidate @submit.prevent="submitProfile">
         <div class="onboarding-photo-row">
-          <label for="onboarding-photo" class="onboarding-photo-picker" :class="{ 'has-photo': !!profile.photoUrl }" aria-label="Ajouter une photo de profil, optionnel">
+          <button type="button" class="onboarding-photo-picker" :class="{ 'has-photo': !!profile.photoUrl }" :disabled="photoBusy" aria-label="Choisir une photo depuis la galerie ou les fichiers" @click="photoInput?.click()">
             <img v-if="profile.photoUrl" :src="profile.photoUrl" alt="Aperçu de la photo de profil" />
-            <Camera v-else aria-hidden="true" />
+            <Upload v-else aria-hidden="true" />
             <span class="onboarding-photo-add" aria-hidden="true">+</span>
-          </label>
-          <input id="onboarding-photo" ref="photoInput" class="sr-only" type="file" accept="image/*" @change="chooseProfilePhoto" />
-          <div class="onboarding-photo-copy"><strong>Photo de profil</strong><span>Ajoute une photo pour te présenter <span class="optional">(au choix)</span></span></div>
+          </button>
+          <input id="onboarding-photo" ref="photoInput" class="sr-only" type="file" accept="image/jpeg,image/png,image/webp,image/avif" @change="chooseProfilePhoto" />
+          <div class="onboarding-photo-copy"><strong>Photo de profil <span class="optional">(optionnelle)</span></strong><span>{{ photoBusy ? 'Préparation de ta photo…' : 'Appuie pour choisir dans ta galerie ou tes fichiers.' }}</span></div>
         </div>
+        <p v-if="photoError" class="onboarding-error" role="alert">{{ photoError }}</p>
 
         <div class="onboarding-fields">
           <div class="onboarding-field">
@@ -430,6 +427,10 @@ onBeforeUnmount(() => { unsubscribe?.(); clearInterval(countdown); accountRevisi
               <MapPin class="onboarding-field-icon" aria-hidden="true" />
               <AddressInput v-model="profile.address" input-id="onboarding-city" placeholder="Ex. : Paris, Belleville" @select="handleAddressSelection" />
             </div>
+          </div>
+          <div class="onboarding-field">
+            <Label for="onboarding-bio">Quelques mots pour te présenter <span class="optional">(optionnel)</span></Label>
+            <div class="counter-field"><textarea id="onboarding-bio" v-model="profile.bio" class="onboarding-bio-field" maxlength="160" rows="2" placeholder="Ce que tu aimes créer ou découvrir…"></textarea><span class="counter">{{ profile.bio?.length ?? 0 }}/160</span></div>
           </div>
         </div>
 
@@ -516,7 +517,7 @@ onBeforeUnmount(() => { unsubscribe?.(); clearInterval(countdown); accountRevisi
       </section>
     </main>
 
-    <main v-else class="auth-layout" :class="{ 'auth-layout--profile': screen === 'profile', 'auth-layout--home': screen === 'request', 'auth-layout--home-has-error': screen === 'request' && !!error, 'auth-layout--status': ['sent', 'confirm', 'expired', 'account-error'].includes(screen), 'auth-layout--sent': screen === 'sent' }">
+    <main v-else class="auth-layout" :class="{ 'auth-layout--profile': screen === 'profile', 'auth-layout--home': screen === 'request', 'auth-layout--home-has-error': screen === 'request' && !!error, 'auth-layout--status': ['sent', 'confirm', 'expired', 'account-error'].includes(screen), 'auth-layout--sent': screen === 'sent', 'auth-layout--confirm': screen === 'confirm' }">
       <section v-if="screen !== 'profile'" class="auth-story">
         <a href="/" class="wordmark wordmark--stacked" aria-label="Novart, accueil"><span class="brand-logo brand-logo--primary" aria-hidden="true"></span></a>
         <h1 class="brand-slogan"><span>L’art se crée ensemble</span></h1>
@@ -533,7 +534,7 @@ onBeforeUnmount(() => { unsubscribe?.(); clearInterval(countdown); accountRevisi
           </div>
           <img v-if="screen === 'profile'" src="/images/novart-mascot-joy.webp" alt="" class="profile-mascot" width="159" height="133" />
         </CardHeader>
-        <CardContent :class="screen === 'request' ? 'auth-panel-content--home' : 'space-y-5'">
+        <CardContent :class="screen === 'request' ? 'auth-panel-content--home' : screen === 'confirm' ? 'auth-panel-content--confirm' : 'space-y-5'">
           <form v-if="screen === 'request'" class="auth-home-form" novalidate @submit.prevent="sendLink">
             <div class="auth-social-buttons">
               <button type="button" class="auth-social-button" :disabled="busy" @click="startSocialSignIn('google')">
@@ -571,10 +572,10 @@ onBeforeUnmount(() => { unsubscribe?.(); clearInterval(countdown); accountRevisi
             <Button variant="outline" class="auth-sent-resend" :disabled="busy || cooldown > 0" @click="sendLink">{{ cooldown > 0 ? `Renvoyer le lien dans ${cooldown} s` : 'Renvoyer le lien' }}</Button>
             <Button variant="link" class="auth-sent-change" @click="screen = 'request'; error = ''">Utiliser une autre adresse</Button>
           </div>
-          <form v-else-if="screen === 'confirm'" class="space-y-5" novalidate @submit.prevent="finishLink">
-            <p class="text-sm text-muted-foreground">Tu as ouvert le lien sur un autre appareil ? Indique la même adresse e-mail que celle à laquelle il a été envoyé.</p>
-            <div class="space-y-2"><Label for="confirm-email">Adresse e-mail</Label><Input id="confirm-email" v-model="email" type="email" autocomplete="email" /></div>
-            <Button class="w-full" type="submit" :disabled="busy">{{ busy ? 'Connexion…' : 'Confirmer mon e-mail' }}</Button>
+          <form v-else-if="screen === 'confirm'" class="auth-confirm-form" novalidate @submit.prevent="finishLink">
+            <p class="auth-confirm-copy">Tu as ouvert le lien sur un autre appareil ? Indique la même adresse e-mail que celle à laquelle il a été envoyé.</p>
+            <div class="auth-confirm-field"><Label for="confirm-email">Adresse e-mail utilisée</Label><div class="auth-confirm-input-wrap"><Mail aria-hidden="true" /><Input id="confirm-email" v-model="email" type="email" autocomplete="email" inputmode="email" placeholder="exemple@mail.com" :aria-invalid="!!error" /></div></div>
+            <Button class="auth-confirm-button" type="submit" :disabled="busy"><span>{{ busy ? 'Vérification…' : 'Continuer' }}</span><ArrowRight aria-hidden="true" /></Button>
           </form>
           <form v-else-if="screen === 'expired'" class="space-y-5" novalidate @submit.prevent="sendLink">
             <p class="text-sm text-muted-foreground">Ce lien a expiré ou a déjà été utilisé. Demande un nouveau lien pour continuer.</p>
@@ -586,6 +587,5 @@ onBeforeUnmount(() => { unsubscribe?.(); clearInterval(countdown); accountRevisi
         </CardContent>
       </Card>
     </main>
-    <footer class="site-footer">Novart · Une communauté de pratiques artistiques.</footer>
   </div>
 </template>

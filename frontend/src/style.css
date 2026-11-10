@@ -344,6 +344,27 @@
   padding-block: .8rem;
 }
 
+.auth-layout--confirm { gap: .7rem; padding-block: 1rem; }
+.auth-layout--confirm .auth-story { display: flex; flex-direction: column; align-items: center; gap: .35rem; }
+.auth-layout--confirm .wordmark--stacked { width: clamp(6rem, 22vw, 7.25rem); }
+.auth-layout--confirm .brand-slogan { margin: 0; color: var(--novart-red); font-family: 'Caveat', cursive; font-size: 1.6rem; font-weight: 700; line-height: 1; }
+.auth-layout--confirm .auth-mascot { width: 9rem; }
+.novart-app .auth-layout--confirm .auth-panel { padding-block: .9rem; border: 1px solid color-mix(in srgb, var(--foreground) 11%, transparent); border-radius: 1.2rem; background: var(--card); box-shadow: 0 8px 24px rgb(60 70 80 / .06); }
+.auth-layout--confirm .auth-panel [data-slot="card-header"] { padding: .4rem 1.1rem .65rem; }
+.auth-layout--confirm .form-title { margin: 0; text-align: center; }
+.auth-layout--confirm .auth-panel-content--confirm { display: block; padding: 0 1.1rem .4rem; }
+.auth-confirm-form { display: grid; gap: 1rem; }
+.auth-confirm-copy { max-width: 36ch; margin: 0 auto; color: var(--foreground); font-size: .94rem; line-height: 1.55; text-align: center; }
+.auth-confirm-field { display: grid; gap: .4rem; }
+.auth-confirm-field [data-slot="label"] { color: var(--auth-home-ink, var(--foreground)); font-weight: 500; }
+.auth-confirm-input-wrap { display: flex; align-items: center; gap: .65rem; min-width: 0; padding-left: .9rem; border: 1px solid var(--border); border-radius: .9rem; background: #fff; color: var(--novart-red); }
+.auth-confirm-input-wrap > svg { width: 1.25rem; height: 1.25rem; flex: 0 0 auto; }
+.novart-app .auth-confirm-input-wrap [data-slot="input"] { min-width: 0; min-height: 3.1rem; border: 0; background: transparent; box-shadow: none; color: var(--auth-home-ink, var(--foreground)); font-size: .95rem; }
+.novart-app .auth-confirm-input-wrap:focus-within { border-color: var(--novart-red); box-shadow: 0 0 0 3px rgb(255 0 0 / .1); }
+.novart-app .auth-confirm-button { position: relative; width: 100%; min-height: 3.15rem; display: flex; justify-content: center; border: 0; border-radius: .9rem; background: var(--novart-red); color: #fff; font-size: 1rem; font-weight: 700; }
+.auth-confirm-button > svg { position: absolute; right: 1rem; width: 1.3rem; height: 1.3rem; }
+.novart-app .auth-confirm-button:hover:not(:disabled) { background: #e60000; color: #fff; }
+
 .auth-layout--sent .auth-story {
   display: flex;
   flex-direction: column;
@@ -418,6 +439,11 @@
   .auth-layout--sent .wordmark--stacked { width: 5.25rem; }
   .auth-layout--sent .auth-mascot { width: 6.25rem; }
   .auth-sent-content { gap: .5rem; }
+  .auth-layout--confirm { gap: .45rem; padding-block: .45rem; }
+  .auth-layout--confirm .wordmark--stacked { width: 5.75rem; }
+  .auth-layout--confirm .brand-slogan { font-size: 1.45rem; }
+  .auth-layout--confirm .auth-mascot { width: 6.5rem; }
+  .auth-layout--confirm .auth-confirm-form { gap: .75rem; }
 }
 
 /* Création du profil : le titre prend toute la largeur, la mascotte reste
@@ -1026,16 +1052,23 @@
   place-items: center;
   overflow: visible;
   border-radius: 1.45rem;
+  border: 0;
+  padding: 0;
   background: #fff0ee;
   color: var(--novart-red);
+  font: inherit;
   cursor: pointer;
 }
 .onboarding-photo-picker > svg { width: 2rem; height: 2rem; stroke-width: 1.7; }
 .onboarding-photo-picker > img { width: 100%; height: 100%; border-radius: inherit; object-fit: cover; }
+.onboarding-photo-picker:disabled { opacity: .7; cursor: wait; }
 .onboarding-photo-add { position: absolute; right: -.2rem; bottom: -.2rem; width: 1.7rem; height: 1.7rem; display: grid; place-items: center; border: 2px solid var(--background); border-radius: 50%; background: var(--novart-red); color: white; font-size: 1.35rem; line-height: 1; }
 .onboarding-photo-copy { max-width: 15rem; display: flex; flex-direction: column; gap: .15rem; color: #69717a; font-size: .82rem; line-height: 1.35; }
 .onboarding-photo-copy strong { color: var(--auth-home-ink); font-size: .92rem; font-weight: 600; }
 .onboarding-photo-copy .optional { color: #858a90; }
+.onboarding-bio-field { width: 100%; min-height: 4.1rem; padding: .6rem .85rem 1.45rem; resize: vertical; border: 1px solid #e6ddda; border-radius: .85rem; background: #fffefa; color: var(--auth-home-ink); font: inherit; font-size: .88rem; line-height: 1.4; box-shadow: 0 1px 4px rgb(60 70 80 / .035); }
+.onboarding-bio-field::placeholder { color: #aaa4a2; }
+.onboarding-bio-field:focus-visible { outline: 2px solid var(--novart-red); outline-offset: 1px; }
 
 .onboarding-interest-section { min-width: 0; margin: 0; padding: 0; border: 0; }
 .onboarding-interest-section legend,
@@ -1055,7 +1088,7 @@
   border: 1px solid transparent;
   border-radius: .95rem;
   background: #fff0ed;
-  color: #a72a36;
+  color: var(--novart-red);
   font-size: .77rem;
   line-height: 1.15;
   text-align: center;
