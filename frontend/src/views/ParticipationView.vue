@@ -1,14 +1,18 @@
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
 import { ArrowRight, Bell, CalendarDays, Check, ChevronRight, MapPin, MessageCircleMore, Share2, Users, X } from '@lucide/vue'
+import ConfettiBurst from '@/components/ConfettiBurst.vue'
 import DisciplineBadge from '@/components/DisciplineBadge.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import { shortDay, timeRange } from '@/lib/activity'
 import { ensureActivity, loadMembers, memberName, notify, store, uid } from '@/lib/store'
+import { useRoute } from '@/lib/router'
 import { downloadReminder, shareActivity } from '@/lib/share'
 
 // Confirmation après l'inscription (maquette 11).
 const props = defineProps<{ id: string }>()
+const route = useRoute()
+const showConfetti = computed(() => route.value.query.celebrate === '1')
 const activity = computed(() => store.activities.find(a => a.id === props.id))
 const others = computed(() => activity.value ? [activity.value.organizerId, ...activity.value.participantIds.filter(id => id !== uid.value)] : [])
 const organizerProfile = computed(() => store.members[activity.value?.organizerId ?? ''])
@@ -21,6 +25,7 @@ async function share() { if (activity.value) { const message = await shareActivi
 
 <template>
   <div class="page page--confirm">
+    <ConfettiBurst v-if="showConfetti" />
     <a :href="detailHref" class="icon-button icon-button--plain confirm-close" aria-label="Fermer et revenir à l’activité"><X aria-hidden="true" /></a>
     <p v-if="!activity" class="loading-line" role="status"><span class="spinner" aria-hidden="true"></span>Chargement…</p>
     <template v-else>
@@ -41,13 +46,13 @@ async function share() { if (activity.value) { const message = await shareActivi
         </div>
       </article>
       <section class="organizer-card" aria-label="Organisation">
-        <UserAvatar :name="activity.organizerName" :photo="activity.organizerPhoto || organizerProfile?.photoUrl" size="lg" />
+        <UserAvatar :name="activity.organizerName" :photo="activity.organizerPhoto || organizerProfile?.photoUrl" :user-id="activity.organizerId" size="lg" />
         <div><p class="muted">Organisé par</p><p class="organizer-card__name">{{ activity.organizerName }}</p><p v-if="organizerProfile?.bio" class="muted">{{ organizerProfile.bio }}</p></div>
       </section>
       <a :href="groupHref" class="group-invite">
         <Users class="group-invite__icon" aria-hidden="true" />
         <span><strong>Rejoins le groupe de discussion !</strong><small>Échange avec l’organisation et les autres participants pour préparer l’activité.</small>
-          <span class="avatar-stack"><UserAvatar v-for="id in others.slice(0, 3)" :key="id" :name="id === activity.organizerId ? activity.organizerName : memberName(id)" size="sm" /><span v-if="others.length > 3" class="avatar-stack__more">+{{ others.length - 3 }}</span></span>
+          <span class="avatar-stack"><UserAvatar v-for="id in others.slice(0, 3)" :key="id" :name="id === activity.organizerId ? activity.organizerName : memberName(id)" :photo="store.members[id]?.photoUrl" :user-id="id" size="sm" /><span v-if="others.length > 3" class="avatar-stack__more">+{{ others.length - 3 }}</span></span>
         </span>
         <ChevronRight aria-hidden="true" />
       </a>

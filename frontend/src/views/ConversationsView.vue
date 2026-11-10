@@ -43,7 +43,7 @@ const visible = computed(() => {
             <span class="conversation-item__top"><strong>{{ a.title }}</strong><time>{{ relativeTime(a.lastMessage?.sentAtMs ?? a.createdAtMs) }}</time></span>
             <DisciplineBadge :discipline="a.discipline" />
             <span class="conversation-item__last">{{ a.lastMessage ? `${a.lastMessage.authorName} : ${a.lastMessage.text}` : 'Aucun message pour l’instant. Lance la discussion !' }}</span>
-            <span class="conversation-item__people"><span class="avatar-stack"><UserAvatar v-for="id in [a.organizerId, ...a.participantIds].slice(0, 3)" :key="id" :name="id === a.organizerId ? a.organizerName : memberName(id)" size="xs" /></span>{{ a.participantIds.length + 1 }} membres</span>
+            <span class="conversation-item__people"><span class="avatar-stack"><UserAvatar v-for="id in [a.organizerId, ...a.participantIds].slice(0, 3)" :key="id" :name="id === a.organizerId ? a.organizerName : memberName(id)" :photo="a.organizerId === id ? a.organizerPhoto || store.members[id]?.photoUrl : store.members[id]?.photoUrl" :user-id="id" size="xs" /></span>{{ a.participantIds.length + 1 }} membres</span>
           </span>
           <ChevronRight aria-hidden="true" class="conversation-item__chevron" />
         </a>

@@ -37,7 +37,7 @@ export const templates = catalog.templates
 export const venueTypes = catalog.venueTypes
 export const disciplineLabel = (id: string) => disciplines.find(d => d.id === id)?.label ?? 'Autre'
 export const levelLabel = (id: string) => levels.find(l => l.id === id)?.label ?? 'Tous niveaux'
-export const defaultCover = (discipline: string, variant = 1) => `/images/activities/${disciplines.some(d => d.id === discipline) ? discipline : 'autre'}-${variant}.svg`
+export const defaultCover = (discipline: string) => `/images/activities/photos/${disciplines.some(d => d.id === discipline) ? discipline : 'autre'}.webp`
 
 /** Centre de Lyon (place Bellecour), utilisé quand le profil n'a pas de coordonnées. */
 export const LYON_CENTER = { lat: 45.7578, lng: 4.832 }

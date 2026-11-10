@@ -55,7 +55,7 @@ async function join() {
   busy.value = true; error.value = ''
   try {
     upsertActivity(await joinActivity(activity.value.id, uid.value))
-    navigate(`activite/${encodeURIComponent(activity.value.id)}/participation`)
+    navigate(`activite/${encodeURIComponent(activity.value.id)}/participation`, { celebrate: '1' })
   } catch (cause) {
     error.value = cause instanceof ActivityFullError ? 'Trop tard, la dernière place vient d’être prise. Cette activité est complète.' : 'Inscription impossible pour le moment. Vérifie ta connexion et réessaie.'
   } finally { busy.value = false }
@@ -103,7 +103,7 @@ async function share() { if (activity.value) { const message = await shareActivi
       <section class="detail__section"><h2 class="subheading">À propos</h2><p class="detail__description">{{ activity.description }}</p></section>
 
       <section class="organizer-card" aria-label="Organisation">
-        <UserAvatar :name="activity.organizerName" :photo="activity.organizerPhoto || organizerProfile?.photoUrl" size="lg" />
+        <UserAvatar :name="activity.organizerName" :photo="activity.organizerPhoto || organizerProfile?.photoUrl" :user-id="activity.organizerId" size="lg" />
         <div><p class="muted">Organisé par</p><p class="organizer-card__name">{{ organizer ? 'Toi' : activity.organizerName }}</p><p v-if="organizerProfile?.bio" class="muted">{{ organizerProfile.bio }}</p></div>
       </section>
 
@@ -113,7 +113,7 @@ async function share() { if (activity.value) { const message = await shareActivi
         <h2 id="participants-title" class="subheading">Participants <span class="muted">({{ activity.participantIds.length }})</span></h2>
         <ul class="people-list">
           <li v-for="(id, index) in people" :key="id" class="person-row">
-            <UserAvatar :name="index === 0 ? activity.organizerName : memberName(id)" :photo="store.members[id]?.photoUrl" />
+            <UserAvatar :name="index === 0 ? activity.organizerName : memberName(id)" :photo="store.members[id]?.photoUrl" :user-id="id" />
             <span class="person-row__name">{{ id === uid ? 'Toi' : index === 0 ? activity.organizerName : memberName(id) }}</span>
             <span v-if="index === 0" class="soft-tag">Organisation</span>
           </li>

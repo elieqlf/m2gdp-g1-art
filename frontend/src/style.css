@@ -187,7 +187,7 @@
 .novart-app .form-title {
   color: var(--primary);
   font-family: var(--font-heading);
-  font-weight: 400;
+  font-weight: 700;
   line-height: 1.08;
 }
 
@@ -312,7 +312,7 @@
 }
 
 .novart-app .form-title {
-  font-size: clamp(2rem, 9vw, 2.6rem);
+  font-size: clamp(2.3rem, 10vw, 3rem);
   margin-bottom: .6rem;
   overflow-wrap: anywhere;
 }
@@ -328,7 +328,7 @@
   margin: 0;
   color: var(--novart-red);
   font-family: 'Caveat', cursive;
-  font-size: clamp(2.25rem, 9vw, 2.8rem);
+  font-size: clamp(2.65rem, 10vw, 3.2rem);
   font-weight: 700;
   letter-spacing: 0;
   line-height: 1;
@@ -566,7 +566,7 @@
   margin: .12rem auto .78rem;
   color: var(--novart-red);
   font-family: 'Caveat', cursive;
-  font-size: clamp(2rem, 7.8vw, 2.5rem);
+  font-size: clamp(2.25rem, 8.6vw, 2.8rem);
   font-style: normal;
   font-weight: 700;
   letter-spacing: -.015em;
@@ -820,7 +820,7 @@
   }
 
   .auth-layout--home .wordmark--stacked { width: min(9.25rem, 40vw); }
-  .novart-app--auth-home .brand-slogan { margin: .1rem auto .65rem; font-size: clamp(1.8rem, 6vh, 2.15rem); }
+  .novart-app--auth-home .brand-slogan { margin: .1rem auto .65rem; font-size: clamp(2rem, 6.5vh, 2.35rem); }
   .auth-mascot-frame { width: min(100%, 18rem); max-height: 21svh; }
   .auth-home-form { gap: .7rem; }
   .auth-social-buttons { gap: .42rem; }
@@ -840,7 +840,7 @@
 
 @media (max-height: 620px) and (orientation: portrait) {
   .auth-layout--home .wordmark--stacked { width: min(8rem, 37vw); }
-  .novart-app--auth-home .brand-slogan { margin: .04rem auto .38rem; font-size: 1.65rem; }
+  .novart-app--auth-home .brand-slogan { margin: .04rem auto .38rem; font-size: 1.85rem; }
   .auth-mascot-frame { width: min(100%, 15rem); max-height: 17svh; }
   .auth-layout--home { gap: .3rem; }
   .auth-home-form { gap: .5rem; }
@@ -854,7 +854,7 @@
 @media (max-height: 740px) and (orientation: portrait) {
   .auth-layout--home-has-error { gap: .25rem; padding-block: .25rem; }
   .auth-layout--home-has-error .wordmark--stacked { width: min(8rem, 36vw); }
-  .auth-layout--home-has-error .brand-slogan { margin: .03rem auto .3rem; font-size: 1.55rem; }
+  .auth-layout--home-has-error .brand-slogan { margin: .03rem auto .3rem; font-size: 1.75rem; }
   .auth-layout--home-has-error .auth-mascot-frame { width: min(100%, 13rem); max-height: 14svh; }
   .auth-layout--home-has-error .auth-panel-content--home { gap: .5rem; }
   .auth-layout--home-has-error .auth-home-form { gap: .28rem; }
@@ -874,7 +874,7 @@
     padding: .4rem .8rem;
   }
   .auth-layout--home .wordmark--stacked { width: min(7rem, 18vh); }
-  .novart-app--auth-home .brand-slogan { margin: .05rem auto .35rem; font-size: 1.45rem; }
+  .novart-app--auth-home .brand-slogan { margin: .05rem auto .35rem; font-size: 1.65rem; }
   .auth-mascot-frame { width: min(100%, 39vh); max-height: 33svh; }
   .auth-home-form { gap: .32rem; }
   .auth-social-buttons { gap: .3rem; }

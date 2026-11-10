@@ -5,9 +5,9 @@ import ActivityCard from '@/components/ActivityCard.vue'
 import ActivityMap from '@/components/ActivityMap.vue'
 import FilterSheet from '@/components/FilterSheet.vue'
 import MascotState from '@/components/MascotState.vue'
-import { activeFilterCount, activityDistance, defaultFilters, disciplineLabel, filterActivities, formatDistance, type Filters, type SortKey } from '@/lib/activity'
+import { activeFilterCount, activityDistance, defaultFilters, disciplineLabel, disciplines, filterActivities, formatDistance, type DatePreset, type Filters, type LevelId, type PlacesPreset, type SortKey } from '@/lib/activity'
 import { loadActivities, origin, originLabel, requestPosition, store } from '@/lib/store'
-import { useRoute } from '@/lib/router'
+import { replaceRoute, useRoute } from '@/lib/router'
 
 // US-04 / US-05 : recherche texte, filtres, tri, vue liste ou carte.
 const route = useRoute()
@@ -20,12 +20,40 @@ const locateError = ref('')
 
 function syncFromRoute() {
   const q = route.value.query
-  Object.assign(filters, defaultFilters(), { query: q.q ?? '', disciplines: q.discipline ? q.discipline.split(',') : [], sort: (['date', 'popularite'].includes(q.tri ?? '') ? q.tri : 'proximite') as SortKey })
+  const datePreset = (['toutes', 'aujourdhui', 'semaine', 'weekend'].includes(q.date ?? '') ? q.date : 'toutes') as DatePreset
+  const places = (['tous', '1-5', '6-10', '10+'].includes(q.places ?? '') ? q.places : 'tous') as PlacesPreset
+  const level = (['tous', 'debutant', 'intermediaire', 'avance'].includes(q.niveau ?? '') ? q.niveau : 'tous') as LevelId
+  const sort = (['date', 'popularite'].includes(q.tri ?? '') ? q.tri : 'proximite') as SortKey
+  const radius = Number(q.rayon ?? 50)
+  const day = /^\d{4}-\d{2}-\d{2}$/.test(q.jour ?? '') ? q.jour! : ''
+  Object.assign(filters, defaultFilters(), {
+    query: q.q ?? '',
+    disciplines: (q.discipline ?? '').split(',').filter(id => disciplines.some(d => d.id === id)),
+    datePreset, day, radiusKm: Number.isFinite(radius) ? Math.min(50, Math.max(1, radius)) : 50,
+    places, level, sort,
+  })
   view.value = q.vue === 'carte' ? 'carte' : 'liste'
   sheetOpen.value = q.filtres === '1'
 }
 syncFromRoute()
 watch(() => route.value, value => { if (value.name === 'rechercher') syncFromRoute() })
+function persistRoute() {
+  const query: Record<string, string> = {
+    q: filters.query,
+    discipline: filters.disciplines.join(','),
+    date: filters.datePreset === 'toutes' ? '' : filters.datePreset,
+    jour: filters.day,
+    rayon: filters.radiusKm === 50 ? '' : String(filters.radiusKm),
+    places: filters.places === 'tous' ? '' : filters.places,
+    niveau: filters.level === 'tous' ? '' : filters.level,
+    tri: filters.sort === 'proximite' ? '' : filters.sort,
+    vue: view.value === 'liste' ? '' : view.value,
+    filtres: sheetOpen.value ? '1' : '',
+  }
+  replaceRoute('rechercher', query)
+}
+watch(filters, persistRoute, { deep: true })
+watch([view, sheetOpen], persistRoute)
 
 const results = computed(() => filterActivities(store.activities, filters, origin.value))
 const count = (f: Filters) => filterActivities(store.activities, f, origin.value).length

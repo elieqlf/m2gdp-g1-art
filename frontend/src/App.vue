@@ -39,6 +39,14 @@ const busy = ref(false)
 const account = ref<Account | null>(null)
 const cooldown = ref(0)
 const route = useRoute()
+function focusPageHeading() {
+  if (screen.value !== 'app') return
+  const heading = document.querySelector<HTMLElement>('#app-main h1')
+  if (heading) {
+    heading.tabIndex = -1
+    heading.focus({ preventScroll: true })
+  }
+}
 // Écrans de l'application connectée, choisis selon l'ancre (#/…).
 const views = { decouvrir: DiscoverView, rechercher: SearchView, activite: ActivityView, participation: ParticipationView, creer: CreateActivityView, modifier: EditActivityView, conversations: ConversationsView, conversation: ConversationView, 'mes-activites': MyActivitiesView, profil: ProfileView, 'profil-modifier': ProfileEditView, favoris: FavoritesView, communaute: CommunityView }
 const currentView = computed(() => views[route.value.name])
@@ -355,7 +363,9 @@ onBeforeUnmount(() => { unsubscribe?.(); clearInterval(countdown); accountRevisi
   <div v-else-if="screen === 'app'" class="novart-app app-frame">
     <a href="#app-main" class="skip-link">Aller au contenu</a>
     <main id="app-main" class="app-main" :class="{ 'app-main--no-nav': !showNav }">
-      <component :is="currentView" :id="route.id" :key="viewKey" @logout="disconnect" />
+      <Transition name="view" mode="out-in" @after-enter="focusPageHeading">
+        <component :is="currentView" :id="route.id" :key="viewKey" @logout="disconnect" />
+      </Transition>
     </main>
     <BottomNav v-if="showNav" :active="tabOf(route.name)" />
     <p v-if="store.notice" class="toast" role="status">{{ store.notice }}</p>

@@ -164,7 +164,7 @@ export function buildUsers(rand) {
       address: d.label,
       addressLat: +(d.lat + (rand() - 0.5) * 0.006).toFixed(5),
       addressLng: +(d.lng + (rand() - 0.5) * 0.008).toFixed(5),
-      photoUrl: '',
+      photoUrl: `/images/people/portrait-${String((i % 8) + 1).padStart(2, '0')}.webp`,
       profileComplete: true,
       demo: true,
     })
@@ -272,7 +272,7 @@ export function buildDataset(baseDate = new Date()) {
       description: `${opening.replace('{sub}', sub.toLowerCase())} ${ending}`,
       level,
       equipment: equipmentByDiscipline[discipline.id],
-      coverUrl: `/images/activities/${discipline.id}-${1 + (i % 2)}.svg`,
+      coverUrl: `/images/activities/photos/${discipline.id}.webp`,
       placeName: venue.name,
       address: venue.address,
       district: venue.district,

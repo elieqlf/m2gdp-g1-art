@@ -18,25 +18,49 @@ export function parseRoute(hash: string): Route {
 
 const current = ref<Route>(parseRoute(typeof window === 'undefined' ? '' : window.location.hash))
 let listening = false
+let lastHash = typeof window === 'undefined' ? '' : window.location.hash
+let programmaticHash = ''
+const routeHistory: string[] = []
 export function useRoute() {
   if (!listening && typeof window !== 'undefined') {
     listening = true
     window.addEventListener('hashchange', () => {
-      current.value = parseRoute(window.location.hash)
+      const nextHash = window.location.hash
+      if (programmaticHash === nextHash) programmaticHash = ''
+      else {
+        const backIndex = routeHistory.lastIndexOf(nextHash)
+        if (backIndex >= 0) routeHistory.splice(backIndex)
+        else if (lastHash !== nextHash) routeHistory.push(lastHash)
+      }
+      lastHash = nextHash
+      current.value = parseRoute(nextHash)
       window.scrollTo({ top: 0 })
     })
   }
   return computed(() => current.value)
 }
 export function navigate(path: string, query?: Record<string, string>) {
-  const search = query ? new URLSearchParams(Object.entries(query).filter(([, v]) => v !== '')).toString() : ''
-  const hash = `#/${path.replace(/^\/+/, '')}${search ? `?${search}` : ''}`
+  const hash = routeHash(path, query)
   if (window.location.hash === hash) return
+  routeHistory.push(window.location.hash)
+  programmaticHash = hash
   window.location.hash = hash
+  lastHash = hash
   current.value = parseRoute(hash)
 }
+export function replaceRoute(path: string, query?: Record<string, string>) {
+  const hash = routeHash(path, query)
+  if (window.location.hash === hash) return
+  window.history.replaceState(window.history.state, '', `${window.location.pathname}${window.location.search}${hash}`)
+  lastHash = hash
+  current.value = parseRoute(hash)
+}
+function routeHash(path: string, query?: Record<string, string>) {
+  const search = query ? new URLSearchParams(Object.entries(query).filter(([, value]) => value !== '')).toString() : ''
+  return `#/${path.replace(/^\/+/, '')}${search ? `?${search}` : ''}`
+}
 export function goBack(fallback = 'decouvrir') {
-  if (window.history.length > 1) window.history.back()
+  if (routeHistory.length) window.history.back()
   else navigate(fallback)
 }
 // Onglet actif de la barre de navigation pour chaque écran.

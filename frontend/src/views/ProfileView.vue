@@ -27,7 +27,7 @@ function logout() { busy.value = true; emit('logout') }
   <div class="page">
     <div class="topbar topbar--end"><a href="#/profil/modifier" class="icon-button icon-button--plain" aria-label="Paramètres du profil"><Settings aria-hidden="true" /></a></div>
     <header class="profile-head">
-      <div class="profile-head__avatar"><UserAvatar :name="displayName" :photo="store.profile.photoUrl" size="lg" /><a href="#/profil/modifier" class="profile-head__edit" aria-label="Modifier ma photo"><Pencil aria-hidden="true" /></a></div>
+      <div class="profile-head__avatar"><UserAvatar :name="displayName" :photo="store.profile.photoUrl" :user-id="uid" size="lg" /><a href="#/profil/modifier" class="profile-head__edit" aria-label="Modifier ma photo"><Pencil aria-hidden="true" /></a></div>
       <div class="profile-head__text">
         <h1 class="profile-head__name">{{ store.profile.firstName || displayName }}</h1>
         <p class="muted">{{ store.profile.bio || 'Ajoute une courte description pour te présenter à la communauté.' }}</p>

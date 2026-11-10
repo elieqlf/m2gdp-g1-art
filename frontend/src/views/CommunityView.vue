@@ -21,7 +21,7 @@ onMounted(() => loadMembers())
       <p v-if="!members.length" class="muted">Aucun utilisateur pour le moment.</p>
       <ul v-else class="member-list">
         <li v-for="m in members" :key="m.uid" class="member-tile">
-          <UserAvatar :name="[m.firstName, m.lastName].filter(Boolean).join(' ') || 'Membre'" :photo="m.photoUrl" size="md" />
+          <UserAvatar :name="[m.firstName, m.lastName].filter(Boolean).join(' ') || 'Membre'" :photo="m.photoUrl" :user-id="m.uid" size="md" />
           <div><h2>{{ m.firstName ? `${m.firstName} ${m.lastName || ''}` : 'Membre' }}</h2><span class="soft-tag">{{ m.userType === 'organisateur' ? 'Organisateur' : m.userType === 'participant' ? 'Participant' : 'Profil à compléter' }}</span>
             <p v-if="m.address" class="member-tile__address"><MapPin aria-hidden="true" />{{ m.address.split(',').slice(-2).join(',').trim() }}</p></div>
         </li>

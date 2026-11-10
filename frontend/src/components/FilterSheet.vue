@@ -10,23 +10,45 @@ const emit = defineEmits<{ apply: [filters: Filters]; close: [] }>()
 const draft = reactive<Filters>({ ...props.filters, disciplines: [...props.filters.disciplines] })
 const panel = ref<HTMLElement | null>(null)
 const results = computed(() => props.count(draft))
+let previousFocus: HTMLElement | null = null
+let previousOverflow = ''
 const dates: { id: DatePreset; label: string }[] = [{ id: 'toutes', label: 'Toutes' }, { id: 'aujourdhui', label: 'Aujourd’hui' }, { id: 'semaine', label: 'Cette semaine' }, { id: 'weekend', label: 'Ce week-end' }]
 const places: { id: PlacesPreset; label: string }[] = [{ id: 'tous', label: 'Peu importe' }, { id: '1-5', label: '1 à 5' }, { id: '6-10', label: '6 à 10' }, { id: '10+', label: 'Plus de 10' }]
 function toggleDiscipline(id: string) {
   draft.disciplines = draft.disciplines.includes(id) ? draft.disciplines.filter(d => d !== id) : [...draft.disciplines, id]
 }
 function reset() { Object.assign(draft, { ...defaultFilters(), query: draft.query, sort: draft.sort }) }
-const onKey = (event: KeyboardEvent) => { if (event.key === 'Escape') emit('close') }
-onMounted(async () => { document.addEventListener('keydown', onKey); document.body.style.overflow = 'hidden'; await nextTick(); panel.value?.focus() })
-onBeforeUnmount(() => { document.removeEventListener('keydown', onKey); document.body.style.overflow = '' })
+const onKey = (event: KeyboardEvent) => {
+  if (event.key === 'Escape') { emit('close'); return }
+  if (event.key !== 'Tab' || !panel.value) return
+  const focusable = [...panel.value.querySelectorAll<HTMLElement>('button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), a[href], [tabindex]:not([tabindex="-1"])')]
+  if (!focusable.length) { event.preventDefault(); panel.value.focus(); return }
+  const first = focusable[0]!
+  const last = focusable[focusable.length - 1]!
+  if (event.shiftKey && (document.activeElement === first || document.activeElement === panel.value)) { event.preventDefault(); last.focus() }
+  else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus() }
+}
+onMounted(async () => {
+  previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null
+  previousOverflow = document.body.style.overflow
+  document.addEventListener('keydown', onKey)
+  document.body.style.overflow = 'hidden'
+  await nextTick()
+  panel.value?.focus()
+})
+onBeforeUnmount(() => {
+  document.removeEventListener('keydown', onKey)
+  document.body.style.overflow = previousOverflow
+  previousFocus?.focus()
+})
 </script>
 
 <template>
   <div class="sheet-backdrop" @click.self="emit('close')">
-    <section ref="panel" class="sheet" role="dialog" aria-modal="true" aria-labelledby="filters-title" tabindex="-1">
+    <section ref="panel" class="sheet" role="dialog" aria-modal="true" aria-labelledby="filters-title" aria-describedby="filters-description" tabindex="-1">
       <span class="sheet__grip" aria-hidden="true"></span>
       <header class="sheet__header">
-        <div><h2 id="filters-title" class="display-title">Filtres</h2><p class="lead">Affine ta recherche pour trouver l’activité qui te correspond !</p></div>
+        <div><h2 id="filters-title" class="display-title">Filtres</h2><p id="filters-description" class="lead">Affine ta recherche pour trouver l’activité qui te correspond !</p></div>
         <button type="button" class="icon-button icon-button--plain" aria-label="Fermer les filtres" @click="emit('close')"><X aria-hidden="true" /></button>
       </header>
       <div class="sheet__content">

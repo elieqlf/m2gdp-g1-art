@@ -4,7 +4,7 @@ import { Plus, Search } from '@lucide/vue'
 import ActivityCard from '@/components/ActivityCard.vue'
 import MascotState from '@/components/MascotState.vue'
 import { isPast, startsAt, type Activity } from '@/lib/activity'
-import { store, uid } from '@/lib/store'
+import { loadActivities, store, uid } from '@/lib/store'
 
 // US-13 : retrouver les activités auxquelles je participe et celles que j'organise (maquette 17).
 const tab = ref<'avenir' | 'passees'>('avenir')
@@ -27,7 +27,8 @@ const counts = computed(() => {
       <button type="button" role="tab" :aria-selected="tab === 'avenir'" :class="{ 'is-selected': tab === 'avenir' }" @click="tab = 'avenir'">À venir ({{ counts.avenir }})</button>
       <button type="button" role="tab" :aria-selected="tab === 'passees'" :class="{ 'is-selected': tab === 'passees' }" @click="tab = 'passees'">Passées ({{ counts.passees }})</button>
     </div>
-    <p v-if="store.activitiesStatus === 'loading'" class="loading-line" role="status"><span class="spinner" aria-hidden="true"></span>Chargement…</p>
+    <p v-if="store.activitiesStatus === 'idle' || store.activitiesStatus === 'loading'" class="loading-line" role="status"><span class="spinner" aria-hidden="true"></span>Chargement de tes activités…</p>
+    <MascotState v-else-if="store.activitiesStatus === 'error'" title="Tes activités ne se chargent pas" text="Vérifie ta connexion puis réessaie."><button type="button" class="btn btn--primary" @click="loadActivities(true)">Réessayer</button></MascotState>
     <MascotState v-else-if="!joined.length && !organized.length" :title="tab === 'avenir' ? 'Rien de prévu pour l’instant' : 'Pas encore d’activité passée'" text="Trouve une activité près de chez toi ou propose la tienne.">
       <a href="#/rechercher" class="btn btn--primary">Trouver une activité</a><a href="#/creer" class="btn btn--soft">Créer une activité</a>
     </MascotState>

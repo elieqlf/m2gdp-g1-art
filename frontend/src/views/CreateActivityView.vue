@@ -31,8 +31,10 @@ const publishError = ref('')
 const subs = computed(() => disciplines.find(d => d.id === draft.discipline)?.subs ?? [])
 watch(draft, value => { try { localStorage.setItem(DRAFT_KEY, JSON.stringify(value)) } catch { /* stockage indisponible */ } }, { deep: true })
 watch(() => draft.discipline, (value, previous) => {
-  // L'illustration suit la discipline tant qu'aucune photo personnelle n'est choisie.
-  if (!draft.coverUrl || (previous && draft.coverUrl.startsWith(`/images/activities/${previous}-`))) draft.coverUrl = value ? defaultCover(value) : ''
+  // La photo suit la discipline tant qu'aucune photo personnelle n'est choisie.
+  const oldCover = previous ? defaultCover(previous) : ''
+  const oldIllustration = previous ? new RegExp(`/images/activities/${previous}-\\d\\.svg$`).test(draft.coverUrl) : false
+  if (!draft.coverUrl || draft.coverUrl === oldCover || oldIllustration) draft.coverUrl = value ? defaultCover(value) : ''
   if (draft.subDiscipline && !subs.value.includes(draft.subDiscipline)) draft.subDiscipline = ''
 })
 
