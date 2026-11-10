@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, defineAsyncComponent, defineComponent, h, nextTick, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
-import { ArrowRight, Check, ChevronLeft, Mail, MapPin, Search, X } from '@lucide/vue'
+import { ArrowRight, Check, ChevronLeft, GraduationCap, Heart, Lightbulb, Mail, MapPin, Search, Sprout, Star, Users, X } from '@lucide/vue'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -98,6 +98,14 @@ const matchingPracticeOptions = computed(() => {
   const selected = new Set(profile.practiceTags ?? [])
   return practiceOptions.value.filter(option => !selected.has(option.key) && normalizePractice(option.label + ' ' + option.disciplineLabel).includes(query)).slice(0, 6)
 })
+const goalOptions = [
+  { id: 'meet-people', label: 'Rencontrer du monde', icon: Users },
+  { id: 'discover', label: 'Découvrir de nouvelles pratiques', icon: Sprout },
+  { id: 'create', label: 'Créer ensemble', icon: Heart },
+  { id: 'learn', label: 'Apprendre', icon: GraduationCap },
+  { id: 'go-out', label: 'Sortir et se divertir', icon: Star },
+  { id: 'inspiration', label: 'Être inspiré·e', icon: Lightbulb },
+]
 const photoInput = ref<HTMLInputElement | null>(null)
 const photoBusy = ref(false)
 const photoError = ref('')
@@ -109,7 +117,7 @@ let cityPrefillAttempted = false
 let cityDetectionRevision = 0
 let authStateReady = false
 let pendingSocialError = ''
-const titles: Record<string, string> = { loading: '', request: 'Bienvenue', sent: 'Consulte ta boîte mail', confirm: 'Confirme ton e-mail', expired: 'Ce lien n’est plus valide', profile: 'Crée ton profil', preferences: 'Tes envies', complete: 'Presque terminé !', 'account-error': 'Chargement interrompu' }
+const titles: Record<string, string> = { loading: '', request: 'Bienvenue', sent: 'Consulte ta boîte mail', confirm: 'Confirme ton e-mail', expired: 'Ce lien n’est plus valide', profile: 'Crée ton profil', preferences: 'Ton univers créatif', complete: 'Presque terminé !', 'account-error': 'Chargement interrompu' }
 const title = computed(() => titles[screen.value] ?? '')
 function startCooldown() {
   clearInterval(countdown)
@@ -273,6 +281,10 @@ function removePractice(key: string) {
   const selectedCategories = new Set(practiceOptions.value.filter(option => profile.practiceTags?.includes(option.key)).map(option => option.disciplineId))
   profile.interests = [...new Set((profile.interests ?? []).filter(id => selectedCategories.has(id)))]
 }
+function toggleGoal(id: string) {
+  const selected = profile.onboardingGoals ?? []
+  profile.onboardingGoals = selected.includes(id) ? selected.filter(item => item !== id) : [...selected, id]
+}
 function startAutomaticCityDetection() {
   if (cityPrefillAttempted || profile.address.trim()) return
   cityPrefillAttempted = true
@@ -356,7 +368,7 @@ async function savePreferences() {
   busy.value = true
   try {
     const interests = [...new Set([...(profile.interests ?? []), ...selectedPracticeOptions.value.map(option => option.disciplineId)])]
-    const saved: Partial<Profile> = { discoveryRadiusKm: profile.discoveryRadiusKm ?? 10, useCurrentLocation: !!profile.useCurrentLocation, interests, practiceTags: [...(profile.practiceTags ?? [])] }
+    const saved: Partial<Profile> = { discoveryRadiusKm: profile.discoveryRadiusKm ?? 10, useCurrentLocation: !!profile.useCurrentLocation, interests, practiceTags: [...(profile.practiceTags ?? [])], onboardingGoals: [...(profile.onboardingGoals ?? [])] }
     await saveOnboardingProgress(account.value.uid, saved, 3)
     Object.assign(profile, saved, { onboardingStep: 3 })
     screen.value = 'complete'
@@ -453,7 +465,7 @@ onBeforeUnmount(() => { unsubscribe?.(); clearInterval(countdown); accountRevisi
         <div class="onboarding-intro-copy">
           <h1>{{ title }}</h1>
           <p v-if="screen === 'profile'">Rejoins la communauté NOVART et découvre des activités artistiques près de chez toi.</p>
-          <p v-else-if="screen === 'preferences'">Ajoute les pratiques qui te plaisent.</p>
+          <p v-else-if="screen === 'preferences'">Dis-nous ce qui t’inspire.</p>
           <p v-else>Un dernier petit pas pour rejoindre NOVART.</p>
         </div>
         <img
@@ -519,7 +531,7 @@ onBeforeUnmount(() => { unsubscribe?.(); clearInterval(countdown); accountRevisi
 
       <form v-else-if="screen === 'preferences'" class="onboarding-form onboarding-form--preferences" novalidate @submit.prevent="savePreferences">
         <fieldset class="onboarding-practice-section">
-          <Label for="onboarding-practice">Ajouter une pratique</Label>
+          <Label for="onboarding-practice">Qu’aimes-tu pratiquer ?</Label>
           <div class="onboarding-practice-picker" @focusout="event => { if (!(event.currentTarget as HTMLElement).contains(event.relatedTarget as Node)) practiceSuggestionsOpen = false }">
             <div class="onboarding-practice-input">
               <Search class="onboarding-practice-search-icon" aria-hidden="true" />
@@ -552,6 +564,17 @@ onBeforeUnmount(() => { unsubscribe?.(); clearInterval(countdown); accountRevisi
             </button>
           </div>
           <p v-if="practiceQuery && practiceSuggestionsOpen && !matchingPracticeOptions.length" class="onboarding-practice-empty">Aucune pratique trouvée.</p>
+        </fieldset>
+
+        <fieldset class="onboarding-goal-section">
+          <legend>Ce que tu recherches sur NOVART</legend>
+          <p>Tu peux choisir plusieurs options.</p>
+          <div class="onboarding-goal-grid">
+            <button v-for="goal in goalOptions" :key="goal.id" type="button" class="onboarding-goal-card" :class="{ 'is-selected': profile.onboardingGoals?.includes(goal.id) }" :aria-pressed="profile.onboardingGoals?.includes(goal.id) ?? false" @click="toggleGoal(goal.id)">
+              <component :is="goal.icon" aria-hidden="true" />
+              <span>{{ goal.label }}</span>
+            </button>
+          </div>
         </fieldset>
 
         <p v-if="error" class="onboarding-error" role="alert">{{ error }}</p>
