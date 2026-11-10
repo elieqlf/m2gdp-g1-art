@@ -407,8 +407,8 @@ onBeforeUnmount(() => { unsubscribe?.(); clearInterval(countdown); accountRevisi
 
       <form v-if="screen === 'profile'" class="onboarding-form onboarding-form--profile" novalidate @submit.prevent="submitProfile">
         <div class="onboarding-photo-row">
-          <button type="button" class="onboarding-photo-picker" :class="{ 'has-photo': !!profile.photoUrl }" :disabled="photoBusy" aria-label="Choisir une photo depuis la galerie ou les fichiers" @click="photoInput?.click()">
-            <img v-if="profile.photoUrl" :src="profile.photoUrl" alt="Aperçu de la photo de profil" />
+          <button type="button" class="onboarding-photo-picker" :class="{ 'has-photo': !!profile.photoUrl }" :disabled="photoBusy"  :aria-label="profile.photoUrl ? 'Modifier la photo de profil' : 'Choisir une photo depuis la galerie ou les fichiers'" @click="photoInput?.click()">
+            <img v-if="profile.photoUrl" :src="profile.photoUrl" alt="" />
             <Upload v-else aria-hidden="true" />
             <span class="onboarding-photo-add" aria-hidden="true">+</span>
           </button>
@@ -468,7 +468,7 @@ onBeforeUnmount(() => { unsubscribe?.(); clearInterval(countdown); accountRevisi
             <button v-for="option in radiusOptions" :key="option.label" type="button" :class="{ 'is-selected': profile.discoveryRadiusKm === option.value }" :aria-pressed="profile.discoveryRadiusKm === option.value" @click="profile.discoveryRadiusKm = option.value">{{ option.label }}</button>
           </div>
           <button type="button" class="onboarding-location-toggle" role="switch" :aria-checked="!!profile.useCurrentLocation" :disabled="busy" @click="toggleCurrentLocation">
-            <span class="onboarding-location-icon" aria-hidden="true"><span></span></span>
+            <span class="onboarding-location-icon" aria-hidden="true"><MapPin /></span>
             <span class="onboarding-location-copy"><strong>Utiliser ma localisation actuelle</strong><small>Uniquement si tu l’autorises, pour calculer les distances.</small></span>
             <span class="onboarding-switch" aria-hidden="true"><span></span></span>
           </button>
