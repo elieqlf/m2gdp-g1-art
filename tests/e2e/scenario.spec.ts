@@ -16,6 +16,9 @@ test('US-03 : Découvrir s’ouvre sur la carte, avec le panneau des activités 
   await expect(page.getByRole('region', { name: 'Carte des activités autour de toi' })).toBeVisible()
   await expect(page.getByRole('heading', { name: 'Autour de toi', exact: true })).toBeVisible()
   await expect(page.getByRole('link', { name: 'Découvrir' })).toHaveAttribute('aria-current', 'page')
+  // Par défaut le panneau est replié : la carte se voit en entier.
+  await expect(page.locator('.discover-sheet__peek .activity-card').first()).toBeHidden()
+  await page.getByRole('button', { name: /Afficher/ }).click()
   await expect(page.locator('.discover-sheet__peek .activity-card').first()).toBeVisible()
   await capture(page, testInfo, 'decouvrir-carte', '.discover-sheet__peek .activity-card__media img')
   // Toucher une épingle met l'activité en avant dans le panneau.
@@ -94,17 +97,56 @@ test('Création : idées d’activités proposées par l’IA à partir de mots-
   await expect(page.getByRole('heading', { name: 'Ajouter des médias' })).toBeVisible()
 })
 
-test('Accueil : le panneau « Autour de toi » se replie complètement', async ({ page }) => {
+test('Accueil : le panneau « Autour de toi » se tire avec le doigt et part replié', async ({ page }) => {
   await openApp(page, 'app', '#/decouvrir')
   const firstCard = page.locator('.discover-sheet__peek .activity-card').first()
+  const handle = page.locator('.discover-sheet__handle')
+  const drag = async (dy: number) => {
+    await page.waitForTimeout(400) // fin de l'animation du cran précédent
+    const box = (await handle.boundingBox())!
+    await page.mouse.move(box.x + box.width / 4, box.y + 8)
+    await page.mouse.down()
+    for (let i = 1; i <= 6; i++) await page.mouse.move(box.x + box.width / 4, box.y + 8 + (dy * i) / 6)
+    await page.mouse.up()
+  }
+  await expect(page.getByRole('heading', { name: 'Autour de toi', exact: true })).toBeVisible()
+  await expect(firstCard).toBeHidden()
+  // Vers le haut : aperçu ; encore vers le haut : liste complète.
+  await drag(-180)
+  await expect(firstCard).toBeVisible()
+  await drag(-250)
+  await expect(page.getByRole('heading', { name: 'Activités populaires' })).toBeVisible()
+  // Vers le bas : un cran à chaque fois, jusqu'à replier (même effet que la flèche).
+  await drag(200)
+  await expect(firstCard).toBeVisible()
+  await drag(150)
+  await expect(firstCard).toBeHidden()
+  // Les boutons font la même chose.
+  await page.getByRole('button', { name: /Afficher/ }).click()
   await expect(firstCard).toBeVisible()
   await page.getByRole('button', { name: 'Replier le panneau' }).click()
   await expect(firstCard).toBeHidden()
-  await expect(page.getByRole('heading', { name: 'Autour de toi', exact: true })).toBeVisible()
-  await page.getByRole('button', { name: /Afficher/ }).click()
-  await expect(firstCard).toBeVisible()
-  // La barre de navigation d'origine est conservée.
   await expect(page.getByRole('navigation', { name: 'Navigation principale' }).getByRole('link', { name: 'Créer' })).toBeVisible()
+})
+
+test('Accueil (écran tactile) : glisser le doigt sur le panneau, même depuis une carte', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'mobile', 'gestes tactiles simulés sur le profil téléphone')
+  await openApp(page, 'app', '#/decouvrir')
+  const cdp = await page.context().newCDPSession(page)
+  const swipe = async (x: number, y: number, dy: number) => {
+    await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x, y }] })
+    for (let i = 1; i <= 8; i++) await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x, y: y + (dy * i) / 8 }] })
+    await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] })
+    await page.waitForTimeout(450)
+  }
+  const card = page.locator('.discover-sheet__peek .activity-card').first()
+  await expect(page.getByRole('heading', { name: 'Autour de toi', exact: true })).toBeVisible()
+  const handle = (await page.locator('.discover-sheet__handle').boundingBox())!
+  await swipe(handle.x + 40, handle.y + 10, -200)
+  await expect(card).toBeVisible()
+  const c = (await card.boundingBox())!
+  await swipe(c.x + 30, c.y + 30, 160)
+  await expect(card).toBeHidden()
 })
 
 test('US-04/05/09/11/12 : rechercher, filtrer, s’inscrire et écrire au groupe', async ({ page }, testInfo) => {
@@ -383,6 +425,7 @@ test.describe('Position de l’appareil', () => {
   test.use({ geolocation: { latitude: 45.7426, longitude: 4.8185 }, permissions: ['geolocation'] })
   test('l’accueil part de la position réelle, pas du centre de Lyon', async ({ page }) => {
     await openApp(page, 'app', '#/decouvrir')
+    await page.getByRole('button', { name: /Afficher/ }).click()
     await expect(page.getByText('Distances depuis ta position')).toBeVisible()
     await page.goto('/#/rechercher')
     await expect(page.getByText(/distances depuis ta position/)).toBeVisible()
@@ -395,6 +438,7 @@ test('sans localisation, un message flottant prévient puis disparaît', async (
   const toast = page.getByRole('status').filter({ hasText: 'les distances partent de ta ville ou ton quartier' })
   // Il passe après le message « place libérée », affiché en premier à l'ouverture.
   await expect(toast).toBeVisible({ timeout: 10000 })
+  await page.getByRole('button', { name: /Afficher/ }).click()
   await expect(page.getByText('Distances depuis ta ville ou ton quartier')).toBeVisible()
   await expect(toast).toBeHidden({ timeout: 8000 })
 })

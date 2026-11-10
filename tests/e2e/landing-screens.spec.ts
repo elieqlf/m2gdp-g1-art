@@ -44,6 +44,7 @@ test('captures de l’application pour le site vitrine', async ({ page }, testIn
   await login.close()
 
   await openApp(page, 'app', '#/decouvrir')
+  await page.getByRole('button', { name: /Afficher/ }).click()
   await page.getByRole('button', { name: 'Tout voir' }).click()
   await expect(page.getByRole('heading', { name: 'Activités populaires' })).toBeVisible()
   await shoot(page, 'decouvrir')

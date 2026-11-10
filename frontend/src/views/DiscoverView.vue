@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, ref } from 'vue'
+import { computed, nextTick, onBeforeUnmount, ref } from 'vue'
 import { Bell, ChevronDown, ChevronRight, ChevronUp, LocateFixed, SlidersHorizontal } from '@lucide/vue'
 import ActivityCard from '@/components/ActivityCard.vue'
 import ActivityMap from '@/components/ActivityMap.vue'
@@ -17,7 +17,7 @@ const query = ref('')
 const discipline = ref('')
 // Panneau du bas : replié (seulement la poignée et le titre), aperçu, ou ouvert en grand.
 type SheetState = 'closed' | 'peek' | 'open'
-const sheet = ref<SheetState>('peek')
+const sheet = ref<SheetState>('closed')
 const sheetOpen = computed(() => sheet.value === 'open')
 const LEVELS: SheetState[] = ['closed', 'peek', 'open']
 const step = (direction: 1 | -1) => { sheet.value = LEVELS[Math.min(2, Math.max(0, LEVELS.indexOf(sheet.value) + direction))]! }
@@ -86,16 +86,66 @@ async function locate() {
   if (origin.value) map.value?.recenter(origin.value)
   if (!ok) notifyPositionFallback()
 }
-// Glisser le panneau vers le haut ou le bas (en plus du bouton).
-let startY: number | null = null
-function dragStart(event: PointerEvent) { startY = event.clientY }
-function dragEnd(event: PointerEvent) {
-  if (startY === null) return
-  const delta = event.clientY - startY
-  startY = null
-  if (delta < -40) step(1)
-  else if (delta > 40) step(-1)
+// Glisser le panneau avec le doigt (comme les boutons) : il suit le doigt, puis se cale sur la
+// position la plus proche dans le sens du geste. En aperçu ou replié, tout le panneau se tire
+// (les cartes défilent toujours de côté) ; ouvert, on le tire par la poignée et le titre.
+const sheetEl = ref<HTMLElement | null>(null)
+let drag: { id: number; y: number; height: number; moved: boolean } | null = null
+const rem = () => parseFloat(getComputedStyle(document.documentElement).fontSize) || 16
+function heights() {
+  const container = sheetEl.value?.parentElement?.clientHeight ?? window.innerHeight
+  return { closed: 4.3 * rem(), peek: 16.5 * rem(), open: container - 7.2 * rem() }
 }
+function dragStart(event: PointerEvent) {
+  if (!sheetEl.value || (event.pointerType === 'mouse' && event.button !== 0)) return
+  const target = event.target as HTMLElement
+  if (sheet.value === 'open' && !target.closest('.discover-sheet__handle')) return
+  drag = { id: event.pointerId, y: event.clientY, height: sheetEl.value.getBoundingClientRect().height, moved: false }
+  // Suivi sur toute la fenêtre : le doigt (ou la souris) sort vite du panneau en le tirant.
+  window.addEventListener('pointermove', dragMove)
+  window.addEventListener('pointerup', dragEnd)
+  window.addEventListener('pointercancel', dragEnd)
+}
+function stopListening() {
+  window.removeEventListener('pointermove', dragMove)
+  window.removeEventListener('pointerup', dragEnd)
+  window.removeEventListener('pointercancel', dragEnd)
+}
+onBeforeUnmount(stopListening)
+function dragMove(event: PointerEvent) {
+  if (!drag || event.pointerId !== drag.id || !sheetEl.value) return
+  const dy = event.clientY - drag.y
+  if (!drag.moved) {
+    if (Math.abs(dy) < 8) return
+    drag.moved = true
+    sheetEl.value.classList.add('is-dragging')
+  }
+  const { closed, open } = heights()
+  sheetEl.value.style.height = `${Math.min(open, Math.max(closed, drag.height - dy))}px`
+}
+function dragEnd(event: PointerEvent) {
+  if (!drag || event.pointerId !== drag.id) return
+  const { moved, y, height } = drag
+  drag = null
+  stopListening()
+  if (!sheetEl.value || !moved) return
+  sheetEl.value.dataset.dragged = '1'
+  setTimeout(() => { if (sheetEl.value) delete sheetEl.value.dataset.dragged }, 350)
+  sheetEl.value.classList.remove('is-dragging')
+  sheetEl.value.style.height = ''
+  const dy = event.clientY - y
+  const h = heights()
+  const final = height - dy
+  const levels: [SheetState, number][] = [['closed', h.closed], ['peek', h.peek], ['open', h.open]]
+  // Position la plus proche, mais au moins un cran dans le sens du geste (dès 40 px).
+  let target = levels.reduce((best, level) => Math.abs(level[1] - final) < Math.abs(best[1] - final) ? level : best)[0]
+  const current = LEVELS.indexOf(sheet.value)
+  if (dy > 40 && LEVELS.indexOf(target) >= current) target = LEVELS[Math.max(0, current - 1)]!
+  if (dy < -40 && LEVELS.indexOf(target) <= current) target = LEVELS[Math.min(2, current + 1)]!
+  sheet.value = target
+}
+// Un clic juste après un glissement ne doit pas ouvrir une activité ou basculer un bouton.
+function swallowClickAfterDrag(event: MouseEvent) { if (sheetEl.value?.dataset.dragged === '1') { event.stopPropagation(); event.preventDefault(); delete sheetEl.value.dataset.dragged } }
 </script>
 
 <template>
@@ -117,8 +167,9 @@ function dragEnd(event: PointerEvent) {
 
     <button type="button" class="icon-button icon-button--round discover__locate" :disabled="locating" aria-label="Me localiser" @click="locate"><LocateFixed aria-hidden="true" /></button>
 
-    <section class="discover-sheet" :class="{ 'is-open': sheet === 'open', 'is-closed': sheet === 'closed' }" aria-labelledby="nearby-title">
-      <div class="discover-sheet__handle" @pointerdown="dragStart" @pointerup="dragEnd">
+    <section ref="sheetEl" class="discover-sheet" :class="{ 'is-open': sheet === 'open', 'is-closed': sheet === 'closed' }" aria-labelledby="nearby-title"
+      @pointerdown="dragStart" @click.capture="swallowClickAfterDrag">
+      <div class="discover-sheet__handle">
         <span class="sheet__grip" aria-hidden="true"></span>
         <div class="discover-sheet__header">
           <h2 id="nearby-title" class="section-title">Autour de toi</h2>

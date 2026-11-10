@@ -887,3 +887,14 @@
 .discover-sheet__actions { display: flex; align-items: center; gap: .2rem; }
 .discover-sheet__hide { width: 2.4rem; height: 2.4rem; min-height: 0; }
 .discover-sheet__hide svg { width: 1.3rem; height: 1.3rem; color: var(--primary); }
+/* Le panneau suit le doigt : pas d'animation pendant le geste ; les gestes verticaux sur
+   l'aperçu sont pour le panneau, les gestes horizontaux font défiler les cartes. */
+.discover-sheet.is-dragging { transition: none; }
+.discover-sheet:not(.is-open) { touch-action: none; }
+.discover-sheet:not(.is-open) .discover-sheet__peek { touch-action: pan-x; }
+.discover-sheet__handle { cursor: grab; }
+.discover-sheet.is-dragging, .discover-sheet.is-dragging .discover-sheet__handle { cursor: grabbing; user-select: none; }
+
+/* Bouton Retour plus grand (conversations et pages avec retour). */
+.chat-header > .icon-button[aria-label="Retour"], .page > .topbar > .icon-button[aria-label="Retour"] { width: 3.25rem; height: 3.25rem; border-radius: 1rem; background: var(--tint); color: var(--primary); }
+.chat-header > .icon-button[aria-label="Retour"] svg, .page > .topbar > .icon-button[aria-label="Retour"] svg { width: 1.9rem; height: 1.9rem; stroke-width: 2.4; }
