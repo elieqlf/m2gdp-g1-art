@@ -9,11 +9,11 @@
 //   Photo de couverture d'une activité, stockée dans Cloudflare R2. Renvoie { url }.
 // GET /files/covers/…  Lecture publique des photos.
 // POST /ai/activity-ideas  { keywords, discipline?, practices? } (en-tête Authorization: Bearer <jeton Firebase>)
-//   Trois idées d'activités culturelles proposées par Mistral. Renvoie { ideas }.
+//   Trois idées d'activités culturelles proposées par Mistral Small (Cloudflare Workers AI). Renvoie { ideas }.
 // GET /health
 //
 // Secrets (jamais dans le dépôt) : FIREBASE_SERVICE_ACCOUNT (fichier JSON entier),
-// BREVO_API_KEY, SENDER_EMAIL, MISTRAL_API_KEY. Variables publiques : wrangler.toml.
+// BREVO_API_KEY, SENDER_EMAIL, MISTRAL_API_KEY (facultatif). Variables publiques : wrangler.toml.
 
 import { ConfigError, readServiceAccount, signInLink, UpstreamError } from './google.js'
 import { sendEmail } from './brevo.js'
@@ -21,7 +21,7 @@ import { signInEmail } from './email-template.js'
 import { checkAndRecord } from './limits.js'
 import { AuthError, verifyIdToken } from './auth.js'
 import { coverKey, isAllowedType, matchesType, MAX_BYTES, memberQuota, serveFile, uploadQuota } from './files.js'
-import { activityIdeas, AI_LIMIT, AiConfigError, AiUpstreamError, readRequest } from './ai.js'
+import { activityIdeas, AI_LIMIT, aiConfigured, AiConfigError, AiQuotaError, AiUpstreamError, readRequest } from './ai.js'
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const origins = env => (env.ALLOWED_ORIGINS || '').split(',').map(o => o.trim()).filter(Boolean)
@@ -94,8 +94,8 @@ async function aiIdeas(request, env, headers) {
   const origin = request.headers.get('origin') || ''
   if (!origins(env).includes(origin)) return json({ error: 'origin-not-allowed' }, 403)
   const projectId = env.FIREBASE_PROJECT_ID
-  if (!projectId || !env.MISTRAL_API_KEY) return json({ error: 'not-configured' }, 503, headers)
-  // Réservé aux membres connectés : la clé Mistral est payante à l'usage.
+  if (!projectId || !aiConfigured(env)) return json({ error: 'not-configured' }, 503, headers)
+  // Réservé aux membres connectés : le quota gratuit de Workers AI est partagé par toute l'appli.
   let uid
   try { uid = await verifyIdToken((request.headers.get('authorization') || '').replace(/^Bearer\s+/i, ''), projectId) }
   catch (error) {
@@ -114,6 +114,7 @@ async function aiIdeas(request, env, headers) {
     // Les mots-clés ne sont jamais journalisés.
     console.error('Idées IA impossibles :', error.message)
     if (error instanceof AiConfigError) return json({ error: 'not-configured' }, 503, headers)
+    if (error instanceof AiQuotaError) return json({ error: 'daily-limit' }, 429, headers)
     if (error instanceof AiUpstreamError) return json({ error: 'ai-failed' }, 502, headers)
     throw error
   }

@@ -1,15 +1,20 @@
 // Idées d'activités culturelles générées par Mistral à partir de mots-clés (POST /ai/activity-ideas).
-// La clé MISTRAL_API_KEY est un secret Cloudflare : elle ne passe jamais par l'application.
+// Par défaut : Mistral Small 3.1 hébergé par Cloudflare Workers AI (binding AI, gratuit dans la
+// limite quotidienne du compte, sans clé). Si un secret MISTRAL_API_KEY est déclaré, l'API de
+// Mistral est appelée directement ; la clé ne passe jamais par l'application.
 // La réponse du modèle est relue et bornée ici (disciplines et niveaux connus, longueurs
 // maximales des champs du formulaire NOVART) avant d'être renvoyée.
 
 export class AiConfigError extends Error {}
 export class AiUpstreamError extends Error {}
+/** Quota gratuit quotidien de Workers AI épuisé (remis à zéro à 00:00 UTC). */
+export class AiQuotaError extends Error {}
 
 export const DISCIPLINES = ['peinture', 'dessin', 'musique', 'chant', 'danse', 'theatre', 'photo', 'street-art', 'artisanat', 'ecriture', 'arts-plastiques', 'autre']
 export const LEVELS = ['tous', 'debutant', 'intermediaire', 'avance']
 export const AI_LIMIT = { max: 20, windowMs: 3600_000 }
 const MISTRAL_URL = 'https://api.mistral.ai/v1/chat/completions'
+export const WORKERS_AI_MODEL = '@cf/mistralai/mistral-small-3.1-24b-instruct'
 const MAX_IDEAS = 3
 
 const clean = (value, max) => typeof value === 'string' ? value.replace(/\s+/g, ' ').trim().slice(0, max) : ''
@@ -57,8 +62,40 @@ export function sanitizeIdeas(raw, { discipline, practices }) {
   }).filter(idea => idea.title && idea.description)
 }
 
+/** Texte JSON renvoyé par le modèle, parfois entouré de ```json … ``` ou de quelques mots. */
+export function parseJson(text) {
+  if (text && typeof text === 'object') return text
+  const raw = String(text ?? '').trim()
+  try { return JSON.parse(raw) } catch { /* on cherche l'objet dans le texte */ }
+  const start = raw.indexOf('{')
+  const end = raw.lastIndexOf('}')
+  if (start < 0 || end <= start) throw new AiUpstreamError('Réponse du modèle illisible')
+  try { return JSON.parse(raw.slice(start, end + 1)) } catch { throw new AiUpstreamError('Réponse du modèle illisible') }
+}
+
+export const aiConfigured = env => !!(env.MISTRAL_API_KEY || env.AI)
+
 export async function activityIdeas(env, request, fetchImpl = fetch) {
-  if (!env.MISTRAL_API_KEY) throw new AiConfigError('MISTRAL_API_KEY manquant')
+  if (env.MISTRAL_API_KEY) return mistralApi(env, request, fetchImpl)
+  if (env.AI) return workersAi(env, request)
+  throw new AiConfigError('Ni binding AI ni MISTRAL_API_KEY')
+}
+
+async function workersAi(env, request) {
+  let result
+  try {
+    result = await env.AI.run(env.AI_MODEL || WORKERS_AI_MODEL, { messages: buildMessages(request), temperature: 0.7, max_tokens: 1400 })
+  } catch (error) {
+    // Code 4006 : allocation gratuite du jour épuisée (aucune facturation sur l'offre gratuite).
+    if (/4006|allocation|neurons/i.test(String(error?.message))) throw new AiQuotaError(`Workers AI : ${error.message}`)
+    throw new AiUpstreamError(`Workers AI : ${error.message}`)
+  }
+  const ideas = sanitizeIdeas(parseJson(result?.response ?? result?.choices?.[0]?.message?.content), request)
+  if (!ideas.length) throw new AiUpstreamError('Aucune idée exploitable')
+  return ideas
+}
+
+async function mistralApi(env, request, fetchImpl) {
   let response
   try {
     response = await fetchImpl(MISTRAL_URL, {
@@ -70,9 +107,7 @@ export async function activityIdeas(env, request, fetchImpl = fetch) {
   } catch (error) { throw new AiUpstreamError(`Mistral injoignable : ${error.message}`) }
   if (!response.ok) throw new AiUpstreamError(`Mistral a répondu ${response.status}`)
   const data = await response.json().catch(() => null)
-  let parsed
-  try { parsed = JSON.parse(data?.choices?.[0]?.message?.content ?? '') } catch { throw new AiUpstreamError('Réponse de Mistral illisible') }
-  const ideas = sanitizeIdeas(parsed, request)
+  const ideas = sanitizeIdeas(parseJson(data?.choices?.[0]?.message?.content), request)
   if (!ideas.length) throw new AiUpstreamError('Aucune idée exploitable')
   return ideas
 }

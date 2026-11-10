@@ -17,6 +17,10 @@ migrations_dir = "migrations"
 binding = "FILES"
 bucket_name = "art-files"
 
+# Cloudflare Workers AI (modèles hébergés par Cloudflare, 10 000 Neurons gratuits par jour).
+[ai]
+binding = "AI"
+
 [vars]
 # Variables publiques (non sensibles) ici.
 # Origines autorisées à appeler l'API, et vers lesquelles un lien de connexion peut ramener.
@@ -25,11 +29,13 @@ APP_URL = "https://novart-app.web.app"
 SENDER_NAME = "NOVART"
 # Projet Firebase dont les jetons de connexion sont acceptés pour l'envoi de photos.
 FIREBASE_PROJECT_ID = "novart-109bf"
-# Modèle Mistral des idées d'activités (POST /ai/activity-ideas).
+# Idées d'activités (POST /ai/activity-ideas) : Mistral Small via Workers AI (binding AI ci-dessus),
+# gratuit dans la limite quotidienne du compte. MISTRAL_MODEL ne sert que si le secret
+# MISTRAL_API_KEY (API Mistral payante) est déclaré.
 MISTRAL_MODEL = "mistral-small-latest"
 # Les secrets se déclarent avec (voir workers/README.md) :
 #   npx wrangler secret put FIREBASE_SERVICE_ACCOUNT < /chemin/hors-depot/cle.json
 #   npx wrangler secret put BREVO_API_KEY
 #   npx wrangler secret put SENDER_EMAIL
-#   npx wrangler secret put MISTRAL_API_KEY
+#   npx wrangler secret put MISTRAL_API_KEY   (facultatif : API Mistral payante à la place de Workers AI)
 # et se lisent en local via workers/.dev.vars (jamais commité)

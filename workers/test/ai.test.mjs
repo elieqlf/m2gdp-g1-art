@@ -98,3 +98,27 @@ test(`limite à ${AI_LIMIT.max} demandes par heure et par membre`, async () => {
   // Un autre membre n'est pas concerné ; le quota des photos non plus.
   assert.equal((await ask({ keywords: 'photo de rue' }, { token: await idToken('membre-2') })).status, 200)
 })
+
+test('sans clé Mistral : Mistral Small hébergé par Cloudflare Workers AI (gratuit)', async () => {
+  delete env.MISTRAL_API_KEY
+  const runs = []
+  env.AI = { async run(model, input) { runs.push({ model, input }); return { response: '```json\n' + JSON.stringify(IDEAS) + '\n```' } } }
+  const response = await ask({ keywords: 'danse afro, parc', discipline: 'danse', practices: ['Danse africaine'] })
+  assert.equal(response.status, 200)
+  const { ideas } = await response.json()
+  assert.equal(ideas.length, 2)
+  assert.equal(ideas[0].discipline, 'danse')
+  assert.equal(runs[0].model, '@cf/mistralai/mistral-small-3.1-24b-instruct')
+  assert.match(runs[0].input.messages[1].content, /danse afro, parc/)
+  assert.equal(mistralCalls.length, 0)
+})
+
+test('Workers AI : quota du jour épuisé, puis réponse illisible', async () => {
+  delete env.MISTRAL_API_KEY
+  env.AI = { async run() { throw new Error('4006: you have used up your daily free allocation of 10,000 neurons') } }
+  const limited = await ask({ keywords: 'slam' })
+  assert.equal(limited.status, 429)
+  assert.equal((await limited.json()).error, 'daily-limit')
+  env.AI = { async run() { return { response: 'Désolé, je ne peux pas.' } } }
+  assert.equal((await ask({ keywords: 'slam' })).status, 502)
+})

@@ -6,7 +6,7 @@ import { disciplineLabel, levelLabel } from '@/lib/activity'
 import { idToken } from '@/services/firebase'
 import { activityIdeas, AiError, type ActivityIdea } from '@/services/ai'
 
-// Idées d'activités culturelles proposées par l'IA (Mistral) à partir de mots-clés,
+// Idées d'activités culturelles proposées par l'IA (Mistral Small via le Worker) à partir de mots-clés,
 // au niveau du choix de la discipline : l'organisateur relit puis choisit une idée,
 // qui remplit le titre, la description, la pratique, le niveau et le matériel.
 const props = defineProps<{ discipline: string }>()
@@ -24,6 +24,7 @@ const ERRORS: Record<string, string> = {
   'not-configured': 'Les idées par IA ne sont pas encore activées sur ce serveur.',
   network: 'Pas de connexion : vérifie ton réseau et réessaie.',
   'ai-failed': 'L’IA n’a pas pu proposer d’idées cette fois-ci. Réessaie ou change de mots-clés.',
+  'daily-limit': 'Le quota gratuit d’idées du jour est atteint pour NOVART. Réessaie demain.',
 }
 
 async function generate() {
@@ -67,7 +68,7 @@ function use(idea: ActivityIdea, index: number) { used.value = index; emit('use'
           <button type="button" class="btn btn--soft btn--small" @click="use(idea, index)"><Check v-if="used === index" aria-hidden="true" />{{ used === index ? 'Idée reprise dans le formulaire' : 'Utiliser cette idée' }}</button>
         </li>
       </ul>
-      <p class="ai-ideas__note">Idées générées par Mistral AI : relis et adapte-les avant de publier. Tes mots-clés ne sont pas conservés.</p>
+      <p class="ai-ideas__note">Idées générées par Mistral Small (IA hébergée par Cloudflare) : relis et adapte-les avant de publier. Tes mots-clés ne sont pas conservés.</p>
     </div>
   </section>
 </template>

@@ -1,4 +1,5 @@
-// Idées d'activités proposées par Mistral via l'API NOVART (Worker) : la clé Mistral reste côté serveur.
+// Idées d'activités proposées par Mistral Small via l'API NOVART (Worker, Cloudflare Workers AI) :
+// aucun accès au modèle ni clé dans l'application.
 import { AUTH_API_URL } from './emailLink'
 import { disciplines, levels, type ActivityDraft } from '@/lib/activity'
 
