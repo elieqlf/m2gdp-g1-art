@@ -1,6 +1,6 @@
 import { computed, reactive } from 'vue'
 import { listMembers, setFavorite, type Account, type Member, type Profile } from '@/services/firebase'
-import { getActivity, listActivities, watchMyOffers } from '@/services/activities'
+import { getActivity, listActivities, watchMyActivities, watchMyOffers } from '@/services/activities'
 import { isUnread, otherMember, watchMyChats, type PrivateChat } from '@/services/messages'
 import { LYON_CENTER, activeOffer, distanceKm, isMember, isPast, startsAt, waitlistOf, type Activity, type Point } from '@/lib/activity'
 
@@ -20,6 +20,8 @@ export const store = reactive({
   /** Conversations privées (temps réel) ; 'idle' tant que l'écoute n'a rien reçu. */
   chats: [] as PrivateChat[],
   chatsStatus: 'idle' as 'idle' | 'ready' | 'error',
+  /** Dernière lecture de chaque groupe de discussion (sur cet appareil, jamais visible des autres). */
+  groupReads: {} as Record<string, number>,
   /** Notifications déjà vues (mémorisées sur cet appareil). */
   seenNotifications: [] as string[],
 })
@@ -36,7 +38,7 @@ export const originLabel = computed(() => store.gps ? 'ta position' : typeof sto
 export function resetStore() {
   stopWatchers()
   pending = []
-  Object.assign(store, { account: null, profile: {}, activities: [], activitiesStatus: 'idle', members: {}, membersStatus: 'idle', gps: null, gpsStatus: 'idle', notice: '', offers: [], chats: [], chatsStatus: 'idle', seenNotifications: [] })
+  Object.assign(store, { account: null, profile: {}, activities: [], activitiesStatus: 'idle', members: {}, membersStatus: 'idle', gps: null, gpsStatus: 'idle', notice: '', offers: [], chats: [], chatsStatus: 'idle', groupReads: {}, seenNotifications: [] })
 }
 let noticeTimer: ReturnType<typeof setTimeout> | undefined
 let pending: { text: string; duration: number }[] = []
@@ -65,7 +67,11 @@ export function notifyPositionFallback() {
 export async function loadActivities(force = false) {
   if (!force && (store.activitiesStatus === 'loading' || store.activitiesStatus === 'ready')) return
   store.activitiesStatus = 'loading'
-  try { store.activities = await listActivities(); store.activitiesStatus = 'ready' }
+  try {
+    // Les activités suivies en temps réel (mes groupes) priment sur la liste chargée une fois.
+    store.activities = (await listActivities()).map(a => liveMine.get(a.id) ?? a)
+    store.activitiesStatus = 'ready'
+  }
   catch { store.activitiesStatus = 'error' }
 }
 export async function loadMembers(force = false) {
@@ -183,11 +189,55 @@ export function startWatchers() {
     if (fresh && !firstChats) notify(`Nouveau message de ${memberName(otherMember(fresh, uid.value))}`, 4000, true)
     firstChats = false
   }, () => { store.chatsStatus = 'error' }))
+
+  // Groupes de discussion : activités dont je suis membre, en temps réel.
+  let known: Record<string, number> | null = null
+  try { known = JSON.parse(localStorage.getItem(groupReadsKey()) || 'null') } catch { known = null }
+  store.groupReads = known ?? {}
+  let firstGroups = true
+  unsubscribers.push(watchMyActivities(uid.value, list => {
+    const before = new Map(store.activities.map(a => [a.id, a.lastMessage?.sentAtMs ?? 0]))
+    liveMine = new Map(list.map(a => [a.id, a]))
+    list.forEach(upsertActivity)
+    // Toute première utilisation sur cet appareil : l'existant compte comme lu.
+    if (firstGroups && !known) {
+      store.groupReads = Object.fromEntries(list.map(a => [a.id, a.lastMessage?.sentAtMs ?? 0]))
+      saveGroupReads()
+    }
+    const fresh = list.find(a => isGroupUnread(a) && (a.lastMessage?.sentAtMs ?? 0) > (before.get(a.id) ?? 0) && openGroupId !== a.id)
+    if (fresh && !firstGroups) notify(`Nouveau message dans «\u00a0${fresh.title}\u00a0» : ${fresh.lastMessage?.authorName ?? 'quelqu’un'} a écrit.`, 4000, true)
+    firstGroups = false
+  }, () => { /* hors ligne : la liste se mettra à jour au retour du réseau */ }))
 }
+
+let liveMine = new Map<string, Activity>()
+const groupReadsKey = () => `novart.groups.${uid.value}`
+function saveGroupReads() {
+  try { localStorage.setItem(groupReadsKey(), JSON.stringify(store.groupReads)) } catch { /* navigation privée */ }
+}
+/** Un message d'une autre personne est arrivé dans ce groupe depuis ma dernière lecture. */
+export function isGroupUnread(a: Activity) {
+  const last = a.lastMessage
+  if (!last || !isMember(a, uid.value)) return false
+  const fromOther = last.authorId ? last.authorId !== uid.value : last.authorName !== me.value.name
+  return fromOther && last.sentAtMs > (store.groupReads[a.id] ?? 0)
+}
+export function markGroupRead(id: string) {
+  const at = Math.max(Date.now(), activityById(id)?.lastMessage?.sentAtMs ?? 0)
+  if ((store.groupReads[id] ?? 0) >= at) return
+  store.groupReads = { ...store.groupReads, [id]: at }
+  saveGroupReads()
+}
+/** Groupe affiché à l'écran : ses nouveaux messages ne déclenchent pas de message flottant. */
+let openGroupId = ''
+export function setOpenGroup(id: string) { openGroupId = id }
+export const unreadGroups = computed(() => store.activities.filter(a => !isPast(a) && isGroupUnread(a)).length)
 /** Conversation affichée à l'écran : ses nouveaux messages ne déclenchent pas de message flottant. */
 let openChatId = ''
 export function setOpenChat(id: string) { openChatId = id }
 export const unreadChats = computed(() => store.chats.filter(c => isUnread(c, uid.value)).length)
+/** Pastille de l'onglet Conversations : messages privés et groupes non lus. */
+export const unreadConversations = computed(() => unreadChats.value + unreadGroups.value)
 
 export type NotificationKind = 'offer' | 'waitlist' | 'reminder' | 'message' | 'private'
 export type AppNotification =

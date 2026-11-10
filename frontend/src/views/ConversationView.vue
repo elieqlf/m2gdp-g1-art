@@ -5,7 +5,7 @@ import DisciplineBadge from '@/components/DisciplineBadge.vue'
 import MascotState from '@/components/MascotState.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import { clockRange, isMember, longDay, toIsoDay } from '@/lib/activity'
-import { ensureActivity, loadMembers, me, store, uid, upsertActivity } from '@/lib/store'
+import { ensureActivity, loadMembers, markGroupRead, me, setOpenGroup, store, uid, upsertActivity } from '@/lib/store'
 import { goBack } from '@/lib/router'
 import { sendMessage, watchMessages, type Message } from '@/services/activities'
 
@@ -43,9 +43,11 @@ watch(() => props.id, async id => {
   status.value = 'ready'
   void loadMembers()
   if (!member.value) return
-  stop = watchMessages(id, data => { messages.value = data; void scrollDown() }, () => { failure.value = 'Messages indisponibles pour le moment.' })
+  // Groupe affiché : marqué comme lu à l'ouverture et à chaque message reçu pendant la lecture.
+  setOpenGroup(id)
+  stop = watchMessages(id, data => { messages.value = data; markGroupRead(id); void scrollDown() }, () => { failure.value = 'Messages indisponibles pour le moment.' })
 }, { immediate: true })
-onBeforeUnmount(() => stop?.())
+onBeforeUnmount(() => { stop?.(); setOpenGroup('') })
 
 async function send() {
   const content = text.value.trim()

@@ -616,3 +616,7 @@
 .search-suggest__label mark { background: none; color: var(--primary); font-weight: 700; }
 .search-suggest small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: .8rem; color: color-mix(in srgb, var(--foreground) 70%, transparent); }
 .discover__top:focus-within { z-index: 7; } /* suggestions de recherche au-dessus du panneau « Autour de toi » */
+
+/* Pastille de non-lus sur les onglets Groupes / Privées */
+.tab-badge { display: inline-grid; place-items: center; min-width: 1.25rem; height: 1.25rem; margin-left: .4rem; padding: 0 .3rem; border-radius: 1rem; background: var(--primary); color: var(--primary-foreground); font-size: .72rem; font-weight: 700; line-height: 1; vertical-align: .1em; }
+.tabs button.is-selected .tab-badge { background: var(--primary-foreground); color: var(--primary); }

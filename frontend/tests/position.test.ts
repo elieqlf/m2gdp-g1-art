@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('../src/services/firebase', () => ({ listMembers: vi.fn(async () => []), setFavorite: vi.fn() }))
-vi.mock('../src/services/activities', () => ({ listActivities: vi.fn(async () => []), getActivity: vi.fn(), watchMyOffers: vi.fn(() => () => {}) }))
+vi.mock('../src/services/activities', () => ({ listActivities: vi.fn(async () => []), getActivity: vi.fn(), watchMyOffers: vi.fn(() => () => {}), watchMyActivities: vi.fn(() => () => {}) }))
 vi.mock('../src/services/messages', () => ({ watchMyChats: vi.fn(() => () => {}), isUnread: () => false, otherMember: () => '' }))
 import { requestPosition, store } from '../src/lib/store'
 

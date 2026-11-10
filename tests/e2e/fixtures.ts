@@ -110,7 +110,20 @@ export const sendMessage = async (id, author, text) => {
   messages.push(message);
   activities.find(a => a.id === id).lastMessage = { text: message.text, authorName: author.name, authorId: author.uid, sentAtMs: message.sentAtMs };
   emit(id);
+  emitMine();
 };
+// Mes activités en temps réel (groupes de discussion).
+const mineWatchers = new Set();
+const emitMine = () => mineWatchers.forEach(w => w.callback(clone(activities.filter(a => a.organizerId === w.uid || a.participantIds.includes(w.uid)))));
+export const watchMyActivities = (uid, callback) => { const w = { uid, callback }; mineWatchers.add(w); queueMicrotask(emitMine); return () => mineWatchers.delete(w); };
+// Pour les tests : un autre membre écrit dans un groupe.
+window.__novartTest = { receiveGroupMessage: (id, authorId, authorName, text) => {
+  const message = { activityId: id, authorId, authorName, authorPhoto: '', text, sentAtMs: Date.now() };
+  messages.push(message);
+  activities.find(a => a.id === id).lastMessage = { text, authorName, authorId, sentAtMs: message.sentAtMs };
+  emit(id);
+  emitMine();
+} };
 `
 
 type DemoChat = ReturnType<typeof demoData>['chats'][number]

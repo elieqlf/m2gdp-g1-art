@@ -101,6 +101,24 @@ export function watchMyOffers(uid: string, onOffers: (activities: Activity[]) =>
   }, onError)
 }
 
+/**
+ * Activités dont je suis membre (inscrit ou organisateur), en temps réel : le dernier message
+ * des groupes de discussion s'actualise dans la liste des conversations et les non-lus.
+ * Deux requêtes (Firestore ne combine pas array-contains et == sur des champs différents en OU).
+ */
+export function watchMyActivities(uid: string, onActivities: (activities: Activity[]) => void, onError: (error: Error) => void) {
+  const parts: Record<'joined' | 'organized', Activity[]> = { joined: [], organized: [] }
+  const ready = { joined: false, organized: false }
+  const listen = (part: 'joined' | 'organized', constraint: ReturnType<typeof where>) =>
+    onSnapshot(query(collection(db, 'activities'), constraint), (snapshot: { docs: { id: string; data(): DocumentData }[] }) => {
+      parts[part] = snapshot.docs.map(item => toActivity(item.id, item.data()))
+      ready[part] = true
+      if (ready.joined && ready.organized) onActivities([...new Map([...parts.joined, ...parts.organized].map(a => [a.id, a])).values()])
+    }, onError)
+  const stops = [listen('joined', where('participantIds', 'array-contains', uid)), listen('organized', where('organizerId', '==', uid))]
+  return () => stops.forEach(stop => stop())
+}
+
 // US-11 : groupe de l'activité, mis à jour en temps réel.
 export function watchMessages(activityId: string, onMessages: (messages: Message[]) => void, onError: (error: Error) => void) {
   const messages = query(collection(db, 'activities', activityId, 'messages'), orderBy('sentAtMs', 'asc'))

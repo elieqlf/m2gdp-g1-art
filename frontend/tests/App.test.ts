@@ -14,7 +14,7 @@ vi.mock('../src/services/firebase', () => ({
   requestSignInLink: vi.fn(), completeSignIn: vi.fn(), signInWithSocialProvider: vi.fn(), saveOnboardingProgress: vi.fn(), consumeSocialRedirect: vi.fn(async () => null), observeAccount: vi.fn(),
   getProfile: vi.fn(), saveProfile: vi.fn(), listMembers: vi.fn(), idToken: vi.fn(async () => 'jeton'), logout: vi.fn(), updateProfile: vi.fn(), setFavorite: vi.fn(),
 }))
-vi.mock('../src/services/activities', () => ({ listActivities: vi.fn(async () => []), getActivity: vi.fn(async () => null), ActivityFullError: class extends Error {}, watchMyOffers: vi.fn(() => () => {}) }))
+vi.mock('../src/services/activities', () => ({ listActivities: vi.fn(async () => []), getActivity: vi.fn(async () => null), ActivityFullError: class extends Error {}, watchMyOffers: vi.fn(() => () => {}), watchMyActivities: vi.fn(() => () => {}) }))
 vi.mock('../src/services/messages', () => ({
   watchMyChats: vi.fn(() => () => {}), watchPrivateMessages: vi.fn(() => () => {}), sendPrivateMessage: vi.fn(), markChatRead: vi.fn(async () => {}),
   chatIdFor: (a: string, b: string) => [a, b].sort().join('__'), otherMember: () => '', isUnread: () => false,

@@ -45,6 +45,9 @@ Les notifications vues sont mémorisées sur l'appareil. Pas de notification pus
 | CA2 | Groupe en temps réel (`onSnapshot`), séparateurs par jour, mes messages à droite | idem |
 | CA3 | Envoi d'un message (1000 caractères max) ; le dernier message alimente la liste | idem |
 | CA4 | Non-membre : « Groupe réservé aux participants » ; les règles Firestore refusent la lecture | `docs/firestore.rules` |
+| CA5 | Liste des groupes en temps réel (activités dont je suis membre, `onSnapshot`) : dernier message mis à jour sans recharger | `scenario.spec.ts` (Groupes) |
+| CA6 | Groupe non lu : point et nom en gras, pastille chiffrée sur l'onglet Groupes (et Privées), sur l'onglet Conversations du bas ; message flottant « Nouveau message dans « … » » hors du groupe ouvert | idem |
+| CA7 | Ouvrir un groupe le marque comme lu ; date de lecture gardée sur l'appareil (jamais visible des autres membres) ; à la première utilisation, l'existant compte comme lu | idem |
 
 ## Contact : messagerie privée (sujet ART : « contacter l'organisateur avant de réserver »)
 

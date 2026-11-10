@@ -178,12 +178,12 @@ test('Contact : message privé reçu, non lu puis lu', async ({ page }, testInfo
   const { users, chats } = demoData()
   const sender = users.find(u => u.uid === chats[0]!.other)!
   await openApp(page, 'app', '#/decouvrir')
-  await expect(page.getByRole('link', { name: /Conversations.*1 message privé non lu/ })).toBeVisible()
+  await expect(page.getByRole('link', { name: /Conversations.*1 conversation non lue/ })).toBeVisible()
   await page.getByRole('link', { name: /Notifications, \d+ nouvelles?/ }).click()
   await page.getByRole('tab', { name: 'Messages' }).click()
   await expect(page.getByRole('link', { name: new RegExp(`Message privé.*${sender.firstName} ${sender.lastName} : Non, tout est fourni`) })).toBeVisible()
   await page.goto('/#/conversations')
-  await page.getByRole('tab', { name: 'Privées (1)' }).click()
+  await page.getByRole('tab', { name: /^Privées\s*1 non lu$/ }).click()
   await capture(page, testInfo, 'conversations-privees')
   await page.getByRole('link', { name: new RegExp(`${sender.firstName} ${sender.lastName}.*Non lu`) }).click()
   await expect(page.getByText('Non, tout est fourni, viens comme tu es !')).toBeVisible()
@@ -241,6 +241,35 @@ test('Recherche : autocomplétion des activités, disciplines et lieux', async (
   await list.getByRole('option', { name: /^Croix-Rousse.*Quartier/ }).click()
   await expect(box).toHaveValue('Croix-Rousse')
   await expect(page.getByRole('heading', { name: 'Résultats pour « Croix-Rousse »' })).toBeVisible()
+})
+
+test('Groupes : un message reçu s’affiche en direct, avec non-lus et pastilles', async ({ page }) => {
+  const { activities, users } = demoData()
+  const group = activities.find(a => a.participantIds.includes(ME.uid) && a.date > today())!
+  const author = users.find(u => u.uid !== ME.uid && group.participantIds.includes(u.uid))!
+  await openApp(page, 'app', '#/conversations')
+  const item = page.getByRole('link', { name: new RegExp(group.title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')) })
+  await expect(item).toBeVisible()
+  await expect(page.getByRole('tab', { name: 'Groupes', exact: true })).toBeVisible()
+  // Un autre membre écrit pendant que la liste est affichée.
+  await page.evaluate(([id, uid, name]) => (window as unknown as { __novartTest: { receiveGroupMessage: (...a: string[]) => void } }).__novartTest.receiveGroupMessage(id!, uid!, name!, 'On se retrouve devant l’entrée ?'), [group.id, author.uid, author.firstName])
+  await expect(item).toContainText(`${author.firstName} : On se retrouve devant l’entrée ?`)
+  await expect(item).toHaveClass(/is-unread/)
+  await expect(page.getByRole('tab', { name: /^Groupes\s*1 non lu$/ })).toBeVisible()
+  await expect(page.getByRole('link', { name: /Conversations.*conversations? non lues?/ })).toBeVisible()
+  // Les messages d'arrière-plan passent chacun leur tour (ici après « place libérée » et la localisation).
+  await expect(page.getByText(`Nouveau message dans « ${group.title} »`)).toBeVisible({ timeout: 16_000 })
+  // Ouvrir le groupe le marque comme lu.
+  await item.click()
+  await expect(page.getByText('On se retrouve devant l’entrée ?')).toBeVisible()
+  await page.getByRole('button', { name: 'Retour' }).click()
+  await expect(page.getByRole('tab', { name: 'Groupes', exact: true })).toBeVisible()
+  await expect(item).not.toHaveClass(/is-unread/)
+  // Dans le groupe ouvert, un nouveau message s'affiche sans message flottant.
+  await item.click()
+  await page.evaluate(([id, uid, name]) => (window as unknown as { __novartTest: { receiveGroupMessage: (...a: string[]) => void } }).__novartTest.receiveGroupMessage(id!, uid!, name!, 'Je serai là à l’heure !'), [group.id, author.uid, author.firstName])
+  await expect(page.getByText('Je serai là à l’heure !')).toBeVisible()
+  await expect(page.getByText(`Nouveau message dans « ${group.title} »`)).toBeHidden()
 })
 
 test('US-08 : modifier son activité sans descendre sous le nombre d’inscrits, puis la supprimer', async ({ page }, testInfo) => {

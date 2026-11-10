@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { flushPromises, mount, type VueWrapper } from '@vue/test-utils'
 
 vi.mock('../src/services/firebase', () => ({ listMembers: vi.fn(async () => []), setFavorite: vi.fn() }))
-vi.mock('../src/services/activities', () => ({ listActivities: vi.fn(async () => []), getActivity: vi.fn(), watchMyOffers: vi.fn(() => () => {}) }))
+vi.mock('../src/services/activities', () => ({ listActivities: vi.fn(async () => []), getActivity: vi.fn(), watchMyOffers: vi.fn(() => () => {}), watchMyActivities: vi.fn(() => () => {}) }))
 vi.mock('../src/services/messages', () => ({
   chatIdFor: (a: string, b: string) => [a, b].sort().join('__'),
   isUnread: () => false,
