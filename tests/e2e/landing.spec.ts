@@ -17,11 +17,14 @@ for (const name of pages) {
       await document.fonts.ready
       return {
         broken: Array.from(document.images).filter(img => img.naturalWidth === 0).map(img => img.getAttribute('src')),
-        sigmar: Array.from(document.fonts).some(f => f.family.replaceAll('"', '') === 'Sigmar One' && f.status === 'loaded'),
+        caveat: Array.from(document.fonts).some(f => f.family.replaceAll('"', '') === 'Caveat' && f.status === 'loaded'),
+        // Netteté : une image matricielle doit avoir assez de pixels pour l'écran (densité ×1 à ×3).
+        blurry: Array.from(document.images).filter(img => !img.currentSrc.endsWith('.svg') && img.getBoundingClientRect().width > 0
+          && img.naturalWidth < img.getBoundingClientRect().width * Math.min(window.devicePixelRatio, 3) * 0.95).map(img => img.getAttribute('src')),
         overflow: document.documentElement.scrollWidth > window.innerWidth,
       }
     })
-    expect(check).toEqual({ broken: [], sigmar: true, overflow: false })
+    expect(check).toEqual({ broken: [], caveat: true, blurry: [], overflow: false })
     await page.screenshot({ path: testInfo.outputPath(name.replace('.html', '.png')), fullPage: true })
   })
 }

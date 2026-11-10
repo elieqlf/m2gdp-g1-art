@@ -1,6 +1,8 @@
 # Site vitrine NOVART
 
-Site statique (HTML, CSS, JS sans dépendance), mobile-first, aux couleurs de la charte.
+Site statique (HTML, CSS, JS sans dépendance), mobile-first, aux couleurs et à la typographie de l'application (rouge NOVART, titres en Caveat, fond gris clair).
+
+Les pages sont générées par `python3 scripts/design/build-landing.py` (à la racine du dépôt) : modifier ce script plutôt que les fichiers HTML, puis le relancer.
 Publié par la cible Firebase Hosting `landing` : https://novart-109bf.web.app
 
 | Page | Contenu (attendus du cours) |
@@ -28,8 +30,9 @@ npx --yes --package firebase-tools firebase deploy --only hosting:landing --proj
 ## Ressources
 
 - `assets/site.css` : styles (base téléphone, puis `min-width` 30, 48 et 64 rem) ; `assets/site.js` : menu mobile, apparition au défilement, formulaire.
-- `assets/img/` : logos officiels (le secondaire détouré), mascotte et onze poses découpées dans la planche « Mascotte NOVART » du DA, agrandies ×3 (`scripts/design/agrandir-mascotte.py`), détourées (`scripts/design/detourer-fond.py`) et enregistrées en WebP. Les fichiers HD d'origine du DA donneraient un rendu encore meilleur.
-- `assets/screens/` : captures de l'application (données de démonstration), à refaire si l'interface change.
+- `assets/img/` : logo vectoriel de l'application (`novart-logo.svg`, utilisé comme masque CSS, rouge ou blanc), visuels HD de la mascotte de la charte 2026 (`mascotte-*-hd.webp`, pour les grands emplacements) et poses découpées dans la planche « Mascotte NOVART » du DA (affichées à 170 px au plus pour rester nettes sur un écran ×3).
+- `assets/screens/` : captures de l'application (données de démonstration, 780 × 1688 px). À refaire quand l'interface change :
+  `CAPTURE_LANDING=1 npx playwright test tests/e2e/landing-screens.spec.ts --project mobile` puis `python3 scripts/design/landing-screens.py`.
 - `assets/covers/` : illustrations par discipline (`scripts/design/generate-covers.mjs`).
 - Pictogrammes Lucide (ISC) intégrés en sprite au début de chaque page ; polices dans `assets/fonts/` avec leurs licences.
 
