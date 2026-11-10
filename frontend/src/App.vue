@@ -535,7 +535,18 @@ onBeforeUnmount(() => { unsubscribe?.(); clearInterval(countdown); accountRevisi
         <h1 class="brand-slogan"><span>L’art se crée ensemble</span></h1>
         <div class="auth-mascot-frame" :class="{ 'auth-sent-illustration': screen === 'sent' }">
           <img :src="screen === 'sent' ? '/images/novart-onboarding-complete-hd.webp' : '/images/novart-mascot-login.webp'" alt="" class="auth-mascot" :width="screen === 'sent' ? 1536 : 1520" :height="screen === 'sent' ? 1024 : 1035" fetchpriority="high" decoding="async" />
-          <span v-if="screen === 'sent'" class="auth-sent-box" aria-hidden="true"><span></span></span>
+          <svg v-if="screen === 'sent'" class="auth-sent-box" viewBox="0 0 300 120" aria-hidden="true" focusable="false">
+            <defs><linearGradient id="novart-box-front" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#f2c79e" /><stop offset="68%" stop-color="#edbb8e" /><stop offset="68.1%" stop-color="#e6a879" /><stop offset="100%" stop-color="#e6a879" /></linearGradient></defs>
+            <ellipse class="auth-sent-box__shadow" cx="150" cy="108" rx="119" ry="5" />
+            <path class="auth-sent-box__flap auth-sent-box__flap--left" d="M43 40 13 30l15 47 16 7Z" />
+            <path class="auth-sent-box__flap auth-sent-box__flap--right" d="m225 40 50-17 15 40-65 5Z" />
+            <path class="auth-sent-box__side" d="M225 41 275 26v61q0 9-9 12l-41 11Z" />
+            <path class="auth-sent-box__front" d="M42 40h183v51q0 15-15 15H57q-15 0-15-15Z" />
+            <path class="auth-sent-box__rim" d="M23 31 52 15h197l28 16-52 18H47Z" />
+            <path class="auth-sent-box__rim-line" d="m47 49 178 0 52-18" />
+            <path class="auth-sent-box__tape" d="M64 70h20a4 4 0 0 1 0 8H64a4 4 0 0 1 0-8Z" />
+            <path class="auth-sent-box__crease" d="M247 42v49" />
+          </svg>
         </div>
       </section>
       <Card class="auth-panel" :class="{ 'auth-panel--home': screen === 'request' }">
@@ -577,8 +588,7 @@ onBeforeUnmount(() => { unsubscribe?.(); clearInterval(countdown); accountRevisi
             </p>
           </form>
           <div v-else-if="screen === 'sent'" class="auth-sent-content">
-            <p class="auth-sent-lead">Le lien pour accéder à NOVART a été envoyé à</p>
-            <p class="auth-sent-address">{{ email }}</p>
+            <p class="auth-sent-lead" :title="email"><span>Lien d’accès envoyé à</span><strong class="auth-sent-address">{{ email }}</strong></p>
             <p class="auth-sent-hint">Tu ne le vois pas ? Vérifie tes spams.</p>
             <p class="auth-sent-cooldown" role="status"><Clock aria-hidden="true" />{{ cooldown > 0 ? `Nouveau lien disponible dans ${cooldown} s` : 'Tu peux renvoyer le lien maintenant.' }}</p>
             <Button variant="default" class="auth-sent-resend" :disabled="busy || cooldown > 0" @click="sendLink">{{ busy ? 'Envoi en cours…' : 'Renvoyer le lien' }}</Button>
