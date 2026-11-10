@@ -10,7 +10,7 @@ export const db = getFirestore(app)
 const EMAIL_KEY = 'art_pending_signin_email'
 const REMEMBER_KEY = 'art_remember_signin'
 const SOCIAL_PROVIDER_KEY = 'art_pending_social_provider'
-export type Account = Pick<User, 'uid' | 'email'>
+export type Account = Pick<User, 'uid' | 'email' | 'displayName' | 'photoURL' | 'emailVerified'>
 export interface Profile {
   firstName: string
   lastName: string
@@ -23,6 +23,10 @@ export interface Profile {
   bio?: string
   interests?: string[]
   favoriteIds?: string[]
+  discoveryRadiusKm?: number | null
+  useCurrentLocation?: boolean
+  onboardingGoals?: string[]
+  onboardingStep?: number
 }
 export type Member = Partial<Profile> & { uid: string }
 export const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())
@@ -35,8 +39,6 @@ export async function setAuthPersistence(remember: boolean) {
   localStorage.setItem(REMEMBER_KEY, remember ? '1' : '0')
   await setPersistence(auth, remember ? browserLocalPersistence : browserSessionPersistence)
 }
-/** Prénom, nom et photo du compte social, pour pré-remplir le profil d'un nouveau compte. */
-export interface SocialIdentity { firstName: string; lastName: string; photoUrl: string }
 /**
  * Connexion Google (ou Apple) dans une fenêtre, et non par redirection : l'appli est servie
  * sur novart-app.web.app alors que l'authentification passe par novart-109bf.firebaseapp.com ;
@@ -45,21 +47,19 @@ export interface SocialIdentity { firstName: string; lastName: string; photoUrl:
  * sinon le navigateur la bloque ; le choix « Rester connecté·e » s'applique juste après
  * (setPersistence déplace la session déjà ouverte).
  */
-export async function signInWithSocialProvider(providerName: 'apple' | 'google', remember: boolean): Promise<SocialIdentity> {
+export async function signInWithSocialProvider(providerName: 'apple' | 'google', remember: boolean) {
   const provider = providerName === 'google' ? new GoogleAuthProvider() : new OAuthProvider('apple.com')
   if (provider instanceof GoogleAuthProvider) provider.setCustomParameters({ prompt: 'select_account' })
   else { provider.addScope('email'); provider.addScope('name') }
-  const { user } = await signInWithPopup(auth, provider)
+  const result = await signInWithPopup(auth, provider)
   await setAuthPersistence(remember)
-  const [firstName = '', ...rest] = (user.displayName ?? '').trim().split(/\s+/)
-  return { firstName, lastName: rest.join(' '), photoUrl: user.photoURL ?? '' }
+  localStorage.removeItem(SOCIAL_PROVIDER_KEY)
+  localStorage.removeItem(REMEMBER_KEY)
+  return result
 }
 export async function consumeSocialRedirect() {
   const result = await getRedirectResult(auth)
-  if (result) {
-    localStorage.removeItem(REMEMBER_KEY)
-    clearPendingSocialProvider()
-  }
+  if (result) localStorage.removeItem(REMEMBER_KEY)
   return result
 }
 export async function requestSignInLink(email: string) {
@@ -95,6 +95,9 @@ export async function getProfile(user: Account): Promise<Partial<Profile>> {
 }
 export async function saveProfile(uid: string, profile: Profile) {
   await setDoc(doc(db, 'users', uid), { ...profile, profileComplete: true }, { merge: true })
+}
+export async function saveOnboardingProgress(uid: string, profile: Partial<Profile>, onboardingStep: number) {
+  await setDoc(doc(db, 'users', uid), { ...profile, profileComplete: false, onboardingStep }, { merge: true })
 }
 export async function listMembers(): Promise<Member[]> {
   const snapshot = await getDocs(collection(db, 'users'))

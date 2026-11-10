@@ -56,12 +56,13 @@ export const pendingSocialProvider = () => null;
 export const clearPendingSocialProvider = () => {};
 export const rememberedSessionChoice = () => false;
 export const setAuthPersistence = async () => {};
-// Fenêtre Google simulée : la session s'ouvre et l'identité Google est renvoyée.
-export const signInWithSocialProvider = async () => { observer?.(me); return { firstName: 'Camille', lastName: 'Martin', photoUrl: 'https://lh3.googleusercontent.com/a/photo-camille' }; };
+// Fenêtre Google simulée : la session s'ouvre avec le nom et la photo du compte Google.
+export const signInWithSocialProvider = async () => { const user = { ...me, displayName: 'Camille Martin', photoURL: 'https://lh3.googleusercontent.com/a/photo-camille', emailVerified: true }; observer?.(user); return { user }; };
 export const consumeSocialRedirect = async () => null;
 export const observeAccount = callback => { observer = callback; queueMicrotask(() => callback(mode === 'request' ? null : me)); return () => {}; };
 export const getProfile = async () => ({ ...profile });
 export const saveProfile = async (uid, data) => { profile = { ...profile, ...data, profileComplete: true }; };
+export const saveOnboardingProgress = async (uid, data, step) => { profile = { ...profile, ...data, profileComplete: false, onboardingStep: step }; };
 export const updateProfile = async (uid, changes) => { profile = { ...profile, ...changes }; };
 export const setFavorite = async (uid, id, on) => { const list = profile.favoriteIds || []; profile.favoriteIds = on ? [...list, id] : list.filter(x => x !== id); };
 export const listMembers = async () => [...members, { uid: me.uid, ...profile }];
@@ -160,8 +161,8 @@ export async function openApp(page: Page, mode: Mode, hash = '') {
 }
 
 /** Vérifie polices et visuels réellement chargés, l'absence de défilement horizontal, puis enregistre une capture. */
-/** `heading` : police de titre attendue (Sigmar One dans l'appli, Caveat sur l'écran de connexion refondu). */
-export async function capture(page: Page, testInfo: TestInfo, name: string, selector?: string, heading = 'Sigmar One') {
+/** `heading` : police de titre attendue (Caveat dans toute l'appli depuis la refonte de hadi-app-ux). */
+export async function capture(page: Page, testInfo: TestInfo, name: string, selector?: string, heading = 'Caveat') {
   const assets = await page.evaluate(async ({ selector, heading }) => {
     await document.fonts.ready
     const images = selector ? Array.from(document.querySelectorAll<HTMLImageElement>(selector)) : []

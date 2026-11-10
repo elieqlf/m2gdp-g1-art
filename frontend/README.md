@@ -21,10 +21,11 @@ Firebase détermine l’écran à afficher selon l’état de connexion et le pr
 
 ## Parcours disponibles
 
-- Connexion et inscription par lien envoyé par Firebase Authentication.
+- Connexion et inscription par lien e-mail, avec retour Google OAuth lorsque le fournisseur est activé dans Firebase.
 - Confirmation de l’e-mail quand le lien est ouvert dans un autre navigateur.
 - Nouveau lien après expiration et délai de 60 secondes avant renvoi.
-- Création du profil Firestore ; reprise d’un profil incomplet après reconnexion.
+- Après authentification, création du profil en trois étapes ; les profils existants vont
+  directement dans l’application et les profils incomplets reprennent à l’étape enregistrée.
 - Adresse avec Google Places (New), choix au clavier et saisie manuelle possible.
 - Enregistrement de l’adresse et de ses coordonnées, supprimées si la saisie change.
 - Application connectée avec navigation basse (maquettes 05 à 26) :

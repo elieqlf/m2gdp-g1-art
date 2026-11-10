@@ -11,7 +11,7 @@ vi.mock('../src/services/firebase', () => ({
   hasSignInLink: vi.fn(() => false), pendingEmail: vi.fn(() => ''),
   pendingSocialProvider: vi.fn(() => null), clearPendingSocialProvider: vi.fn(),
   rememberedSessionChoice: vi.fn(() => false), setAuthPersistence: vi.fn(async () => undefined),
-  requestSignInLink: vi.fn(), completeSignIn: vi.fn(), signInWithSocialProvider: vi.fn(), consumeSocialRedirect: vi.fn(async () => null), observeAccount: vi.fn(),
+  requestSignInLink: vi.fn(), completeSignIn: vi.fn(), signInWithSocialProvider: vi.fn(), saveOnboardingProgress: vi.fn(), consumeSocialRedirect: vi.fn(async () => null), observeAccount: vi.fn(),
   getProfile: vi.fn(), saveProfile: vi.fn(), listMembers: vi.fn(), logout: vi.fn(), updateProfile: vi.fn(), setFavorite: vi.fn(),
 }))
 vi.mock('../src/services/activities', () => ({ listActivities: vi.fn(async () => []), getActivity: vi.fn(async () => null), ActivityFullError: class extends Error {}, watchMyOffers: vi.fn(() => () => {}) }))
@@ -32,27 +32,42 @@ beforeEach(() => {
   vi.mocked(api.listMembers).mockResolvedValue([])
   vi.mocked(api.requestSignInLink).mockResolvedValue(undefined)
   vi.mocked(api.saveProfile).mockResolvedValue(undefined)
+  vi.mocked(api.saveOnboardingProgress).mockResolvedValue(undefined)
 })
 afterEach(() => { wrapper?.unmount(); vi.useRealTimers() })
 async function render() { wrapper = mount(App); await flushPromises() }
 async function openProfile() { await render(); observer(user); await flushPromises() }
+// Inscription en trois étapes (branche hadi-app-ux) : profil, préférences, récapitulatif.
+const nameInput = () => wrapper.get('#onboarding-name').element as HTMLInputElement
 async function fillProfile() {
-  await wrapper.get('#firstName').setValue('Camille')
-  await wrapper.get('#lastName').setValue('Martin')
-  await wrapper.get('#address').setValue('Paris')
+  await wrapper.get('#onboarding-name').setValue('Camille')
+  await wrapper.get('#onboarding-city').setValue('Paris')
+  await wrapper.findAll('button').find(b => b.text().includes('Peinture'))!.trigger('click')
+}
+async function submitStep() { await wrapper.get('form').trigger('submit'); await flushPromises() }
+async function finishSignup() {
+  await submitStep() // 1. Créer mon profil
+  await submitStep() // 2. Préférences
+  await wrapper.findAll('button.onboarding-submit').at(-1)!.trigger('click') // 3. Terminer
+  await flushPromises()
 }
 describe('Continuer avec Google (fenêtre)', () => {
-  const identity = { firstName: 'Camille', lastName: 'Martin Dupont', photoUrl: 'https://lh3.googleusercontent.com/a/photo' }
+  const identity = { photoUrl: 'https://lh3.googleusercontent.com/a/photo' }
   const googleButton = () => wrapper.findAll('button').find(b => b.text().includes('Continuer avec Google'))!
-  it('pré-remplit le profil d’un nouveau compte, même si la session s’ouvre avant la fin de la fenêtre', async () => {
-    vi.mocked(api.signInWithSocialProvider).mockImplementation(async () => { observer(user); await flushPromises(); return identity })
+  it('pré-remplit le profil d’un nouveau compte avec le prénom et la photo Google', async () => {
+    const googleUser = { ...user, displayName: 'Camille Martin Dupont', photoURL: identity.photoUrl, emailVerified: true }
+    vi.mocked(api.signInWithSocialProvider).mockImplementation(async () => { observer(googleUser); await flushPromises(); return { user: googleUser } as never })
     await render()
     await googleButton().trigger('click')
     await flushPromises()
     expect(api.signInWithSocialProvider).toHaveBeenCalledWith('google', false)
-    expect((wrapper.get('#firstName').element as HTMLInputElement).value).toBe('Camille')
-    expect((wrapper.get('#lastName').element as HTMLInputElement).value).toBe('Martin Dupont')
-    expect((wrapper.get('#photoUrl').element as HTMLInputElement).value).toBe(identity.photoUrl)
+    expect(nameInput().value).toBe('Camille')
+    expect(wrapper.find('.onboarding-photo-picker.has-photo').exists()).toBe(true)
+    // Le nom de famille Google est conservé, même si l'inscription ne demande qu'un prénom ou pseudo.
+    await wrapper.get('#onboarding-city').setValue('Lyon')
+    await wrapper.findAll('button').find(b => b.text().includes('Peinture'))!.trigger('click')
+    await finishSignup()
+    expect(api.saveProfile).toHaveBeenCalledWith('test-user', expect.objectContaining({ firstName: 'Camille', lastName: 'Martin Dupont', photoUrl: identity.photoUrl }))
   })
   it('ne montre pas d’erreur si la fenêtre Google est fermée', async () => {
     vi.mocked(api.signInWithSocialProvider).mockRejectedValueOnce({ code: 'auth/popup-closed-by-user' })
@@ -118,16 +133,31 @@ describe('Parcours inscription Shadcn-Vue', () => {
     expect(wrapper.text()).toContain('Ce lien n’est plus valide')
     expect(wrapper.get('button[type="submit"]').attributes('disabled')).toBeDefined()
   })
-  it('reprend un profil incomplet après reconnexion', async () => {
+  it('reprend un profil incomplet après reconnexion, à la bonne étape', async () => {
     vi.mocked(api.getProfile).mockResolvedValue({ profileComplete: false, firstName: 'Camille' })
     await openProfile()
-    expect((wrapper.get('#firstName').element as HTMLInputElement).value).toBe('Camille')
-    expect(wrapper.text()).toContain('Terminer mon inscription')
+    expect(nameInput().value).toBe('Camille')
+    expect(wrapper.text()).toContain('Créer mon profil')
+    wrapper.unmount()
+    vi.mocked(api.getProfile).mockResolvedValue({ profileComplete: false, firstName: 'Camille', address: 'Lyon', interests: ['peinture'], onboardingStep: 2 })
+    await openProfile()
+    expect(wrapper.find('form.onboarding-form--preferences').exists()).toBe(true)
   })
-  it('conserve les coordonnées choisies et affiche ensuite les membres', async () => {
+  it('exige au moins un centre d’intérêt', async () => {
+    await openProfile()
+    await wrapper.get('#onboarding-name').setValue('Camille')
+    await wrapper.get('#onboarding-city').setValue('Paris')
+    await submitStep()
+    expect(wrapper.get('[role="alert"]').text()).toContain('au moins un centre d’intérêt')
+    expect(api.saveOnboardingProgress).not.toHaveBeenCalled()
+  })
+  it('conserve les coordonnées choisies et ouvre ensuite l’application', async () => {
     await openProfile(); await fillProfile()
     wrapper.getComponent(AddressInput).vm.$emit('select', { address: 'Paris', lat: 48.85, lng: 2.35 })
-    await wrapper.get('form').trigger('submit'); await flushPromises()
+    await submitStep()
+    expect(api.saveOnboardingProgress).toHaveBeenCalledWith('test-user', expect.objectContaining({ firstName: 'Camille', addressLat: 48.85, addressLng: 2.35, interests: ['peinture'] }), 2)
+    await submitStep()
+    await wrapper.findAll('button.onboarding-submit').at(-1)!.trigger('click'); await flushPromises()
     expect(api.saveProfile).toHaveBeenCalledWith('test-user', expect.objectContaining({ firstName: 'Camille', addressLat: 48.85, addressLng: 2.35 }))
     // Le profil terminé ouvre l'application : navigation basse et accueil « Découvrir ».
     expect(wrapper.find('nav[aria-label="Navigation principale"]').exists()).toBe(true)
@@ -136,19 +166,19 @@ describe('Parcours inscription Shadcn-Vue', () => {
   it('retire les anciennes coordonnées après une saisie manuelle', async () => {
     await openProfile(); await fillProfile()
     wrapper.getComponent(AddressInput).vm.$emit('select', { address: 'Paris', lat: 48.85, lng: 2.35 })
-    await wrapper.get('#address').setValue('Lyon')
-    await wrapper.get('form').trigger('submit'); await flushPromises()
-    expect(api.saveProfile).toHaveBeenCalledWith('test-user', expect.objectContaining({ address: 'Lyon', addressLat: null, addressLng: null }))
+    await wrapper.get('#onboarding-city').setValue('Lyon')
+    await submitStep()
+    expect(api.saveOnboardingProgress).toHaveBeenCalledWith('test-user', expect.objectContaining({ address: 'Lyon', addressLat: null, addressLng: null }), 2)
   })
   it('conserve le formulaire si l’enregistrement échoue', async () => {
-    vi.mocked(api.saveProfile).mockRejectedValueOnce(new Error('offline'))
+    vi.mocked(api.saveOnboardingProgress).mockRejectedValueOnce(new Error('offline'))
     await openProfile(); await fillProfile()
-    await wrapper.get('form').trigger('submit'); await flushPromises()
-    expect(wrapper.text()).toContain('Tes informations sont conservées')
-    expect((wrapper.get('#firstName').element as HTMLInputElement).value).toBe('Camille')
+    await submitStep()
+    expect(wrapper.text()).toContain('Ton profil n’a pas pu être enregistré')
+    expect(nameInput().value).toBe('Camille')
   })
   it('affiche un utilisateur existant et permet la déconnexion', async () => {
-    vi.mocked(api.getProfile).mockResolvedValue({ profileComplete: true })
+    vi.mocked(api.getProfile).mockResolvedValue({ profileComplete: true, firstName: 'Camille', address: 'Lyon', interests: ['peinture'] })
     vi.mocked(api.listMembers).mockResolvedValue([{ uid: 'other', firstName: 'Alex', lastName: 'Durand', userType: 'organisateur' }, { uid: 'ancien', email: 'secret@example.com' } as never])
     vi.mocked(api.logout).mockImplementation(async () => { observer(null) })
     await render(); observer(user); await flushPromises()
