@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
-import { ArrowRight, Check, ChevronLeft, GraduationCap, Heart, Lightbulb, Mail, MapPin, Sprout, Star, Upload, Users } from '@lucide/vue'
+import { ArrowRight, Check, ChevronLeft, Clock, GraduationCap, Heart, Lightbulb, Mail, MapPin, Sprout, Star, Upload, Users } from '@lucide/vue'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -521,8 +521,9 @@ onBeforeUnmount(() => { unsubscribe?.(); clearInterval(countdown); accountRevisi
       <section v-if="screen !== 'profile'" class="auth-story">
         <a href="/" class="wordmark wordmark--stacked" aria-label="Novart, accueil"><span class="brand-logo brand-logo--primary" aria-hidden="true"></span></a>
         <h1 class="brand-slogan"><span>L’art se crée ensemble</span></h1>
-        <div class="auth-mascot-frame">
-          <img src="/images/novart-mascot-login.webp" alt="" class="auth-mascot" width="1520" height="1035" fetchpriority="high" decoding="async" />
+        <div class="auth-mascot-frame" :class="{ 'auth-sent-illustration': screen === 'sent' }">
+          <img :src="screen === 'sent' ? '/images/novart-mascot-joy.webp' : '/images/novart-mascot-login.webp'" alt="" class="auth-mascot" width="1520" height="1035" fetchpriority="high" decoding="async" />
+          <span v-if="screen === 'sent'" class="auth-sent-box" aria-hidden="true"><span></span></span>
         </div>
       </section>
       <Card class="auth-panel" :class="{ 'auth-panel--home': screen === 'request' }">
@@ -564,12 +565,11 @@ onBeforeUnmount(() => { unsubscribe?.(); clearInterval(countdown); accountRevisi
             </p>
           </form>
           <div v-else-if="screen === 'sent'" class="auth-sent-content">
-            <span class="auth-sent-icon" aria-hidden="true"><Mail /><Check /></span>
             <p class="auth-sent-lead">Le lien pour accéder à NOVART a été envoyé à</p>
-            <div class="auth-sent-address"><Mail aria-hidden="true" /><strong>{{ email }}</strong></div>
-            <p class="auth-sent-next">Ouvre-le sur cet appareil pour te connecter. Si tu découvres NOVART, tu pourras ensuite créer ton profil.</p>
-            <p class="auth-sent-hint">Tu ne vois pas le message ? Regarde dans tes courriers indésirables.</p>
-            <Button variant="outline" class="auth-sent-resend" :disabled="busy || cooldown > 0" @click="sendLink">{{ cooldown > 0 ? `Renvoyer le lien dans ${cooldown} s` : 'Renvoyer le lien' }}</Button>
+            <p class="auth-sent-address">{{ email }}</p>
+            <p class="auth-sent-hint">Tu ne le vois pas ? Vérifie tes spams.</p>
+            <p class="auth-sent-cooldown" role="status"><Clock aria-hidden="true" />{{ cooldown > 0 ? `Nouveau lien disponible dans ${cooldown} s` : 'Tu peux renvoyer le lien maintenant.' }}</p>
+            <Button variant="default" class="auth-sent-resend" :disabled="busy || cooldown > 0" @click="sendLink">{{ busy ? 'Envoi en cours…' : 'Renvoyer le lien' }}</Button>
             <Button variant="link" class="auth-sent-change" @click="screen = 'request'; error = ''">Utiliser une autre adresse</Button>
           </div>
           <form v-else-if="screen === 'confirm'" class="auth-confirm-form" novalidate @submit.prevent="finishLink">
