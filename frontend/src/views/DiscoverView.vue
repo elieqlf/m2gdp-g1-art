@@ -13,13 +13,11 @@ const query = ref('')
 const discipline = ref('')
 const now = new Date()
 const upcoming = computed(() => store.activities.filter(a => !isPast(a, now) && (!discipline.value || a.discipline === discipline.value)))
-const nearby = computed(() => sortActivities(upcoming.value.filter(a => !isFull(a) && (activityDistance(a, origin.value) ?? 99) < 8), 'proximite', origin.value).slice(0, 8))
-const popular = computed(() => sortActivities(upcoming.value, 'popularite', origin.value).filter(a => !nearby.value.slice(0, 3).includes(a)).slice(0, 8))
-const interests = computed(() => store.profile.interests ?? [])
-const forYou = computed(() => discipline.value ? [] : sortActivities(upcoming.value.filter(a => interests.value.includes(a.discipline) && !isFull(a)), 'date', origin.value).slice(0, 8))
+const nearby = computed(() => sortActivities(upcoming.value.filter(a => !isFull(a) && (activityDistance(a, origin.value) ?? 99) < 8), 'proximite', origin.value).slice(0, 2))
+const popular = computed(() => sortActivities(upcoming.value.filter(a => !isFull(a)), 'popularite', origin.value).filter(a => !nearby.value.some(n => n.id === a.id)).slice(0, 6))
 const highlight = computed(() => {
   const soon = upcoming.value.filter(a => startsAt(a).getTime() - now.getTime() < 10 * 86400000 && placesLeft(a) >= 3)
-  return [...soon].sort((a, b) => b.capacity - a.capacity)[0]
+  return [...soon].filter(a => !nearby.value.some(n => n.id === a.id) && !popular.value.some(p => p.id === a.id)).sort((a, b) => b.capacity - a.capacity)[0]
 })
 const chips = computed(() => disciplines.filter(d => d.id !== 'autre'))
 function search() { navigate('rechercher', { q: query.value.trim() }) }
@@ -49,15 +47,11 @@ function search() { navigate('rechercher', { q: query.value.trim() }) }
     <template v-else>
       <section v-if="nearby.length" class="feed-section" aria-labelledby="nearby-title">
         <header class="section-header"><h2 id="nearby-title" class="section-title">Autour de toi</h2><a href="#/rechercher?vue=carte" class="section-link"><MapPin aria-hidden="true" />Voir la carte<ChevronRight aria-hidden="true" /></a></header>
-        <div class="card-scroller"><ActivityCard v-for="a in nearby" :key="a.id" :activity="a" /></div>
-      </section>
-      <section v-if="forYou.length" class="feed-section" aria-labelledby="foryou-title">
-        <header class="section-header"><h2 id="foryou-title" class="section-title">Selon tes envies</h2><a href="#/rechercher" class="section-link">Voir tout<ChevronRight aria-hidden="true" /></a></header>
-        <div class="card-scroller card-scroller--compact"><ActivityCard v-for="a in forYou" :key="a.id" :activity="a" /></div>
+        <div class="card-scroller card-scroller--nearby"><ActivityCard v-for="a in nearby" :key="a.id" :activity="a" /></div>
       </section>
       <section class="feed-section" aria-labelledby="popular-title">
         <header class="section-header"><h2 id="popular-title" class="section-title">Activités populaires</h2><a href="#/rechercher?tri=popularite" class="section-link">Voir tout<ChevronRight aria-hidden="true" /></a></header>
-        <div class="card-scroller card-scroller--compact"><ActivityCard v-for="a in popular" :key="a.id" :activity="a" /></div>
+        <div class="card-scroller card-scroller--compact card-scroller--popular"><ActivityCard v-for="a in popular" :key="a.id" :activity="a" /></div>
       </section>
       <section v-if="highlight" class="feed-section" aria-labelledby="highlight-title">
         <header class="section-header"><h2 id="highlight-title" class="section-title">À ne pas manquer</h2><a href="#/rechercher?tri=date" class="section-link">Voir tout<ChevronRight aria-hidden="true" /></a></header>

@@ -24,7 +24,7 @@ function syncFromRoute() {
   const places = (['tous', '1-5', '6-10', '10+'].includes(q.places ?? '') ? q.places : 'tous') as PlacesPreset
   const level = (['tous', 'debutant', 'intermediaire', 'avance'].includes(q.niveau ?? '') ? q.niveau : 'tous') as LevelId
   const sort = (['date', 'popularite'].includes(q.tri ?? '') ? q.tri : 'proximite') as SortKey
-  const radius = Number(q.rayon ?? 50)
+  const radius = Number(q.rayon ?? 5)
   const day = /^\d{4}-\d{2}-\d{2}$/.test(q.jour ?? '') ? q.jour! : ''
   Object.assign(filters, defaultFilters(), {
     query: q.q ?? '',
@@ -43,7 +43,7 @@ function persistRoute() {
     discipline: filters.disciplines.join(','),
     date: filters.datePreset === 'toutes' ? '' : filters.datePreset,
     jour: filters.day,
-    rayon: filters.radiusKm === 50 ? '' : String(filters.radiusKm),
+    rayon: filters.radiusKm === 5 ? '' : String(filters.radiusKm),
     places: filters.places === 'tous' ? '' : filters.places,
     niveau: filters.level === 'tous' ? '' : filters.level,
     tri: filters.sort === 'proximite' ? '' : filters.sort,
@@ -67,7 +67,7 @@ const disciplineChip = computed(() => filters.disciplines.length === 1 ? discipl
 const placesChip = computed(() => ({ tous: 'Places', '1-5': '1 à 5 places', '6-10': '6 à 10 places', '10+': '10+ places' })[filters.places])
 
 function apply(next: Filters) { Object.assign(filters, next); sheetOpen.value = false; selectedId.value = '' }
-function resetAll() { Object.assign(filters, defaultFilters()); selectedId.value = '' }
+function resetAll() { Object.assign(filters, defaultFilters(), { radiusKm: 50 }); selectedId.value = '' }
 function toggleNearby() { filters.radiusKm = filters.radiusKm < 50 ? 50 : 5 }
 async function locate() {
   locating.value = true; locateError.value = ''
@@ -82,7 +82,7 @@ async function locate() {
   <div class="page page--search" :class="{ 'page--map': view === 'carte' }">
     <header class="search-top">
       <h1 class="sr-only">Rechercher une activité</h1>
-      <div class="segmented" role="group" aria-label="Affichage des résultats">
+      <div class="segmented search-top__views" role="group" aria-label="Affichage des résultats">
         <button type="button" :class="{ 'is-selected': view === 'liste' }" :aria-pressed="view === 'liste'" @click="view = 'liste'"><List aria-hidden="true" />Liste</button>
         <button type="button" :class="{ 'is-selected': view === 'carte' }" :aria-pressed="view === 'carte'" @click="view = 'carte'"><MapIcon aria-hidden="true" />Carte</button>
       </div>
@@ -117,7 +117,7 @@ async function locate() {
           <ChevronDown aria-hidden="true" />
         </label>
       </div>
-      <p class="results-count" aria-live="polite">{{ results.length }} activité{{ results.length > 1 ? 's' : '' }} · distances depuis {{ originLabel }}</p>
+      <p class="results-count sr-only" aria-live="polite">{{ results.length }} activité{{ results.length > 1 ? 's' : '' }} · distances depuis {{ originLabel }}</p>
       <div class="result-list"><ActivityCard v-for="a in results" :key="a.id" :activity="a" variant="row" /></div>
     </template>
     <section v-else class="map-view" aria-label="Résultats sur la carte">

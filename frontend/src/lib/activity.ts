@@ -107,9 +107,9 @@ export interface Filters {
   level: LevelId
   sort: SortKey
 }
-export const defaultFilters = (): Filters => ({ query: '', disciplines: [], datePreset: 'toutes', day: '', radiusKm: 50, places: 'tous', level: 'tous', sort: 'proximite' })
+export const defaultFilters = (): Filters => ({ query: '', disciplines: [], datePreset: 'toutes', day: '', radiusKm: 5, places: 'tous', level: 'tous', sort: 'proximite' })
 export const activeFilterCount = (f: Filters) =>
-  f.disciplines.length + (f.datePreset !== 'toutes' || f.day ? 1 : 0) + (f.radiusKm < 50 ? 1 : 0) + (f.places !== 'tous' ? 1 : 0) + (f.level !== 'tous' ? 1 : 0)
+  f.disciplines.length + (f.datePreset !== 'toutes' || f.day ? 1 : 0) + (f.radiusKm !== 5 && f.radiusKm < 50 ? 1 : 0) + (f.places !== 'tous' ? 1 : 0) + (f.level !== 'tous' ? 1 : 0)
 
 const normalize = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
 function inDateWindow(a: Activity, f: Filters, now: Date) {

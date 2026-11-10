@@ -60,7 +60,7 @@ onBeforeUnmount(() => {
           </div>
         </fieldset>
         <fieldset class="filter-group"><legend>Date</legend>
-          <div class="chip-row">
+          <div class="chip-row chip-row--filter-presets">
             <button v-for="d in dates" :key="d.id" type="button" class="choice-chip" :class="{ 'is-selected': !draft.day && draft.datePreset === d.id }" :aria-pressed="!draft.day && draft.datePreset === d.id" @click="draft.datePreset = d.id; draft.day = ''">{{ d.label }}<Check v-if="!draft.day && draft.datePreset === d.id" class="choice-chip__check" aria-hidden="true" /></button>
           </div>
           <label class="field-label sr-only" for="filter-day">Choisir une date</label>
@@ -72,12 +72,12 @@ onBeforeUnmount(() => {
           <div class="range-scale" aria-hidden="true"><span>1 km</span><span>50 km</span></div>
         </fieldset>
         <fieldset class="filter-group"><legend>Nombre de places disponibles</legend>
-          <div class="chip-row">
+          <div class="chip-row chip-row--filter-presets">
             <button v-for="p in places" :key="p.id" type="button" class="choice-chip" :class="{ 'is-selected': draft.places === p.id }" :aria-pressed="draft.places === p.id" @click="draft.places = p.id">{{ p.label }}<Check v-if="draft.places === p.id" class="choice-chip__check" aria-hidden="true" /></button>
           </div>
         </fieldset>
         <fieldset class="filter-group"><legend>Niveau</legend>
-          <div class="chip-row">
+          <div class="chip-row chip-row--filter-presets">
             <button v-for="l in levels" :key="l.id" type="button" class="choice-chip" :class="{ 'is-selected': draft.level === l.id }" :aria-pressed="draft.level === l.id" @click="draft.level = l.id">{{ l.label }}<Check v-if="draft.level === l.id" class="choice-chip__check" aria-hidden="true" /></button>
           </div>
         </fieldset>
