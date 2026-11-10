@@ -106,6 +106,14 @@ const goalOptions = [
   { id: 'go-out', label: 'Sortir et se divertir', icon: Star },
   { id: 'inspiration', label: 'Être inspiré·e', icon: Lightbulb },
 ]
+const confettiPieces = Array.from({ length: 28 }, (_, index) => ({
+  id: index,
+  left: ((index * 37) % 100) + '%',
+  delay: ((index % 8) * 0.055) + 's',
+  duration: (1.55 + (index % 5) * 0.12) + 's',
+  drift: (((index % 7) - 3) * 2.8) + 'vw',
+  color: ['#FF0000', '#ff6573', '#ffadb5', '#ffd9dc'][index % 4],
+}))
 const photoInput = ref<HTMLInputElement | null>(null)
 const photoBusy = ref(false)
 const photoError = ref('')
@@ -461,7 +469,16 @@ onBeforeUnmount(() => { unsubscribe?.(); clearInterval(countdown); accountRevisi
         <span class="onboarding-step-number">{{ onboardingStep }}/3</span>
       </nav>
 
-      <section class="onboarding-intro" :class="`onboarding-intro--${screen}`">
+      <div v-if="screen === 'complete'" class="onboarding-confetti" aria-hidden="true">
+        <span
+          v-for="piece in confettiPieces"
+          :key="piece.id"
+          class="onboarding-confetti-piece"
+          :style="{ '--confetti-left': piece.left, '--confetti-delay': piece.delay, '--confetti-duration': piece.duration, '--confetti-drift': piece.drift, '--confetti-color': piece.color }"
+        ></span>
+      </div>
+
+      <section :key="screen" class="onboarding-intro" :class="`onboarding-intro--${screen}`">
         <div class="onboarding-intro-copy">
           <h1>{{ title }}</h1>
           <p v-if="screen === 'profile'">Rejoins la communauté NOVART et découvre des activités artistiques près de chez toi.</p>
