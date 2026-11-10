@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { computed, nextTick, ref } from 'vue'
-import { Bell, ChevronDown, ChevronRight, ChevronUp, LocateFixed, Search, SlidersHorizontal } from '@lucide/vue'
+import { Bell, ChevronDown, ChevronRight, ChevronUp, LocateFixed, SlidersHorizontal } from '@lucide/vue'
 import ActivityCard from '@/components/ActivityCard.vue'
 import ActivityMap from '@/components/ActivityMap.vue'
 import DisciplineIcon from '@/components/DisciplineIcon.vue'
 import MascotState from '@/components/MascotState.vue'
+import SearchBox from '@/components/SearchBox.vue'
+import type { Suggestion } from '@/lib/suggest'
 import { activityDistance, disciplines, formatDistance, isFull, isPast, placesLeft, sortActivities, startsAt } from '@/lib/activity'
 import { loadActivities, notifyPositionFallback, origin, originLabel, requestPosition, store, unreadNotifications } from '@/lib/store'
 import { navigate } from '@/lib/router'
@@ -37,6 +39,12 @@ const points = computed(() => byDistance.value.slice(0, 200).map((a, index) => (
 const chips = computed(() => disciplines.filter(d => d.id !== 'autre'))
 
 function search() { navigate('rechercher', { q: query.value.trim() }) }
+// Autocomplétion : une activité ouvre sa fiche, une discipline filtre la recherche, le reste devient la recherche.
+function pick(s: Suggestion) {
+  if (s.kind === 'activity') navigate(`activite/${encodeURIComponent(s.id)}`)
+  else if (s.kind === 'discipline') navigate('rechercher', { discipline: s.id })
+  else navigate('rechercher', { q: s.value })
+}
 async function select(id: string) {
   selectedId.value = id
   sheetOpen.value = false
@@ -69,9 +77,7 @@ function dragEnd(event: PointerEvent) {
 
     <div class="discover__top">
       <form class="search-row" role="search" @submit.prevent="search">
-        <label class="search-field search-field--floating"><Search aria-hidden="true" /><span class="sr-only">Rechercher</span>
-          <input v-model="query" type="search" placeholder="Rechercher une activité, un lieu…" enterkeyhint="search" />
-        </label>
+        <SearchBox v-model="query" floating @submit="search" @pick="pick" />
         <a href="#/rechercher?filtres=1" class="icon-button icon-button--floating" aria-label="Ouvrir les filtres"><SlidersHorizontal aria-hidden="true" /></a>
         <a href="#/notifications" class="icon-button icon-button--floating has-badge" :aria-label="unreadNotifications ? `Notifications, ${unreadNotifications} nouvelle${unreadNotifications > 1 ? 's' : ''}` : 'Notifications'"><Bell aria-hidden="true" /><span v-if="unreadNotifications" class="count-badge" aria-hidden="true">{{ unreadNotifications > 9 ? '9+' : unreadNotifications }}</span></a>
       </form>

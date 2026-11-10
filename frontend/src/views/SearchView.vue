@@ -1,13 +1,15 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue'
-import { CalendarDays, ChevronDown, List, LocateFixed, Map as MapIcon, MapPin, Palette, Search, SlidersHorizontal, Users, X } from '@lucide/vue'
+import { CalendarDays, ChevronDown, List, LocateFixed, Map as MapIcon, MapPin, Palette, Search, SlidersHorizontal, Users } from '@lucide/vue'
 import ActivityCard from '@/components/ActivityCard.vue'
 import ActivityMap from '@/components/ActivityMap.vue'
 import FilterSheet from '@/components/FilterSheet.vue'
 import MascotState from '@/components/MascotState.vue'
+import SearchBox from '@/components/SearchBox.vue'
+import type { Suggestion } from '@/lib/suggest'
 import { activeFilterCount, activityDistance, defaultFilters, disciplineLabel, filterActivities, formatDistance, type Filters, type SortKey } from '@/lib/activity'
 import { loadActivities, origin, originLabel, requestPosition, store } from '@/lib/store'
-import { useRoute } from '@/lib/router'
+import { navigate, useRoute } from '@/lib/router'
 
 // US-04 / US-05 : recherche texte, filtres, tri, vue liste ou carte.
 const route = useRoute()
@@ -48,6 +50,12 @@ async function locate() {
   if (!ok) locateError.value = 'Position indisponible : les distances sont calculées depuis ' + originLabel.value + '.'
   else filters.sort = 'proximite'
 }
+// Autocomplétion : une activité ouvre sa fiche ; une discipline devient un filtre ; le reste, la recherche.
+function pick(s: Suggestion) {
+  if (s.kind === 'activity') navigate(`activite/${encodeURIComponent(s.id)}`)
+  else if (s.kind === 'discipline') Object.assign(filters, { query: '', disciplines: [s.id] })
+  else filters.query = s.value
+}
 </script>
 
 <template>
@@ -59,10 +67,7 @@ async function locate() {
         <button type="button" :class="{ 'is-selected': view === 'carte' }" :aria-pressed="view === 'carte'" @click="view = 'carte'"><MapIcon aria-hidden="true" />Carte</button>
       </div>
       <form class="search-row" role="search" @submit.prevent>
-        <label class="search-field"><Search aria-hidden="true" /><span class="sr-only">Rechercher</span>
-          <input v-model="filters.query" type="search" placeholder="Rechercher une activité, un lieu, une discipline…" enterkeyhint="search" />
-          <button v-if="filters.query" type="button" class="search-field__clear" aria-label="Effacer la recherche" @click="filters.query = ''"><X aria-hidden="true" /></button>
-        </label>
+        <SearchBox v-model="filters.query" placeholder="Rechercher une activité, un lieu, une discipline…" clearable @pick="pick" />
         <button type="button" class="icon-button" :aria-label="`Ouvrir les filtres${activeCount ? ` (${activeCount} actifs)` : ''}`" @click="sheetOpen = true"><SlidersHorizontal aria-hidden="true" /><span v-if="activeCount" class="icon-button__count">{{ activeCount }}</span></button>
       </form>
       <div class="chip-scroller chip-scroller--tight" role="group" aria-label="Filtres rapides">

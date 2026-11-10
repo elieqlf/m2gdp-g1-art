@@ -28,6 +28,8 @@ Distance : depuis la **position de l'appareil**, demandée à l'ouverture de l'a
 | CA4 | Tri par proximité, date ou popularité | `activity.test.ts` |
 | CA5 | Bascule Liste / Carte (Leaflet) avec fiche de l'activité sélectionnée | `scenario.spec.ts` US-05 |
 | CA6 | Aucun résultat : mascotte, « Modifier mes filtres », « Voir toutes les activités » | idem |
+| CA7 | Autocomplétion dès 2 lettres (Découvrir et Rechercher), sans accents ni casse, partie tapée surlignée : activités à venir (une date : ouvre la fiche ; plusieurs : recherche du titre), disciplines et pratiques (avec le nombre d'activités), lieux et quartiers | `suggest.test.ts`, `scenario.spec.ts` |
+| CA8 | Clavier et lecteur d'écran : modèle combobox WAI-ARIA (flèches, Entrée, Échap, nombre de suggestions annoncé) ; Entrée sans choix lance la recherche | `scenario.spec.ts` |
 
 Les activités passées ne sont jamais proposées. La recherche se fait dans le navigateur : quelques centaines d'activités, pas d'index composite Firestore.
 

@@ -49,7 +49,7 @@ test('captures de l’application pour le site vitrine', async ({ page }, testIn
   await shoot(page, 'decouvrir')
 
   await page.goto('/#/rechercher')
-  await expect(page.getByRole('searchbox')).toBeVisible()
+  await expect(page.getByRole('combobox', { name: 'Rechercher' })).toBeVisible()
   await shoot(page, 'rechercher')
   await page.goto('/#/rechercher?filtres=1')
   await expect(page.getByRole('dialog')).toBeVisible()

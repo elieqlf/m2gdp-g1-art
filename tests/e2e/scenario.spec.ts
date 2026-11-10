@@ -58,7 +58,7 @@ test('US-07 : créer une activité en quatre étapes puis la retrouver', async (
   await expect(page.getByRole('link', { name: 'Modifier' })).toBeVisible()
   // Visible dans la recherche et dans « Mes activités ».
   await page.getByRole('link', { name: 'Rechercher' }).click()
-  await page.getByRole('searchbox').fill('quais du Rhône')
+  await page.getByRole('combobox', { name: 'Rechercher' }).fill('quais du Rhône')
   await expect(page.getByRole('link', { name: 'Aquarelle sur les quais du Rhône' })).toBeVisible()
   await page.goto('/#/mes-activites')
   await expect(page.getByRole('heading', { name: /J’organise/ })).toBeVisible()
@@ -67,7 +67,7 @@ test('US-07 : créer une activité en quatre étapes puis la retrouver', async (
 test('US-04/05/09/11/12 : rechercher, filtrer, s’inscrire et écrire au groupe', async ({ page }, testInfo) => {
   const target = pickActivity(a => a.participantIds.length < (a as { capacity: number }).capacity && !a.participantIds.includes(ME.uid) && a.organizerId !== ME.uid)
   await openApp(page, 'app', '#/rechercher')
-  await page.getByRole('searchbox').fill(target.title)
+  await page.getByRole('combobox', { name: 'Rechercher' }).fill(target.title)
   await page.getByRole('button', { name: /Ouvrir les filtres/ }).click()
   const sheet = page.getByRole('dialog', { name: 'Filtres' })
   await expect(sheet).toBeVisible()
@@ -205,6 +205,42 @@ test('Contact : depuis le groupe, toucher un prénom ouvre la conversation priv�
   await expect(page).toHaveURL(new RegExp(`#/messages/${author.uid}`))
   await expect(page.getByRole('heading', { name: `${author.firstName} ${author.lastName}` })).toBeVisible()
   await expect(page.getByRole('link', { name: `À propos de « ${group.title} »` })).toBeVisible()
+})
+
+test('Recherche : autocomplétion des activités, disciplines et lieux', async ({ page }, testInfo) => {
+  const target = pickActivity(a => a.title.length > 10)
+  await openApp(page, 'app', '#/decouvrir')
+  const box = page.getByRole('combobox', { name: 'Rechercher' })
+  const list = page.getByRole('listbox', { name: 'Suggestions de recherche' })
+  // Une seule lettre : pas encore de suggestions.
+  await box.fill(target.title.slice(0, 1))
+  await expect(list).toBeHidden()
+  // Activité : au clavier (flèche puis Entrée), ouverture directe de la fiche.
+  await box.fill(target.title.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''))
+  await expect(list.getByRole('option').first()).toContainText(target.title)
+  await expect(box).toHaveAttribute('aria-expanded', 'true')
+  await capture(page, testInfo, 'autocompletion')
+  await box.press('ArrowDown')
+  await expect(box).toHaveAttribute('aria-activedescendant', /option-0$/)
+  await box.press('Enter')
+  await expect(page).toHaveURL(new RegExp(`#/activite/${target.id}$`))
+  await expect(page.getByRole('heading', { name: target.title, level: 1 })).toBeVisible()
+  // Discipline : ouvre la recherche filtrée.
+  await page.goto('/#/decouvrir')
+  await box.fill('dans')
+  await expect(list.getByRole('option', { name: /^Danse\s*\d+ activités? à venir/ })).toBeVisible()
+  await box.press('Escape')
+  await expect(list).toBeHidden()
+  await box.press('ArrowDown')
+  await expect(list).toBeVisible()
+  await list.getByRole('option', { name: /^Danse\s*\d+ activités? à venir/ }).click()
+  await expect(page).toHaveURL(/#\/rechercher\?discipline=danse/)
+  // Lieu, depuis l'écran Rechercher : devient la recherche.
+  await page.goto('/#/rechercher')
+  await box.fill('croix-r')
+  await list.getByRole('option', { name: /^Croix-Rousse.*Quartier/ }).click()
+  await expect(box).toHaveValue('Croix-Rousse')
+  await expect(page.getByRole('heading', { name: 'Résultats pour « Croix-Rousse »' })).toBeVisible()
 })
 
 test('US-08 : modifier son activité sans descendre sous le nombre d’inscrits, puis la supprimer', async ({ page }, testInfo) => {

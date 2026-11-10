@@ -599,3 +599,20 @@
 .cover-picker__upload { margin-top: .8rem; }
 .cover-picker__upload.is-selected { border-color: var(--primary); background: var(--tint); }
 .field-hint { margin: .6rem 0 .4rem; color: color-mix(in srgb, var(--foreground) 65%, transparent); font-size: .85rem; }
+
+/* Autocomplétion de la recherche */
+/* La liste prend toute la largeur de la barre (champ + boutons Filtres et Notifications). */
+.search-row:has(.search-box) { position: relative; }
+.search-box { flex: 1; min-width: 0; }
+.search-box .search-field { width: 100%; }
+.search-suggest { position: absolute; z-index: 60; inset: calc(100% + .4rem) 0 auto; max-height: min(60vh, 26rem); overflow-y: auto; margin: 0; padding: .4rem; list-style: none; border-radius: 1.1rem; background: var(--card); box-shadow: 0 14px 36px rgb(0 0 0 / .16); border: 1px solid var(--line); }
+.search-suggest__group { padding: .55rem .7rem .25rem; font-size: .72rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: color-mix(in srgb, var(--foreground) 60%, transparent); }
+.search-suggest__option { display: flex; align-items: center; gap: .7rem; padding: .55rem .6rem; border-radius: .8rem; cursor: pointer; }
+.search-suggest__option.is-active { background: var(--tint); }
+.search-suggest__icon { display: grid; place-items: center; flex: none; width: 2.2rem; height: 2.2rem; border-radius: .7rem; background: var(--tint); color: var(--primary); }
+.search-suggest__icon svg { width: 1.1rem; height: 1.1rem; }
+.search-suggest__text { display: grid; min-width: 0; }
+.search-suggest__label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink); font-weight: 500; }
+.search-suggest__label mark { background: none; color: var(--primary); font-weight: 700; }
+.search-suggest small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: .8rem; color: color-mix(in srgb, var(--foreground) 70%, transparent); }
+.discover__top:focus-within { z-index: 7; } /* suggestions de recherche au-dessus du panneau « Autour de toi » */
