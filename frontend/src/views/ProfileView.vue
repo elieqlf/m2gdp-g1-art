@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { Bell, CalendarDays, ChevronRight, FileText, Heart, LogOut, MessageCircleMore, Pencil, Settings, Shield, Sparkles, User, Users } from '@lucide/vue'
+import { Bell, CalendarDays, ChevronRight, CirclePlus, FileText, Heart, LogOut, MessageCircleMore, Pencil, Settings, Shield, Sparkles, User, Users } from '@lucide/vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import { disciplineLabel, isPast } from '@/lib/activity'
 import { displayName, loadActivities, store, uid, unreadNotifications } from '@/lib/store'
@@ -18,7 +18,7 @@ const statsReady = computed(() => store.activitiesStatus === 'ready')
 const LANDING = 'https://novart-109bf.web.app'
 const groups = [
   [{ label: 'Mes informations', href: '#/profil/modifier', icon: User }, { label: 'Mes centres d’intérêt', href: '#/profil/modifier?section=interets', icon: Sparkles }, { label: 'Mes favoris', href: '#/favoris', icon: Heart }],
-  [{ label: 'Notifications', href: '#/notifications', icon: Bell, badge: true }, { label: 'Mes activités', href: '#/mes-activites', icon: CalendarDays }, { label: 'Mes conversations', href: '#/conversations', icon: MessageCircleMore }, { label: 'Communauté', href: '#/communaute', icon: Users }],
+  [{ label: 'Notifications', href: '#/notifications', icon: Bell, badge: true }, { label: 'Mes activités', href: '#/mes-activites', icon: CalendarDays }, { label: 'Créer une activité', href: '#/creer', icon: CirclePlus }, { label: 'Mes conversations', href: '#/conversations', icon: MessageCircleMore }, { label: 'Communauté', href: '#/communaute', icon: Users }],
   [{ label: 'Confidentialité', href: `${LANDING}/legal.html#confidentialite`, icon: Shield, external: true }, { label: 'Conditions d’utilisation', href: `${LANDING}/legal.html#cgu`, icon: FileText, external: true }],
 ]
 function logout() { busy.value = true; emit('logout') }

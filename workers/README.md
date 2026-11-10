@@ -6,8 +6,11 @@
 | `POST /auth/email-link` `{ email, continueUrl }` | Envoyer l'e-mail de connexion NOVART |
 | `POST /uploads/cover` (corps : l'image, `Authorization: Bearer <jeton Firebase>`) | Photo de couverture d'une activité, stockée dans R2 ; renvoie `{ url }` |
 | `GET /files/covers/…` | Lecture publique d'une photo (cache navigateur d'un an) |
+| `POST /ai/activity-ideas` `{ keywords, discipline?, practices? }` (`Authorization: Bearer <jeton Firebase>`) | Trois idées d'activités culturelles proposées par Mistral AI ; renvoie `{ ideas }` |
 
 **Photos (R2)** : seuls les membres connectés peuvent envoyer (jeton Firebase vérifié avec les clés publiques de Google : signature, projet, expiration) ; l'appli recadre et réduit l'image (16:10, 1600 × 1000 px, WebP) ; le Worker revérifie le type réel du fichier (JPEG, PNG ou WebP), la taille (2 Mo max) et limite à 30 envois par heure et par membre (D1, empreinte de l'uid). Les photos remplacées ne sont pas encore supprimées de R2.
+
+**Idées par IA (Mistral)** : réservé aux membres connectés (jeton Firebase vérifié), 20 demandes par heure et par membre (D1, empreinte de l'uid). La clé `MISTRAL_API_KEY` est un secret Cloudflare : l'appli ne la voit jamais. Le Worker borne la réponse du modèle (disciplines et niveaux connus, longueurs du formulaire) ; les mots-clés ne sont ni stockés ni journalisés. Modèle : `MISTRAL_MODEL` dans `wrangler.toml` (`mistral-small-latest`).
 
 ```mermaid
 sequenceDiagram
@@ -109,3 +112,15 @@ Suivi des envois : Brevo > *Transactional > Logs*. Journaux du Worker en direct 
 ## Développement local
 
 `workers/.dev.vars` (jamais commité) avec `FIREBASE_SERVICE_ACCOUNT`, `BREVO_API_KEY`, `SENDER_EMAIL`, puis `npm run worker:dev` et, dans `frontend/.env.local`, `VITE_AUTH_API_URL=http://localhost:8787`.
+
+
+### Idées d'activités par IA (Mistral)
+
+1. Créer une clé sur [console.mistral.ai](https://console.mistral.ai) (*API Keys > Create new key*). La copier, elle ne s'affiche qu'une fois.
+2. La déclarer comme secret du Worker (la commande demande la valeur, à coller dans le terminal, jamais dans le dépôt ni dans une conversation) :
+   ```bash
+   npx wrangler secret put MISTRAL_API_KEY --config workers/wrangler.toml
+   ```
+3. Redéployer le Worker : `npx wrangler deploy --config workers/wrangler.toml`.
+
+Sans cette clé, la route répond 503 et l'appli affiche « Les idées par IA ne sont pas encore activées ».

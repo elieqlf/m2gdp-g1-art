@@ -1,6 +1,6 @@
 import { addDoc, arrayRemove, arrayUnion, collection, deleteDoc, doc, getDoc, getDocs, onSnapshot, orderBy, query, runTransaction, serverTimestamp, updateDoc, where, type DocumentData } from 'firebase/firestore'
 import { db } from './firebase'
-import { canJoinDirectly, defaultCover, type Activity, type ActivityDraft, type Offer } from '@/lib/activity'
+import { canJoinDirectly, coverOf, defaultCover, type Activity, type ActivityDraft, type Offer } from '@/lib/activity'
 import * as queue from '@/lib/waitlist'
 
 export interface Author { uid: string; name: string; photo?: string }
@@ -10,7 +10,8 @@ export class ActivityFullError extends Error { constructor() { super('Cette acti
 const toActivity = (id: string, data: DocumentData): Activity => {
   const discipline = typeof data.discipline === 'string' ? data.discipline : 'autre'
   const savedCover = typeof data.coverUrl === 'string' ? data.coverUrl : ''
-  const coverUrl = !savedCover || /^\/images\/activities\/[^/]+-\d\.svg$/i.test(savedCover) ? defaultCover(discipline) : savedCover
+  // Illustrations NOVART (anciennes variantes rouges ou photos par discipline) : version claire actuelle.
+  const coverUrl = !savedCover || savedCover.startsWith('/images/activities/') ? defaultCover(discipline) : savedCover
   return {
     ...data,
     id,
@@ -41,6 +42,7 @@ export async function getActivity(id: string): Promise<Activity | null> {
 export async function createActivity(draft: ActivityDraft, organizer: Author): Promise<Activity> {
   const activity = {
     ...draft,
+    coverUrl: coverOf(draft),
     participantIds: [] as string[],
     waitlistIds: [] as string[],
     offer: null,
@@ -57,7 +59,7 @@ export async function createActivity(draft: ActivityDraft, organizer: Author): P
 
 // US-08 : modification et suppression par l'organisateur.
 export async function updateActivity(id: string, draft: ActivityDraft) {
-  await updateDoc(doc(db, 'activities', id), { ...draft, updatedAtMs: Date.now() })
+  await updateDoc(doc(db, 'activities', id), { ...draft, coverUrl: coverOf(draft), updatedAtMs: Date.now() })
 }
 export const deleteActivity = (id: string) => deleteDoc(doc(db, 'activities', id))
 

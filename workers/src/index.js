@@ -8,17 +8,20 @@
 // POST /uploads/cover  (corps : l'image ; en-tête Authorization: Bearer <jeton Firebase>)
 //   Photo de couverture d'une activité, stockée dans Cloudflare R2. Renvoie { url }.
 // GET /files/covers/…  Lecture publique des photos.
+// POST /ai/activity-ideas  { keywords, discipline?, practices? } (en-tête Authorization: Bearer <jeton Firebase>)
+//   Trois idées d'activités culturelles proposées par Mistral. Renvoie { ideas }.
 // GET /health
 //
 // Secrets (jamais dans le dépôt) : FIREBASE_SERVICE_ACCOUNT (fichier JSON entier),
-// BREVO_API_KEY, SENDER_EMAIL. Variables publiques : wrangler.toml.
+// BREVO_API_KEY, SENDER_EMAIL, MISTRAL_API_KEY. Variables publiques : wrangler.toml.
 
 import { ConfigError, readServiceAccount, signInLink, UpstreamError } from './google.js'
 import { sendEmail } from './brevo.js'
 import { signInEmail } from './email-template.js'
 import { checkAndRecord } from './limits.js'
 import { AuthError, verifyIdToken } from './auth.js'
-import { coverKey, isAllowedType, matchesType, MAX_BYTES, serveFile, uploadQuota } from './files.js'
+import { coverKey, isAllowedType, matchesType, MAX_BYTES, memberQuota, serveFile, uploadQuota } from './files.js'
+import { activityIdeas, AI_LIMIT, AiConfigError, AiUpstreamError, readRequest } from './ai.js'
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const origins = env => (env.ALLOWED_ORIGINS || '').split(',').map(o => o.trim()).filter(Boolean)
@@ -87,6 +90,35 @@ async function uploadCover(request, env, headers) {
   return json({ url: new URL(`/files/${key}`, request.url).toString() }, 201, headers)
 }
 
+async function aiIdeas(request, env, headers) {
+  const origin = request.headers.get('origin') || ''
+  if (!origins(env).includes(origin)) return json({ error: 'origin-not-allowed' }, 403)
+  const projectId = env.FIREBASE_PROJECT_ID
+  if (!projectId || !env.MISTRAL_API_KEY) return json({ error: 'not-configured' }, 503, headers)
+  // Réservé aux membres connectés : la clé Mistral est payante à l'usage.
+  let uid
+  try { uid = await verifyIdToken((request.headers.get('authorization') || '').replace(/^Bearer\s+/i, ''), projectId) }
+  catch (error) {
+    if (error instanceof AuthError) return json({ error: 'unauthenticated' }, 401, headers)
+    throw error
+  }
+  let body
+  try { body = await request.json() } catch { return json({ error: 'invalid-body' }, 400, headers) }
+  const input = readRequest(body)
+  if (input.error) return json({ error: input.error }, 400, headers)
+  const wait = await memberQuota(env.DB, 'ai', uid, env.HASH_SALT || projectId, AI_LIMIT)
+    .catch(error => { console.warn('D1 indisponible, demande acceptée sans limite :', error.message); return 0 })
+  if (wait) return json({ error: 'too-many-requests', retryAfter: wait }, 429, { ...headers, 'retry-after': String(wait) })
+  try { return json({ ideas: await activityIdeas(env, input) }, 200, headers) }
+  catch (error) {
+    // Les mots-clés ne sont jamais journalisés.
+    console.error('Idées IA impossibles :', error.message)
+    if (error instanceof AiConfigError) return json({ error: 'not-configured' }, 503, headers)
+    if (error instanceof AiUpstreamError) return json({ error: 'ai-failed' }, 502, headers)
+    throw error
+  }
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url)
@@ -98,6 +130,12 @@ export default {
       if (request.method !== 'POST') return json({ error: 'method-not-allowed' }, 405, headers)
       try { return await uploadCover(request, env, headers) }
       catch (error) { console.error('Envoi de photo impossible :', error.message); return json({ error: 'internal' }, 500, headers) }
+    }
+    if (url.pathname === '/ai/activity-ideas') {
+      if (request.method === 'OPTIONS') return new Response(null, { status: Object.keys(headers).length ? 204 : 403, headers })
+      if (request.method !== 'POST') return json({ error: 'method-not-allowed' }, 405, headers)
+      try { return await aiIdeas(request, env, headers) }
+      catch (error) { console.error('Idées IA impossibles :', error.message); return json({ error: 'internal' }, 500, headers) }
     }
     if (url.pathname === '/auth/email-link') {
       if (request.method === 'OPTIONS') return new Response(null, { status: Object.keys(headers).length ? 204 : 403, headers })

@@ -9,7 +9,7 @@ export type Mode = 'request' | 'profile' | 'app' | 'app-no-location'
 export const ME = { uid: 'preview-user', email: 'preview@example.com' }
 
 interface DemoUser { uid: string; firstName: string; lastName: string; photoUrl?: string; bio?: string; interests?: string[] }
-interface DemoActivity { id: string; participantIds: string[]; organizerId: string; date: string; title: string; capacity: number; waitlistIds?: string[]; offer?: { uid: string; expiresAtMs: number; offeredAtMs?: number } | null }
+interface DemoActivity { id: string; participantIds: string[]; organizerId: string; organizerName?: string; date: string; title: string; capacity: number; waitlistIds?: string[]; offer?: { uid: string; expiresAtMs: number; offeredAtMs?: number } | null }
 interface DemoMessage { activityId: string }
 
 export function demoData() {
@@ -183,6 +183,20 @@ export const uploadCover = async (image, token) => {
     if (route.request().method() === 'POST') { uploaded = route.request().postDataBuffer() ?? undefined; return route.fulfill({ status: 201, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: JSON.stringify({ url: 'https://api.novart.test/files/covers/preview-user/1-0123456789ab.webp' }) }) }
     return route.fulfill({ status: uploaded ? 200 : 404, contentType: 'image/webp', body: uploaded ?? '' })
   })
+  // Idées par IA simulées (le vrai service appelle Mistral via le Worker).
+  await page.route('**/src/services/ai.ts*', route => route.fulfill({ contentType: 'application/javascript', body: `
+export class AiError extends Error { constructor(code, retryAfter = 0) { super(code); this.code = code; this.retryAfter = retryAfter; } }
+export const aiEnabled = () => true;
+export const toIdeas = raw => raw.ideas;
+export const activityIdeas = async ({ keywords, discipline }, token) => {
+  if (token !== 'jeton-de-test') throw new AiError('unauthenticated');
+  await new Promise(resolve => setTimeout(resolve, 150));
+  const d = discipline || 'peinture';
+  return [
+    { title: 'Aquarelle et carnets au parc', discipline: d, subDiscipline: d === 'peinture' ? 'Aquarelle' : '', description: 'Idée pour « ' + keywords + ' » : on peint ensemble en plein air, chacun à son rythme, puis on partage ses carnets.', level: 'debutant', equipment: 'Carnet, pinceaux et godet d’eau', durationHours: 2 },
+    { title: 'Portraits croisés en atelier', discipline: d, subDiscipline: '', description: 'Chacun peint le portrait de son voisin en 20 minutes, puis on change.', level: 'tous', equipment: '', durationHours: 3 },
+  ];
+};` }))
   await page.route('**/src/services/places.ts*', route => route.fulfill({ contentType: 'application/javascript', body: 'export const suggestAddresses = async () => []; export const resolveAddress = async () => null;' }))
   await page.route('**/src/services/weather.ts*', route => route.fulfill({ contentType: 'application/javascript', body: "export const dayForecast = async () => ({ label: 'Éclaircies', icon: 'cloud-sun', min: 8, max: 14, rain: 10 });" }))
   // Le fond de carte OpenStreetMap n'est pas nécessaire aux vérifications.

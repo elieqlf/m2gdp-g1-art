@@ -88,10 +88,10 @@ async function send() {
 
 <template>
   <div class="page page--chat">
-    <div class="topbar topbar--chat">
+    <header class="chat-header topbar--chat">
       <button type="button" class="icon-button icon-button--plain" aria-label="Retour" @click="goBack('conversations?onglet=privees')"><ChevronLeft aria-hidden="true" /></button>
       <span class="chat-person"><UserAvatar :name="name" :photo="other?.photoUrl" :user-id="otherId" size="md" /><span><h1>{{ name }}</h1><small v-if="organizes">Organise des activités</small></span></span>
-    </div>
+    </header>
     <MascotState v-if="self" title="C’est toi !" text="Tu ne peux pas t’écrire à toi-même."><a href="#/conversations" class="btn btn--primary">Mes conversations</a></MascotState>
     <template v-else>
       <p class="private-note"><LockKeyhole aria-hidden="true" />Conversation privée : seuls {{ name.split(' ')[0] }} et toi pouvez la lire.</p>

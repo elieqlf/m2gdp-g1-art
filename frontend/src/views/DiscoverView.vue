@@ -7,8 +7,8 @@ import DisciplineIcon from '@/components/DisciplineIcon.vue'
 import MascotState from '@/components/MascotState.vue'
 import SearchBox from '@/components/SearchBox.vue'
 import type { Suggestion } from '@/lib/suggest'
-import { disciplines, isFull, isPast, placesLeft, sortActivities, startsAt } from '@/lib/activity'
-import { loadActivities, notifyPositionFallback, origin, originLabel, requestPosition, store, unreadNotifications } from '@/lib/store'
+import { disciplines, isFull, isMember, isPast, placesLeft, sortActivities, startsAt } from '@/lib/activity'
+import { loadActivities, notifyPositionFallback, origin, originLabel, requestPosition, store, uid, unreadNotifications } from '@/lib/store'
 import { navigate } from '@/lib/router'
 
 // US-03 : accueil « Découvrir ». La carte s'affiche dès l'ouverture (à la manière
@@ -57,6 +57,8 @@ const highlight = computed(() => {
 })
 // Repères par discipline, regroupés quand ils se chevauchent ; la distance est sur la carte de l'activité.
 const points = computed(() => byDistance.value.slice(0, 200).map(a => ({ id: a.id, lat: a.lat, lng: a.lng, title: a.title, discipline: a.discipline })))
+// Mes prochaines activités (inscrit ou organisateur), en tête du panneau ouvert.
+const myNext = computed(() => store.activities.filter(a => !isPast(a, now) && (isMember(a, uid.value) || a.organizerId === uid.value)).sort((a, b) => startsAt(a).getTime() - startsAt(b).getTime()).slice(0, 3))
 const chips = computed(() => disciplines.filter(d => d.id !== 'autre'))
 
 function search() { navigate('rechercher', { q: query.value.trim() }) }
@@ -138,6 +140,11 @@ function dragEnd(event: PointerEvent) {
             <ActivityCard v-for="a in peek" :key="a.id" :activity="a" variant="row" :class="{ 'is-highlighted': a.id === selectedId }" />
           </div>
           <template v-else>
+            <section v-if="myNext.length" class="feed-section feed-section--first" aria-labelledby="my-next-title">
+              <header class="section-header"><h2 id="my-next-title" class="section-title">Tes prochaines activités</h2><a href="#/mes-activites" class="section-link">Tout voir<ChevronRight aria-hidden="true" /></a></header>
+              <div class="agenda-list"><ActivityCard v-for="a in myNext" :key="a.id" :activity="a" variant="agenda" /></div>
+            </section>
+            <h2 v-if="myNext.length" class="section-title discover-sheet__subtitle">Autour de toi</h2>
             <div class="result-list"><ActivityCard v-for="a in nearby.slice(0, 5)" :key="a.id" :activity="a" variant="row" :class="{ 'is-highlighted': a.id === selectedId }" /></div>
             <a href="#/rechercher" class="section-link discover-sheet__more">Voir toutes les activités<ChevronRight aria-hidden="true" /></a>
             <section v-if="forYou.length" class="feed-section" aria-labelledby="for-you-title">

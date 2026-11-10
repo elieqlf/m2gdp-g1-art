@@ -16,16 +16,21 @@ export function matchesType(buffer, type) {
   return false
 }
 
-/** Nombre de secondes à attendre si la personne a trop envoyé de photos, sinon 0. */
-export async function uploadQuota(db, uid, salt, now = Date.now()) {
+/**
+ * Quota par membre (table D1 upload_requests, empreinte salée de « type:uid », effacée après 1 h).
+ * Renvoie le nombre de secondes à attendre si la limite est atteinte, sinon 0 (et compte la demande).
+ */
+export async function memberQuota(db, kind, uid, salt, limit, now = Date.now()) {
   if (!db) return 0
-  const hash = await fingerprint(`upload:${uid}`, salt)
-  await db.prepare('DELETE FROM upload_requests WHERE created_at < ?').bind(now - UPLOAD_LIMIT.windowMs).run()
-  const row = await db.prepare('SELECT COUNT(*) AS n, MIN(created_at) AS first FROM upload_requests WHERE uid_hash = ? AND created_at >= ?').bind(hash, now - UPLOAD_LIMIT.windowMs).first()
-  if (Number(row?.n ?? 0) >= UPLOAD_LIMIT.max) return Math.max(1, Math.ceil((Number(row.first) + UPLOAD_LIMIT.windowMs - now) / 1000))
+  const hash = await fingerprint(`${kind}:${uid}`, salt)
+  await db.prepare('DELETE FROM upload_requests WHERE created_at < ?').bind(now - 60 * 60_000).run()
+  const row = await db.prepare('SELECT COUNT(*) AS n, MIN(created_at) AS first FROM upload_requests WHERE uid_hash = ? AND created_at >= ?').bind(hash, now - limit.windowMs).first()
+  if (Number(row?.n ?? 0) >= limit.max) return Math.max(1, Math.ceil((Number(row.first) + limit.windowMs - now) / 1000))
   await db.prepare('INSERT INTO upload_requests (uid_hash, created_at) VALUES (?, ?)').bind(hash, now).run()
   return 0
 }
+/** Nombre de secondes à attendre si la personne a trop envoyé de photos, sinon 0. */
+export const uploadQuota = (db, uid, salt, now = Date.now()) => memberQuota(db, 'upload', uid, salt, UPLOAD_LIMIT, now)
 
 export function coverKey(uid, type, now = Date.now()) {
   const random = [...crypto.getRandomValues(new Uint8Array(6))].map(n => n.toString(16).padStart(2, '0')).join('')

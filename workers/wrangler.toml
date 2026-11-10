@@ -25,8 +25,11 @@ APP_URL = "https://novart-app.web.app"
 SENDER_NAME = "NOVART"
 # Projet Firebase dont les jetons de connexion sont acceptés pour l'envoi de photos.
 FIREBASE_PROJECT_ID = "novart-109bf"
+# Modèle Mistral des idées d'activités (POST /ai/activity-ideas).
+MISTRAL_MODEL = "mistral-small-latest"
 # Les secrets se déclarent avec (voir workers/README.md) :
 #   npx wrangler secret put FIREBASE_SERVICE_ACCOUNT < /chemin/hors-depot/cle.json
 #   npx wrangler secret put BREVO_API_KEY
 #   npx wrangler secret put SENDER_EMAIL
+#   npx wrangler secret put MISTRAL_API_KEY
 # et se lisent en local via workers/.dev.vars (jamais commité)

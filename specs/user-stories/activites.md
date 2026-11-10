@@ -30,6 +30,7 @@ Distance : depuis la **position de l'appareil**, demandée à l'ouverture de l'a
 | CA6 | Aucun résultat : mascotte, « Modifier mes filtres », « Voir toutes les activités » | idem |
 | CA7 | Autocomplétion dès 2 lettres (Découvrir et Rechercher), sans accents ni casse, partie tapée surlignée : activités à venir (une date : ouvre la fiche ; plusieurs : recherche du titre), disciplines et pratiques (avec le nombre d'activités), lieux et quartiers | `suggest.test.ts`, `scenario.spec.ts` |
 | CA8 | Clavier et lecteur d'écran : modèle combobox WAI-ARIA (flèches, Entrée, Échap, nombre de suggestions annoncé) ; Entrée sans choix lance la recherche | `scenario.spec.ts` |
+| CA9 | Barre de catégories au-dessus des suggestions (Tout, Activités, Disciplines, Lieux, avec leur nombre) : une catégorie masque les autres et leurs titres | `scenario.spec.ts` |
 
 Les activités passées ne sont jamais proposées. La recherche se fait dans le navigateur : quelques centaines d'activités, pas d'index composite Firestore.
 
@@ -43,8 +44,9 @@ Lien direct `#/activite/<id>` : l'activité est lue dans Firestore si la liste n
 | # | Critère d'acceptation | Test |
 |---|---|---|
 | CA1 | Étape 1 : titre (60 car.), discipline, sous-discipline facultative, description (500), niveau, matériel (300) ; modèles d'activités pour pré-remplir | `scenario.spec.ts` US-07 |
-| CA2 | Étape 2 : photo principale obligatoire choisie dans la galerie ou les fichiers, avec aperçu, remplacement et retrait ; recadrée 16:10, réduite et stockée dans Cloudflare R2 (enregistrée dans le document si l'API n'est pas configurée) ; aussi dans « Modifier » | idem, `uploads.test.ts`, `workers/test/uploads.test.mjs` |
-| CA3 | Étape 3 : lieux suggérés (127 lieux de la Métropole, selon la discipline et la distance) ou adresse Google Places ; date, heures, places (2 à 100) | idem |
+| CA2 | Étape 2 : photo principale facultative (sans photo : illustration NOVART claire de la discipline) choisie dans la galerie ou les fichiers, avec aperçu, remplacement et retrait ; recadrée 16:10, réduite et stockée dans Cloudflare R2 (enregistrée dans le document si l'API n'est pas configurée) ; aussi dans « Modifier » | idem, `uploads.test.ts`, `workers/test/uploads.test.mjs` |
+| CA3 | Étape 3 : le lieu se choisit dans un panneau qui s'ouvre au toucher et se referme (bouton, Échap, choix d'un lieu) : lieux suggérés filtrables (127 lieux de la Métropole, selon la discipline et la distance) ou adresse Google Places ; date, heures, places (2 à 100) | idem |
+| CA1b | Sous le choix de la discipline : « Trouver une idée avec l'IA » (Mistral via le Worker) ; trois idées à partir de mots-clés, reprises dans le formulaire au choix | `scenario.spec.ts`, `ai.test.ts`, `workers/test/ai.test.mjs` |
 | CA4 | Étape 4 : aperçu, retour à une étape en touchant une ligne, « Publier l'activité » | idem |
 | CA5 | Erreurs affichées sous chaque champ ; on ne passe pas à l'étape suivante | idem, `activity.test.ts` |
 | CA6 | Brouillon conservé sur l'appareil (fermeture, rechargement), « Recommencer » ; supprimé après publication | — |

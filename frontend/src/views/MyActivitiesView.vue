@@ -23,7 +23,7 @@ const counts = computed(() => {
 
 <template>
   <div class="page">
-    <div class="topbar topbar--end"><a href="#/rechercher" class="icon-button icon-button--plain" aria-label="Rechercher une activité"><Search aria-hidden="true" /></a><a href="#/creer" class="icon-button icon-button--primary" aria-label="Créer une activité"><Plus aria-hidden="true" /></a></div>
+    <div class="topbar topbar--end"><a href="#/rechercher" class="icon-button icon-button--plain" aria-label="Rechercher une activité"><Search aria-hidden="true" /></a><a href="#/creer" class="btn btn--primary btn--small topbar__create"><Plus aria-hidden="true" />Créer une activité</a></div>
     <header class="page-header"><h1 class="display-title">Mes activités</h1><p class="lead">Retrouve ici les activités auxquelles tu participes et celles que tu organises.</p></header>
     <div class="tabs" role="tablist" aria-label="Période">
       <button type="button" role="tab" :aria-selected="tab === 'avenir'" :class="{ 'is-selected': tab === 'avenir' }" @click="tab = 'avenir'">À venir ({{ counts.avenir }})</button>

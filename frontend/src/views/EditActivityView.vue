@@ -6,7 +6,7 @@ import ConfirmDialog from '@/components/ConfirmDialog.vue'
 import CoverPicker from '@/components/CoverPicker.vue'
 import MascotState from '@/components/MascotState.vue'
 import PlacePicker from '@/components/PlacePicker.vue'
-import { validateDraft, type Activity, type ActivityDraft, type DraftErrors } from '@/lib/activity'
+import { coverOf, validateDraft, type Activity, type ActivityDraft, type DraftErrors } from '@/lib/activity'
 import { ensureActivity, notify, removeActivity, store, uid, upsertActivity } from '@/lib/store'
 import { goBack, navigate } from '@/lib/router'
 import { deleteActivity, updateActivity } from '@/services/activities'
@@ -26,7 +26,8 @@ const owner = computed(() => activity.value?.organizerId === uid.value)
 
 function fill(a: Activity) {
   const { title, discipline, subDiscipline = '', description, level, equipment = '', coverUrl, placeName, address, district = '', lat, lng, date, startTime, endTime, capacity } = a
-  Object.assign(draft, { title, discipline, subDiscipline, description, level, equipment, coverUrl, placeName, address, district, lat, lng, date, startTime, endTime, capacity })
+  // Illustration par défaut : pas de photo choisie (elle suit la discipline si celle-ci change).
+  Object.assign(draft, { title, discipline, subDiscipline, description, level, equipment, coverUrl: coverUrl.startsWith('/images/activities/') ? '' : coverUrl, placeName, address, district, lat, lng, date, startTime, endTime, capacity })
 }
 let loadRevision = 0
 async function loadActivity(id = props.id) {
@@ -78,8 +79,8 @@ async function remove() {
     <MascotState v-else-if="status === 'error'" title="Impossible de charger l’activité" text="Vérifie ta connexion. Le formulaire n’a pas encore été ouvert."><button type="button" class="btn btn--primary" @click="loadActivity()">Réessayer</button><a href="#/mes-activites" class="btn btn--soft">Mes activités</a></MascotState>
     <MascotState v-else-if="!owner" title="Modification réservée" text="Seule la personne qui organise cette activité peut la modifier."><a :href="`#/activite/${encodeURIComponent(id)}`" class="btn btn--primary">Voir l’activité</a></MascotState>
     <form v-else class="edit-form" novalidate @submit.prevent="save">
-      <div class="edit-cover"><img :src="draft.coverUrl" alt="" /><button type="button" class="edit-cover__button" :aria-expanded="changingCover" @click="changingCover = !changingCover">{{ changingCover ? 'Fermer' : 'Changer la photo' }}</button></div>
-      <section v-if="changingCover" class="edit-block"><CoverPicker v-model="draft.coverUrl" :invalid="!!errors.coverUrl" /><p v-if="errors.coverUrl" class="field-error">{{ errors.coverUrl }}</p></section>
+      <div class="edit-cover"><img :src="coverOf(draft)" alt="" /><button type="button" class="edit-cover__button" :aria-expanded="changingCover" @click="changingCover = !changingCover">{{ changingCover ? 'Fermer' : 'Changer la photo' }}</button></div>
+      <section v-if="changingCover" class="edit-block"><CoverPicker v-model="draft.coverUrl" :discipline="draft.discipline" :invalid="!!errors.coverUrl" /><p v-if="errors.coverUrl" class="field-error">{{ errors.coverUrl }}</p></section>
       <section class="edit-block"><Pencil class="edit-block__icon" aria-hidden="true" /><div>
         <label for="edit-title" class="field-label field-label--accent">Titre de l’activité <span aria-hidden="true">*</span></label>
         <input id="edit-title" v-model="draft.title" class="text-field" maxlength="60" :aria-invalid="!!errors.title" /><span class="counter counter--below">{{ draft.title.length }}/60</span>

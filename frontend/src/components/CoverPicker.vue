@@ -2,14 +2,16 @@
 import { ref } from 'vue'
 import { ImagePlus, Upload, X } from '@lucide/vue'
 import { imageUploadError, prepareImageUpload } from '@/lib/image-upload'
+import { defaultCover, disciplineLabel } from '@/lib/activity'
 import { toCoverImage } from '@/lib/image'
 import { idToken } from '@/services/firebase'
 import { uploadCover, UploadError, uploadsEnabled } from '@/services/uploads'
 
-// Photo principale choisie par l'organisateur. Avec l'API NOVART (Worker), la photo est
+// Photo principale choisie par l'organisateur (facultative : sans photo, l'illustration
+// NOVART de la discipline est affichée). Avec l'API NOVART (Worker), la photo est
 // recadrée en 16:10 et stockée dans Cloudflare R2 : le document Firestore ne garde que son
 // lien. Sans API configurée, elle est compressée et enregistrée dans le document.
-const props = defineProps<{ modelValue: string; invalid?: boolean }>()
+const props = defineProps<{ modelValue: string; discipline?: string; invalid?: boolean }>()
 const emit = defineEmits<{ 'update:modelValue': [value: string] }>()
 const input = ref<HTMLInputElement | null>(null)
 const busy = ref(false)
@@ -52,6 +54,10 @@ async function chooseImage(event: Event) {
   <div class="cover-picker">
     <div class="cover-picker__preview" :class="{ 'is-empty': !props.modelValue, 'is-invalid': invalid }">
       <img v-if="props.modelValue" :src="props.modelValue" alt="Aperçu de la photo de l’activité" />
+      <template v-else-if="props.discipline">
+        <img :src="defaultCover(props.discipline)" :alt="`Illustration NOVART ${disciplineLabel(props.discipline)}`" />
+        <span class="cover-picker__default">Illustration utilisée sans photo</span>
+      </template>
       <div v-else class="cover-picker__empty"><ImagePlus aria-hidden="true" /><span>Aucune photo ajoutée</span></div>
       <span v-if="busy" class="cover-picker__busy" role="status"><span class="spinner" aria-hidden="true"></span>Envoi de ta photo…</span>
       <button v-if="props.modelValue && !busy" type="button" class="cover-picker__clear" aria-label="Retirer la photo" @click="emit('update:modelValue', '')"><X aria-hidden="true" /></button>

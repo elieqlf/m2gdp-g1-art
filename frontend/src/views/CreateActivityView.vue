@@ -6,8 +6,10 @@ import CoverPicker from '@/components/CoverPicker.vue'
 import DisciplineBadge from '@/components/DisciplineBadge.vue'
 import DisciplineIcon from '@/components/DisciplineIcon.vue'
 import PlacePicker from '@/components/PlacePicker.vue'
+import AiIdeas from '@/components/AiIdeas.vue'
+import { aiEnabled, type ActivityIdea } from '@/services/ai'
 import StepIndicator from '@/components/StepIndicator.vue'
-import { clockRange, disciplines, levelLabel, levels, longDay, templates, toIsoDay, validateDraft, type ActivityDraft, type DraftErrors } from '@/lib/activity'
+import { clockRange, coverOf, disciplines, levelLabel, levels, longDay, templates, toIsoDay, validateDraft, type ActivityDraft, type DraftErrors } from '@/lib/activity'
 import { me, notify, upsertActivity } from '@/lib/store'
 import { navigate } from '@/lib/router'
 import { createActivity } from '@/services/activities'
@@ -48,6 +50,13 @@ function useTemplate(id: string) {
   Object.assign(draft, { title: t.title, discipline: t.discipline, subDiscipline: t.sub, description: t.description, level: t.level, equipment: t.equipment, capacity: t.capacity, endTime: `${String(Math.min(23, h + t.duration)).padStart(2, '0')}:00` })
   errors.value = {}
 }
+// Idée proposée par l'IA : remplit le formulaire (le lieu, la date et les places restent à choisir).
+function useIdea(idea: ActivityIdea) {
+  const [h = 14] = draft.startTime.split(':').map(Number)
+  Object.assign(draft, { title: idea.title, discipline: idea.discipline, subDiscipline: idea.subDiscipline, description: idea.description, level: idea.level, equipment: idea.equipment, endTime: `${String(Math.min(23, h + idea.durationHours)).padStart(2, '0')}:00` })
+  errors.value = {}
+}
+const aiAvailable = aiEnabled()
 function startOver() { Object.assign(draft, blank()); restored.value = false; step.value = 1; errors.value = {} }
 function next() {
   errors.value = validateDraft(draft, step.value as 1 | 2 | 3)
@@ -96,6 +105,7 @@ function close() { navigate('decouvrir') }
         </div>
         <p v-if="errors.discipline" class="field-error">{{ errors.discipline }}</p>
       </fieldset>
+      <AiIdeas v-if="aiAvailable" :discipline="draft.discipline" @use="useIdea" />
       <fieldset v-if="subs.length" class="field-group"><legend class="field-label">Précise la pratique <span class="optional">(optionnel)</span></legend>
         <div class="chip-row"><button v-for="s in subs" :key="s" type="button" class="choice-chip" :class="{ 'is-selected': draft.subDiscipline === s }" :aria-pressed="draft.subDiscipline === s" @click="draft.subDiscipline = draft.subDiscipline === s ? '' : s">{{ s }}</button></div>
       </fieldset>
@@ -113,8 +123,8 @@ function close() { navigate('decouvrir') }
     <form v-else-if="step === 2" class="form-step" novalidate @submit.prevent="next">
       <h1 class="display-title">Ajouter des médias</h1>
       <p class="lead">Une belle image donne envie de participer !</p>
-      <p class="field-label">Photo principale <span class="required" aria-hidden="true">*</span></p>
-      <CoverPicker v-model="draft.coverUrl" :invalid="!!errors.coverUrl" />
+      <p class="field-label">Photo principale <span class="optional">(facultative)</span></p>
+      <CoverPicker v-model="draft.coverUrl" :discipline="draft.discipline" :invalid="!!errors.coverUrl" />
       <p v-if="errors.coverUrl" class="field-error" role="alert">{{ errors.coverUrl }}</p>
       <aside class="tips-box">
         <p class="tips-box__title"><Lightbulb aria-hidden="true" />Astuces pour de belles photos</p>
@@ -145,7 +155,7 @@ function close() { navigate('decouvrir') }
       <h1 id="preview-title" class="display-title">Aperçu de ton activité</h1>
       <p class="lead">Vérifie les informations avant de publier.</p>
       <article class="preview-card">
-        <div class="preview-card__media"><img :src="draft.coverUrl" alt="" /><button type="button" class="preview-card__edit" @click="goTo(1)"><Pencil aria-hidden="true" />Modifier</button></div>
+        <div class="preview-card__media"><img :src="coverOf(draft)" alt="" /><button type="button" class="preview-card__edit" @click="goTo(1)"><Pencil aria-hidden="true" />Modifier</button></div>
         <div class="preview-card__body">
           <h2>{{ draft.title }}</h2>
           <DisciplineBadge :discipline="draft.discipline" />

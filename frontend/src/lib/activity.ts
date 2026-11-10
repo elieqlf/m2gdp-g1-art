@@ -42,7 +42,10 @@ export const templates = catalog.templates
 export const venueTypes = catalog.venueTypes
 export const disciplineLabel = (id: string) => disciplines.find(d => d.id === id)?.label ?? 'Autre'
 export const levelLabel = (id: string) => levels.find(l => l.id === id)?.label ?? 'Tous niveaux'
-export const defaultCover = (discipline: string) => `/images/activities/photos/${disciplines.some(d => d.id === discipline) ? discipline : 'autre'}.webp`
+/** Illustration NOVART de la discipline (version claire), utilisée sans photo de l'organisateur. */
+export const defaultCover = (discipline: string) => `/images/activities/${disciplines.some(d => d.id === discipline) ? discipline : 'autre'}-2.svg`
+/** Image affichée : la photo de l'organisateur, sinon l'illustration de la discipline. */
+export const coverOf = (draft: Pick<ActivityDraft, 'coverUrl' | 'discipline'>) => draft.coverUrl || defaultCover(draft.discipline)
 
 /** Centre de Lyon (place Bellecour), utilisé quand le profil n'a pas de coordonnées. */
 export const LYON_CENTER = { lat: 45.7578, lng: 4.832 }
@@ -221,7 +224,8 @@ export function validateDraft(d: ActivityDraft, step: 1 | 2 | 3 | 'all', registe
     if ((d.equipment || '').length > 300) e.equipment = 'Le matériel ne doit pas dépasser 300 caractères.'
   }
   if (step === 2 || step === 'all') {
-    if (!d.coverUrl) e.coverUrl = 'Choisis une photo principale.'
+    // Photo facultative : sans photo, l'illustration de la discipline est utilisée.
+    if (!d.coverUrl) { /* illustration par défaut */ }
     else if (!d.coverUrl.startsWith('/images/') && !/^https:\/\/\S+$/i.test(d.coverUrl) && !/^data:image\/webp;base64,[\w+/]+=*$/i.test(d.coverUrl)) e.coverUrl = 'Choisis une image JPG, PNG, WebP ou AVIF depuis ton appareil.'
     else if (d.coverUrl.length > 700_000) e.coverUrl = 'Cette photo est trop lourde. Choisis une image plus légère.'
   }

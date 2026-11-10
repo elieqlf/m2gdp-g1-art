@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
-import { CalendarDays, ChevronLeft, ChevronRight, MapPin, SendHorizontal } from '@lucide/vue'
-import DisciplineBadge from '@/components/DisciplineBadge.vue'
+import { CalendarDays, ChevronLeft, ChevronRight, Crown, SendHorizontal } from '@lucide/vue'
 import MascotState from '@/components/MascotState.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
-import { clockRange, isMember, longDay, toIsoDay } from '@/lib/activity'
-import { ensureActivity, loadMembers, markGroupRead, me, setOpenGroup, store, uid, upsertActivity } from '@/lib/store'
+import { clockRange, isMember, longDay, shortDay, toIsoDay } from '@/lib/activity'
+import { ensureActivity, loadMembers, markGroupRead, me, memberName, setOpenGroup, store, uid, upsertActivity } from '@/lib/store'
 import { goBack } from '@/lib/router'
 import { sendMessage, watchMessages, type Message } from '@/services/activities'
 
@@ -23,6 +22,7 @@ const unreadMessages = ref(0)
 const followNextMessage = ref(false)
 const activity = computed(() => store.activities.find(a => a.id === props.id))
 const member = computed(() => !!activity.value && isMember(activity.value, uid.value))
+const organizerLabel = computed(() => !activity.value ? '' : activity.value.organizerId === uid.value ? 'toi' : activity.value.organizerName || memberName(activity.value.organizerId))
 let stop: (() => void) | undefined
 let loadRevision = 0
 
@@ -116,16 +116,24 @@ async function send() {
 
 <template>
   <div class="page page--chat">
-    <div class="topbar"><button type="button" class="icon-button icon-button--plain" aria-label="Retour" @click="goBack('conversations')"><ChevronLeft aria-hidden="true" /></button><h1 class="sr-only">Groupe de discussion{{ activity ? ` : ${activity.title}` : '' }}</h1></div>
+    <!-- En-tête toujours visible : retour, activité et organisateur, sans avoir à remonter le fil. -->
+    <header class="chat-header">
+      <button type="button" class="icon-button icon-button--plain" aria-label="Retour" @click="goBack('conversations')"><ChevronLeft aria-hidden="true" /></button>
+      <h1 class="sr-only">Groupe de discussion{{ activity ? ` : ${activity.title}` : '' }}</h1>
+      <a v-if="activity && status === 'ready'" :href="`#/activite/${encodeURIComponent(activity.id)}`" class="chat-activity chat-activity--compact" :aria-label="`Voir l’activité ${activity.title}`">
+        <img :src="activity.coverUrl" alt="" />
+        <span>
+          <strong>{{ activity.title }}</strong>
+          <small class="chat-activity__organizer"><Crown aria-hidden="true" />Organisé par <b>{{ organizerLabel }}</b></small>
+          <small><CalendarDays aria-hidden="true" />{{ shortDay(activity.date) }} · {{ clockRange(activity) }}</small>
+        </span>
+        <ChevronRight aria-hidden="true" />
+      </a>
+    </header>
     <p v-if="status === 'loading'" class="loading-line" role="status"><span class="spinner" aria-hidden="true"></span>Chargement…</p>
     <MascotState v-else-if="status === 'missing' || (status === 'ready' && !activity)" title="Cette conversation n’est plus disponible" text="L’activité a peut-être été supprimée."><a href="#/conversations" class="btn btn--primary">Mes conversations</a><a href="#/rechercher" class="btn btn--soft">Découvrir les activités</a></MascotState>
     <MascotState v-else-if="status === 'error'" title="Impossible de charger cette conversation" text="Vérifie ta connexion puis réessaie."><button type="button" class="btn btn--primary" @click="loadConversation()">Réessayer</button><a href="#/conversations" class="btn btn--soft">Mes conversations</a></MascotState>
     <template v-else-if="activity">
-      <a :href="`#/activite/${encodeURIComponent(activity.id)}`" class="chat-activity">
-        <img :src="activity.coverUrl" alt="" />
-        <span><strong>{{ activity.title }}</strong><DisciplineBadge :discipline="activity.discipline" /><small><CalendarDays aria-hidden="true" />{{ longDay(activity.date) }} · {{ clockRange(activity) }}</small><small><MapPin aria-hidden="true" />{{ activity.placeName }}</small></span>
-        <ChevronRight aria-hidden="true" />
-      </a>
       <MascotState v-if="!member" title="Groupe réservé aux participants" text="Inscris-toi à l’activité pour échanger avec le groupe."><a :href="`#/activite/${encodeURIComponent(activity.id)}`" class="btn btn--primary">Voir l’activité</a></MascotState>
       <template v-else>
         <div class="messages-region">
@@ -140,7 +148,7 @@ async function send() {
               <li class="message" :class="{ 'message--mine': m.mine }">
                 <a v-if="!m.mine" :href="privateLink(m.authorId)" class="message__avatar-link" tabindex="-1" aria-hidden="true"><UserAvatar :name="m.authorName" :photo="m.authorPhoto || store.members[m.authorId]?.photoUrl" :user-id="m.authorId" size="md" /></a>
                 <div class="message__content">
-                  <p class="message__meta"><a v-if="!m.mine" :href="privateLink(m.authorId)" class="message__author message__author--link" :aria-label="`${m.authorName} : écrire en privé`">{{ m.authorName }}</a><time>{{ hour(m.sentAtMs) }}</time></p>
+                  <p class="message__meta"><a v-if="!m.mine" :href="privateLink(m.authorId)" class="message__author message__author--link" :aria-label="`${m.authorName}${m.authorId === activity.organizerId ? ', organisateur' : ''} : écrire en privé`">{{ m.authorName }}</a><span v-if="m.authorId === activity.organizerId" class="message__role">Organisateur</span><time>{{ hour(m.sentAtMs) }}</time></p>
                   <p class="message__bubble">{{ m.text }}</p>
                 </div>
               </li>

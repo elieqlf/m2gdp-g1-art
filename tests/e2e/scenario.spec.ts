@@ -43,12 +43,22 @@ test('US-07 : créer une activité en quatre étapes puis la retrouver', async (
   await capture(page, testInfo, 'creation-etape-1')
   await page.getByRole('button', { name: 'Continuer' }).click()
   await expect(page.getByRole('heading', { name: 'Ajouter des médias' })).toBeVisible()
-  await expect(page.getByText('Aucune photo ajoutée')).toBeVisible()
+  // Sans photo, l'illustration NOVART (version claire) de la discipline est prévue.
+  await expect(page.getByText('Illustration utilisée sans photo')).toBeVisible()
+  await expect(page.getByAltText('Illustration NOVART Peinture')).toHaveAttribute('src', '/images/activities/peinture-2.svg')
   await page.locator('.cover-picker input[type="file"]').setInputFiles('frontend/public/images/people/portrait-01.webp')
   await expect(page.getByAltText('Aperçu de la photo de l’activité')).toBeVisible()
   await page.getByRole('button', { name: 'Continuer' }).click()
   await expect(page.getByRole('heading', { name: 'Lieu, date et places' })).toBeVisible()
-  await page.locator('.venue-option').first().click()
+  // Le choix du lieu s'ouvre dans un panneau, refermé dès qu'un lieu est choisi.
+  await expect(page.locator('.venue-option')).toHaveCount(0)
+  await page.getByRole('button', { name: /Choisir le lieu/ }).click()
+  const placeDialog = page.getByRole('dialog', { name: 'Choisir le lieu' })
+  await expect(placeDialog).toBeVisible()
+  await placeDialog.getByRole('searchbox', { name: 'Filtrer les lieux suggérés' }).fill('parc')
+  await placeDialog.locator('.venue-option').first().click()
+  await expect(placeDialog).toBeHidden()
+  await expect(page.getByRole('button', { name: 'Changer de lieu' })).toBeVisible()
   await page.getByRole('button', { name: 'Ajouter une place' }).click()
   await expect(page.locator('#capacity')).toHaveValue('9')
   await page.getByRole('button', { name: 'Continuer' }).click()
@@ -65,6 +75,39 @@ test('US-07 : créer une activité en quatre étapes puis la retrouver', async (
   await expect(page.getByRole('link', { name: 'Aquarelle sur les quais du Rhône' })).toBeVisible()
   await page.goto('/#/mes-activites')
   await expect(page.getByRole('heading', { name: /J’organise/ })).toBeVisible()
+})
+
+test('Création : idées d’activités proposées par l’IA à partir de mots-clés', async ({ page }) => {
+  await openApp(page, 'app', '#/creer')
+  await page.getByRole('button', { name: 'Peinture', exact: true }).click()
+  await page.getByRole('button', { name: /Trouver une idée avec l’IA/ }).click()
+  await page.getByLabel('Mots-clés pour l’IA').fill('aquarelle, parc, débutants')
+  await page.getByRole('button', { name: 'Proposer des idées' }).click()
+  const ideas = page.getByRole('list', { name: 'Idées proposées par l’IA' })
+  await expect(ideas.getByRole('listitem')).toHaveCount(2)
+  await ideas.getByRole('listitem').first().getByRole('button', { name: 'Utiliser cette idée' }).click()
+  await expect(page.getByLabel('Titre de l’activité')).toHaveValue('Aquarelle et carnets au parc')
+  await expect(page.getByLabel('Description')).toHaveValue(/aquarelle, parc, débutants/)
+  await expect(page.getByRole('button', { name: 'Aquarelle', exact: true })).toHaveAttribute('aria-pressed', 'true')
+  await expect(page.getByRole('button', { name: 'Débutant' })).toHaveAttribute('aria-pressed', 'true')
+  await page.getByRole('button', { name: 'Continuer' }).click()
+  await expect(page.getByRole('heading', { name: 'Ajouter des médias' })).toBeVisible()
+})
+
+test('Navigation : barre du bas rétractable et accès direct à « Mes activités »', async ({ page }) => {
+  await openApp(page, 'app', '#/decouvrir')
+  const nav = page.getByRole('navigation', { name: 'Navigation principale' })
+  await expect(nav.getByRole('link', { name: /Mes activités/ })).toBeVisible()
+  await expect(nav.getByRole('link', { name: 'Créer' })).toHaveCount(0)
+  await page.getByRole('button', { name: 'Masquer le menu' }).click()
+  await expect(nav).toBeHidden()
+  // Le choix est mémorisé sur l'appareil.
+  await page.reload()
+  await expect(page.getByRole('button', { name: 'Afficher le menu' })).toBeVisible()
+  await page.getByRole('button', { name: 'Afficher le menu' }).click()
+  await nav.getByRole('link', { name: /Mes activités/ }).click()
+  await expect(page.getByRole('heading', { name: 'Mes activités' })).toBeVisible()
+  await expect(page.getByRole('link', { name: 'Créer une activité' }).first()).toBeVisible()
 })
 
 test('US-04/05/09/11/12 : rechercher, filtrer, s’inscrire et écrire au groupe', async ({ page }, testInfo) => {
@@ -207,7 +250,8 @@ test('Contact : depuis le groupe, toucher un prénom ouvre la conversation priv�
   const author = users.find(u => u.uid === message.authorId)!
   await openApp(page, 'app', `#/conversations/${group.id}`)
   await expect(page.getByText('Touche le prénom de quelqu’un pour lui écrire en privé.')).toBeVisible()
-  await page.getByRole('link', { name: `${message.authorName} : écrire en privé` }).first().click()
+  // L'organisateur est signalé dans le fil (« Bastien, organisateur : écrire en privé »).
+  await page.getByRole('link', { name: new RegExp(`^${message.authorName}(, organisateur)? : écrire en privé$`) }).first().click()
   await expect(page).toHaveURL(new RegExp(`#/messages/${author.uid}`))
   await expect(page.getByRole('heading', { name: `${author.firstName} ${author.lastName}` })).toBeVisible()
   await expect(page.getByRole('link', { name: `À propos de « ${group.title} »` })).toBeVisible()
@@ -249,6 +293,12 @@ test('Recherche : autocomplétion des activités, disciplines et lieux', async (
   await list.getByRole('option', { name: /^Croix-Rousse.*Quartier/ }).click()
   await expect(box).toHaveValue('Croix-Rousse')
   await expect(page.getByRole('heading', { name: 'Résultats pour « Croix-Rousse »' })).toBeVisible()
+  // Barre de catégories : ne montrer que les lieux, sans titres de groupes.
+  await box.fill('parc')
+  await page.getByRole('group', { name: 'Catégorie de suggestions' }).getByRole('button', { name: /^Lieux/ }).click()
+  await expect(list.getByRole('option').first()).toBeVisible()
+  await expect(page.locator('.search-suggest__group')).toHaveCount(0)
+  await expect(box).toBeFocused()
 })
 
 test('Groupes : un message reçu s’affiche en direct, avec non-lus et pastilles', async ({ page }) => {
@@ -267,9 +317,10 @@ test('Groupes : un message reçu s’affiche en direct, avec non-lus et pastille
   await expect(page.getByRole('link', { name: /Conversations.*conversations? non lues?/ })).toBeVisible()
   // Les messages d'arrière-plan passent chacun leur tour (ici après « place libérée » et la localisation).
   await expect(page.getByText(`Nouveau message dans « ${group.title} »`)).toBeVisible({ timeout: 16_000 })
-  // Ouvrir le groupe le marque comme lu.
+  // Ouvrir le groupe le marque comme lu ; l'organisateur est nommé dans l'en-tête.
   await item.click()
   await expect(page.getByText('On se retrouve devant l’entrée ?')).toBeVisible()
+  await expect(page.locator('.chat-activity__organizer')).toContainText(`Organisé par ${group.organizerId === ME.uid ? 'toi' : group.organizerName}`)
   await page.getByRole('button', { name: 'Retour' }).click()
   await expect(page.getByRole('tab', { name: 'Groupes', exact: true })).toBeVisible()
   await expect(item).not.toHaveClass(/is-unread/)

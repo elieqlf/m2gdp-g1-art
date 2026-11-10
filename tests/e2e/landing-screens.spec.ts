@@ -83,6 +83,7 @@ test('captures de l’application pour le site vitrine', async ({ page }, testIn
   await shoot(page, 'creer')
   await page.getByRole('button', { name: 'Continuer' }).click()
   await page.getByRole('button', { name: 'Continuer' }).click()
+  await page.getByRole('button', { name: /Choisir le lieu/ }).click()
   await page.locator('.venue-option').first().click()
   await page.getByRole('button', { name: 'Continuer' }).click()
   await expect(page.getByRole('heading', { name: 'Aperçu de ton activité' })).toBeVisible()
