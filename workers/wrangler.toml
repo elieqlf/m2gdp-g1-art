@@ -11,12 +11,11 @@ database_id = "81a1ecbc-d289-41f8-96a4-e403b60a1a39"
 #   npx wrangler d1 migrations apply art-sessions --remote
 migrations_dir = "migrations"
 
-# Stockage R2 (photos des membres) : pas encore utilisé par le code. Désactivé pour que
-# le déploiement n'échoue pas si le bucket n'existe pas ou si R2 n'est pas activé sur le
-# compte. À réactiver avec l'envoi de photos (npx wrangler r2 bucket create art-files).
-# [[r2_buckets]]
-# binding = "FILES"
-# bucket_name = "art-files"
+# Stockage R2 : photos de couverture des activités (POST /uploads/cover, GET /files/…).
+# Création (une fois, R2 activé sur le compte) : npx wrangler r2 bucket create art-files
+[[r2_buckets]]
+binding = "FILES"
+bucket_name = "art-files"
 
 [vars]
 # Variables publiques (non sensibles) ici.
@@ -24,6 +23,8 @@ migrations_dir = "migrations"
 ALLOWED_ORIGINS = "https://novart-app.web.app,https://novart-app.firebaseapp.com,http://localhost:5173"
 APP_URL = "https://novart-app.web.app"
 SENDER_NAME = "NOVART"
+# Projet Firebase dont les jetons de connexion sont acceptés pour l'envoi de photos.
+FIREBASE_PROJECT_ID = "novart-109bf"
 # Les secrets se déclarent avec (voir workers/README.md) :
 #   npx wrangler secret put FIREBASE_SERVICE_ACCOUNT < /chemin/hors-depot/cle.json
 #   npx wrangler secret put BREVO_API_KEY

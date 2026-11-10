@@ -12,7 +12,7 @@ vi.mock('../src/services/firebase', () => ({
   pendingSocialProvider: vi.fn(() => null), clearPendingSocialProvider: vi.fn(),
   rememberedSessionChoice: vi.fn(() => false), setAuthPersistence: vi.fn(async () => undefined),
   requestSignInLink: vi.fn(), completeSignIn: vi.fn(), signInWithSocialProvider: vi.fn(), saveOnboardingProgress: vi.fn(), consumeSocialRedirect: vi.fn(async () => null), observeAccount: vi.fn(),
-  getProfile: vi.fn(), saveProfile: vi.fn(), listMembers: vi.fn(), logout: vi.fn(), updateProfile: vi.fn(), setFavorite: vi.fn(),
+  getProfile: vi.fn(), saveProfile: vi.fn(), listMembers: vi.fn(), idToken: vi.fn(async () => 'jeton'), logout: vi.fn(), updateProfile: vi.fn(), setFavorite: vi.fn(),
 }))
 vi.mock('../src/services/activities', () => ({ listActivities: vi.fn(async () => []), getActivity: vi.fn(async () => null), ActivityFullError: class extends Error {}, watchMyOffers: vi.fn(() => () => {}) }))
 vi.mock('../src/services/messages', () => ({

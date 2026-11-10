@@ -4,6 +4,10 @@
 | --- | --- |
 | `GET /health` | Vérifier que le Worker répond |
 | `POST /auth/email-link` `{ email, continueUrl }` | Envoyer l'e-mail de connexion NOVART |
+| `POST /uploads/cover` (corps : l'image, `Authorization: Bearer <jeton Firebase>`) | Photo de couverture d'une activité, stockée dans R2 ; renvoie `{ url }` |
+| `GET /files/covers/…` | Lecture publique d'une photo (cache navigateur d'un an) |
+
+**Photos (R2)** : seuls les membres connectés peuvent envoyer (jeton Firebase vérifié avec les clés publiques de Google : signature, projet, expiration) ; l'appli recadre et réduit l'image (16:10, 1600 × 1000 px, WebP) ; le Worker revérifie le type réel du fichier (JPEG, PNG ou WebP), la taille (2 Mo max) et limite à 30 envois par heure et par membre (D1, empreinte de l'uid). Les photos remplacées ne sont pas encore supprimées de R2.
 
 ```mermaid
 sequenceDiagram
@@ -45,12 +49,19 @@ Toutes les commandes se lancent **à la racine du dépôt**, dans WSL, après `n
 Console Firebase > ⚙️ *Paramètres du projet > Comptes de service > Générer une nouvelle clé privée*.
 Ranger le fichier JSON **hors du dépôt**, par exemple `~/secrets/novart-firebase.json`. Ne jamais le partager ni le commiter.
 
-### 3. Cloudflare : base D1 et déploiement
+### 3. Cloudflare : R2, base D1 et déploiement
+
+R2 (photos) : dans le tableau de bord Cloudflare, *R2 Object Storage* > activer l'offre gratuite (10 Go ; une carte ou PayPal est demandée pour vérification, sans prélèvement sous le quota), puis :
+
+```bash
+npx wrangler r2 bucket create art-files
+```
+
 
 ```bash
 npx wrangler login              # compte Cloudflare qui possède account_id (wrangler.toml)
 npx wrangler whoami             # vérifier le compte
-npm run worker:migrate          # crée la table email_requests dans la base D1 art-sessions
+npm run worker:migrate          # tables email_requests et upload_requests dans la base D1 art-sessions
 npm run deploy:worker           # affiche l'URL : https://projet-art-api.<sous-domaine>.workers.dev
 ```
 
@@ -91,6 +102,8 @@ Suivi des envois : Brevo > *Transactional > Logs*. Journaux du Worker en direct 
 | Journal « Brevo a refusé l'envoi (400) » | Expéditeur non validé dans Brevo | Valider l'adresse (étape 1.2) ou corriger `SENDER_EMAIL` |
 | Journal « lien Firebase refusé (400) » | Domaine de l'appli non autorisé dans Firebase Authentication | Ajouter `novart-app.web.app` aux domaines autorisés |
 | `wrangler deploy` : base D1 introuvable | Base absente de ce compte Cloudflare | `npx wrangler d1 create art-sessions`, reporter le `database_id` dans `wrangler.toml` |
+| `wrangler deploy` : bucket R2 introuvable | R2 non activé ou bucket absent | Activer R2, puis `npx wrangler r2 bucket create art-files` |
+| « Ta session a expiré » à l'envoi d'une photo | Jeton refusé (`FIREBASE_PROJECT_ID` dans `wrangler.toml`) | Vérifier `FIREBASE_PROJECT_ID = "novart-109bf"`, se reconnecter |
 | « Tu as demandé plusieurs liens d'affilée » | Limite anti-abus (3 liens en 10 min pour une adresse) | Utiliser le dernier lien reçu ou patienter |
 
 ## Développement local

@@ -10,7 +10,7 @@
 | US-04 | Rechercher une activité | Livré | Rechercher |
 | US-05 | Filtrer les résultats | Livré, avec vue carte et tri | Rechercher, Filtres |
 | US-06 | Consulter une fiche activité | Livré, avec météo et participants | Fiche |
-| US-07 | Créer une activité | Livré, 4 étapes, modèles, lieux suggérés | Créer |
+| US-07 | Créer une activité | Livré, 4 étapes, modèles, lieux suggérés, photo de l'organisateur (R2) | Créer, Modifier |
 | US-08 | Modifier / supprimer son activité | Livré | Modifier |
 | US-09 | S'inscrire à une activité | Livré, capacité garantie | Fiche, Tu participes ! |
 | US-10 | Gérer sa participation | Livré (se désinscrire, Mes activités, liste d'attente) | Fiche, Mes activités, Notifications |

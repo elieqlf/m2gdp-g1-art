@@ -1,6 +1,6 @@
 # Stack technique — Architecture serverless
 
-Le schéma ci-dessous décrit l’architecture cible. **En service aujourd’hui** : le front Vue appelle directement Firebase Auth, Firestore et Google Places ; le Worker Cloudflare envoie l’e-mail de connexion NOVART (lien Firebase généré avec le compte de service, envoi Brevo, anti-abus dans D1 ; voir `workers/README.md`). Pas encore utilisés : Realtime DB (la messagerie passe par Firestore) et R2 (envoi de photos à venir).
+Le schéma ci-dessous décrit l’architecture cible. **En service aujourd’hui** : le front Vue appelle directement Firebase Auth, Firestore et Google Places ; le Worker Cloudflare envoie l’e-mail de connexion NOVART (lien Firebase généré avec le compte de service, envoi Brevo, anti-abus dans D1 ; voir `workers/README.md`). Le Worker stocke aussi les photos de couverture des activités dans R2 (`POST /uploads/cover`, membres connectés uniquement). Pas utilisée : Realtime DB (la messagerie passe par Firestore).
 
 ```mermaid
 flowchart LR
@@ -43,7 +43,7 @@ flowchart LR
 | BDD Données | Firestore (NoSQL) | Profils, activités, inscriptions, liste d'attente, messagerie de groupe et privée |
 | BDD Messages | Firebase Realtime DB | Non utilisée (messagerie dans Firestore) |
 | Anti-abus | Cloudflare D1 (SQL) | Limite des demandes de lien de connexion (empreintes, 24 h) ; les sessions sont gérées par Firebase Auth |
-| Fichiers | Cloudflare R2 | Prévu pour les photos (binding désactivé tant qu'il n'est pas utilisé) |
+| Fichiers | Cloudflare R2 | Photos de couverture des activités, envoyées par l'organisateur via le Worker |
 | Hébergement | Firebase Hosting | Site vitrine + application |
 
 ## Sécurité

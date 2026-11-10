@@ -41,7 +41,7 @@ Lien direct `#/activite/<id>` : l'activité est lue dans Firestore si la liste n
 | # | Critère d'acceptation | Test |
 |---|---|---|
 | CA1 | Étape 1 : titre (60 car.), discipline, sous-discipline facultative, description (500), niveau, matériel (300) ; modèles d'activités pour pré-remplir | `scenario.spec.ts` US-07 |
-| CA2 | Étape 2 : photo principale parmi les illustrations NOVART (suit la discipline) ou lien https | idem |
+| CA2 | Étape 2 : photo principale importée depuis l'appareil (recadrée 16:10, réduite, stockée dans Cloudflare R2), illustration NOVART (suit la discipline) ou lien https ; aussi dans « Modifier » | idem, `uploads.test.ts`, `workers/test/uploads.test.mjs` |
 | CA3 | Étape 3 : lieux suggérés (127 lieux de la Métropole, selon la discipline et la distance) ou adresse Google Places ; date, heures, places (2 à 100) | idem |
 | CA4 | Étape 4 : aperçu, retour à une étape en touchant une ligne, « Publier l'activité » | idem |
 | CA5 | Erreurs affichées sous chaque champ ; on ne passe pas à l'étape suivante | idem, `activity.test.ts` |
@@ -77,6 +77,6 @@ flowchart LR
 
 ## Exclusions (hors MVP)
 
-- Envoi de photos personnelles (Storage) : remplacé par les illustrations et les liens https.
+- Suppression des anciennes photos dans R2 quand l'organisateur en change (nettoyage à prévoir).
 - Assistance IA à la rédaction (maquette 22), notifications (maquette 13), brouillons multiples.
 - Liste d'attente et paiement : non développés.

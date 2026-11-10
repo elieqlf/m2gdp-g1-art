@@ -592,3 +592,10 @@
 .message__author--link { text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, var(--primary) 45%, transparent); text-underline-offset: .2em; border-radius: .3rem; }
 .message__author--link:hover, .message__author--link:focus-visible { color: var(--primary); text-decoration: underline; text-underline-offset: .15em; }
 .messages__hint { justify-self: center; margin: -.3rem 0 .2rem; color: color-mix(in srgb, var(--foreground) 55%, transparent); font-size: .8rem; text-align: center; }
+
+/* Couverture : photo de l'organisateur (R2) */
+.cover-picker__preview { position: relative; }
+.cover-picker__busy { position: absolute; inset: auto .6rem .6rem; display: inline-flex; align-items: center; gap: .5rem; justify-self: start; padding: .4rem .8rem; border-radius: 1rem; background: color-mix(in srgb, var(--card) 92%, transparent); color: var(--ink); font-size: .85rem; font-weight: 500; }
+.cover-picker__upload { margin-top: .8rem; }
+.cover-picker__upload.is-selected { border-color: var(--primary); background: var(--tint); }
+.field-hint { margin: .6rem 0 .4rem; color: color-mix(in srgb, var(--foreground) 65%, transparent); font-size: .85rem; }

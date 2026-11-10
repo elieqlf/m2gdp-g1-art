@@ -67,6 +67,7 @@ export const updateProfile = async (uid, changes) => { profile = { ...profile, .
 export const setFavorite = async (uid, id, on) => { const list = profile.favoriteIds || []; profile.favoriteIds = on ? [...list, id] : list.filter(x => x !== id); };
 export const listMembers = async () => [...members, { uid: me.uid, ...profile }];
 export const logout = async () => { observer?.(null); };
+export const idToken = async () => 'jeton-de-test';
 `
 
 const activitiesModule = (activities: DemoActivity[], messages: DemoMessage[]) => `
@@ -152,6 +153,22 @@ export async function openApp(page: Page, mode: Mode, hash = '') {
   await page.route('**/src/services/firebase.ts*', route => route.fulfill({ contentType: 'application/javascript', body: firebaseModule(mode, users) }))
   await page.route('**/src/services/activities.ts*', route => route.fulfill({ contentType: 'application/javascript', body: activitiesModule(activities, messages) }))
   await page.route('**/src/services/messages.ts*', route => route.fulfill({ contentType: 'application/javascript', body: messagesModule(chats) }))
+  // Envoi de photo simulé : l'image réduite par le navigateur est « stockée » et resservie.
+  let uploaded: Buffer | undefined
+  await page.route('**/src/services/uploads.ts*', route => route.fulfill({ contentType: 'application/javascript', body: `
+const API = 'https://api.novart.test';
+export class UploadError extends Error { constructor(code) { super(code); this.code = code; } }
+export const uploadsEnabled = () => true;
+export const isUploadedFile = url => url.startsWith(API + '/files/');
+export const uploadCover = async (image, token) => {
+  if (token !== 'jeton-de-test') throw new UploadError('unauthenticated');
+  const response = await fetch(API + '/uploads/cover', { method: 'POST', headers: { 'content-type': image.type }, body: image });
+  return (await response.json()).url;
+};` }))
+  await page.route('https://api.novart.test/**', async route => {
+    if (route.request().method() === 'POST') { uploaded = route.request().postDataBuffer() ?? undefined; return route.fulfill({ status: 201, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: JSON.stringify({ url: 'https://api.novart.test/files/covers/preview-user/1-0123456789ab.webp' }) }) }
+    return route.fulfill({ status: uploaded ? 200 : 404, contentType: 'image/webp', body: uploaded ?? '' })
+  })
   await page.route('**/src/services/places.ts*', route => route.fulfill({ contentType: 'application/javascript', body: 'export const suggestAddresses = async () => []; export const resolveAddress = async () => null;' }))
   await page.route('**/src/services/weather.ts*', route => route.fulfill({ contentType: 'application/javascript', body: "export const dayForecast = async () => ({ label: 'Éclaircies', icon: 'cloud-sun', min: 8, max: 14, rain: 10 });" }))
   // Le fond de carte OpenStreetMap n'est pas nécessaire aux vérifications.

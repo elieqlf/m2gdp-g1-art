@@ -78,6 +78,11 @@ export async function completeSignIn(email: string) {
   localStorage.removeItem(REMEMBER_KEY)
   return result.user
 }
+/** Jeton de connexion Firebase, pour les appels à l'API NOVART (envoi de photos). */
+export async function idToken() {
+  if (!auth.currentUser) throw new Error('not-signed-in')
+  return auth.currentUser.getIdToken()
+}
 export const observeAccount = (callback: (user: Account | null) => void, onError: (error: Error) => void) => onAuthStateChanged(auth, callback, onError)
 // RGPD : l'e-mail n'est jamais enregistré dans le profil, lisible par les autres
 // membres. Il reste uniquement dans Firebase Authentication (visible de l'équipe).

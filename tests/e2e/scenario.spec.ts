@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test'
+import { resolve } from 'node:path'
 import { ME, capture, demoData, openApp } from './fixtures'
 
 // Scénario de lancement (J5) : « Créer une activité » puis « Rechercher, s'inscrire et prendre contact ».
@@ -214,6 +215,13 @@ test('US-08 : modifier son activité sans descendre sous le nombre d’inscrits,
   await expect(page.getByText(`(minimum ${Math.max(2, registered)} places)`)).toBeVisible()
   await page.getByLabel('Titre de l’activité').fill('Atelier modifié')
   await capture(page, testInfo, 'modification', '.edit-cover img')
+  // Photo de l'organisateur à la place de l'illustration (réduite puis envoyée à R2).
+  await page.locator('.edit-cover__button').click()
+  await page.locator('#cover-file').setInputFiles(resolve(__dirname, '../../frontend/public/images/novart-onboarding-profile-hd.webp'))
+  await expect(page.getByRole('button', { name: 'Changer ma photo' })).toBeVisible()
+  await expect(page.locator('.cover-picker__preview img')).toHaveAttribute('src', /api\.novart\.test\/files\/covers\//)
+  await expect.poll(() => page.locator('.cover-picker__preview img').evaluate((img: HTMLImageElement) => [img.naturalWidth, img.naturalHeight])).toEqual([1536, 960])
+  await capture(page, testInfo, 'modification-photo', '.cover-picker__preview img')
   await page.getByRole('button', { name: 'Enregistrer les modifications' }).click()
   await expect(page.getByRole('heading', { name: 'Atelier modifié', level: 1 })).toBeVisible()
   await page.getByRole('link', { name: 'Modifier' }).click()
