@@ -84,7 +84,7 @@ async function save() {
   <div class="page page--form">
     <div class="topbar"><button type="button" class="icon-button icon-button--plain" aria-label="Retour" @click="goBack('profil')"><ChevronLeft aria-hidden="true" /></button><h1 class="topbar__title">Mes informations</h1><span class="topbar__spacer"></span></div>
     <form class="form-step" novalidate @submit.prevent="save">
-      <div class="profile-preview"><UserAvatar :name="`${form.firstName} ${form.lastName}`" :photo="form.photoUrl" :user-id="uid" size="lg" /><p class="muted">Les informations de ton profil sont visibles par les membres. Ta ville, ton adresse et ta position restent privées.</p></div>
+      <div class="profile-preview"><UserAvatar :name="`${form.firstName} ${form.lastName}`" :photo="form.photoUrl" :user-id="uid" size="lg" /><p class="muted">Les informations de ton profil sont visibles par les membres. Ta zone et ta position restent privées.</p></div>
       <section class="profile-photo-picker" aria-labelledby="profile-photo-title">
         <div class="profile-photo-picker__heading">
           <div><h2 id="profile-photo-title">Ma photo de profil <span class="optional">(optionnel)</span></h2><p class="hint">Ajoute une photo à toi depuis ta galerie ou tes fichiers.</p></div>
@@ -109,9 +109,9 @@ async function save() {
         <p class="hint">Ils servent à te proposer des activités « Selon tes envies ».</p>
         <div class="chip-grid chip-grid--3"><button v-for="d in disciplines" :key="d.id" type="button" class="choice-chip" :class="{ 'is-selected': form.interests.includes(d.id) }" :aria-pressed="form.interests.includes(d.id)" @click="toggle(d.id)"><DisciplineIcon :discipline="d.id" />{{ d.label }}<Check v-if="form.interests.includes(d.id)" class="choice-chip__check" aria-hidden="true" /></button></div>
       </fieldset>
-      <label for="profile-address" class="field-label">Ville ou quartier <span class="optional">(facultatif)</span></label>
-      <AddressInput v-model="form.address" input-id="profile-address" placeholder="Ex. : Lyon, Croix-Rousse" @select="selection = $event" />
-      <p class="hint">Utilisée uniquement pour adapter les distances des activités. Cette zone et ses coordonnées ne sont jamais visibles par les autres membres.</p>
+      <label for="profile-address" class="field-label">Ta zone <span class="optional">(facultatif)</span></label>
+      <AddressInput v-model="form.address" input-id="profile-address" placeholder="Ex. : Belleville, Paris" :show-hint="false" @select="selection = $event" />
+      <p class="hint">Utilisée pour adapter les distances des activités. Ta zone reste privée.</p>
       <p v-if="error" class="form-alert" role="alert">{{ error }}</p>
       <button type="submit" class="btn btn--primary btn--wide btn--big" :disabled="busy">{{ busy ? 'Enregistrement…' : 'Enregistrer' }}</button>
     </form>

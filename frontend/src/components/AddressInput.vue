@@ -2,7 +2,7 @@
 import { onBeforeUnmount, ref, watch } from 'vue'
 import { Input } from '@/components/ui/input'
 import { suggestAddresses, resolveAddress, type Prediction, type AddressSelection } from '@/services/places'
-const props = withDefaults(defineProps<{ modelValue: string; inputId?: string; placeholder?: string }>(), { inputId: 'address', placeholder: 'Commence à saisir un lieu' })
+const props = withDefaults(defineProps<{ modelValue: string; inputId?: string; placeholder?: string; showHint?: boolean }>(), { inputId: 'address', placeholder: 'Commence à saisir un lieu', showHint: true })
 const emit = defineEmits<{ 'update:modelValue': [value: string]; select: [value: AddressSelection | null] }>()
 const predictions = ref<Prediction[]>([])
 const active = ref(-1)
@@ -73,7 +73,7 @@ onBeforeUnmount(cancel)
 <template>
   <div @focusout="event => { if (!(event.currentTarget as HTMLElement).contains(event.relatedTarget as Node)) close() }">
     <div class="relative">
-      <Input :id="inputId" :model-value="modelValue" :placeholder="placeholder" autocomplete="off" role="combobox" aria-autocomplete="list" :aria-controls="`${inputId}-options`" :aria-expanded="predictions.length > 0" :aria-activedescendant="active >= 0 ? `${inputId}-option-${active}` : undefined" :aria-describedby="`${inputId}-hint`" @update:model-value="input" @keydown="keydown" />
+      <Input :id="inputId" :model-value="modelValue" :placeholder="placeholder" autocomplete="off" role="combobox" aria-autocomplete="list" :aria-controls="`${inputId}-options`" :aria-expanded="predictions.length > 0" :aria-activedescendant="active >= 0 ? `${inputId}-option-${active}` : undefined" :aria-describedby="showHint ? `${inputId}-hint` : undefined" @update:model-value="input" @keydown="keydown" />
       <div v-if="predictions.length" class="absolute z-20 mt-1 w-full rounded-lg border bg-popover p-1 text-popover-foreground shadow-md">
         <ul :id="`${inputId}-options`" role="listbox" aria-label="Suggestions d’adresse" class="max-h-56 overflow-auto">
           <li v-for="(prediction, index) in predictions" :id="`${inputId}-option-${index}`" :key="prediction.placeId" role="option" :aria-selected="active === index" class="cursor-pointer rounded-md px-3 py-2 text-sm hover:bg-accent" :class="{ 'bg-accent': active === index }" @mousedown.prevent @click="choose(prediction)">{{ prediction.text.text }}</li>
@@ -81,6 +81,6 @@ onBeforeUnmount(cancel)
         <p class="border-t px-3 py-2 text-right text-xs text-muted-foreground">Powered by Google</p>
       </div>
     </div>
-    <p :id="`${inputId}-hint`" class="mt-2 text-xs text-muted-foreground" aria-live="polite">{{ loading ? 'Recherche d’adresses…' : hint || 'Choisis une suggestion ou saisis un lieu.' }}</p>
+    <p v-if="showHint" :id="`${inputId}-hint`" class="mt-2 text-xs text-muted-foreground" aria-live="polite">{{ loading ? 'Recherche d’adresses…' : hint || 'Choisis une suggestion ou saisis un lieu.' }}</p>
   </div>
 </template>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, defineAsyncComponent, defineComponent, h, nextTick, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
-import { ArrowRight, Cat, Check, ChevronLeft, GraduationCap, Heart, Lightbulb, Mail, MapPin, Sprout, Star, Users } from '@lucide/vue'
+import { ArrowRight, Check, ChevronLeft, GraduationCap, Heart, Lightbulb, Mail, MapPin, Sprout, Star, Users } from '@lucide/vue'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -70,12 +70,12 @@ const showNav = computed(() => !['participation', 'conversation'].includes(route
 const selection = ref<AddressSelection | null>(null)
 const cityDetectionStatus = ref<CityDetectionStatus>('idle')
 const cityDetectionMessage = computed(() => {
-  if (cityDetectionStatus.value === 'locating') return 'Recherche de ta ville en cours…'
-  if (cityDetectionStatus.value === 'found') return 'Ville ou quartier prérempli. Tu peux le modifier.'
-  if (cityDetectionStatus.value === 'denied') return 'Localisation non autorisée. Tu peux saisir ta ville directement.'
-  if (cityDetectionStatus.value === 'unsupported') return 'La détection n’est pas disponible ici. Tu peux saisir ta ville directement.'
-  if (cityDetectionStatus.value === 'unavailable') return 'La détection n’a pas abouti. Tu peux saisir ta ville ou réessayer.'
-  return 'Avec ton accord, une position arrondie à environ 1 km est transmise à OpenStreetMap pour suggérer un lieu. Aucune coordonnée n’est enregistrée.'
+  if (cityDetectionStatus.value === 'locating') return 'Détection de ta zone en cours.'
+  if (cityDetectionStatus.value === 'found') return 'Ta zone a été préremplie automatiquement.'
+  if (cityDetectionStatus.value === 'denied') return 'La localisation a été refusée. Tu peux saisir ta zone manuellement.'
+  if (cityDetectionStatus.value === 'unsupported') return 'La détection n’est pas disponible. Tu peux saisir ta zone manuellement.'
+  if (cityDetectionStatus.value === 'unavailable') return 'La détection est indisponible. Tu peux saisir ta zone manuellement.'
+  return ''
 })
 const blankProfile = (): Profile => ({ firstName: '', lastName: '', userType: 'participant', address: '', addressLat: null, addressLng: null, photoUrl: '', bio: '', interests: [], discoveryRadiusKm: 10, useCurrentLocation: false, onboardingGoals: [], onboardingStep: 1 })
 const profile = reactive<Profile>(blankProfile())
@@ -90,17 +90,9 @@ const goalOptions = [
   { id: 'go-out', label: 'Sortir et se divertir', icon: Star },
   { id: 'inspiration', label: 'Être inspiré·e', icon: Lightbulb },
 ]
-const radiusOptions = [
-  { label: '2 km', value: 2 },
-  { label: '5 km', value: 5 },
-  { label: '10 km', value: 10 },
-  { label: '20 km', value: 20 },
-  { label: 'Toute la ville', value: null },
-]
 const photoInput = ref<HTMLInputElement | null>(null)
 const photoBusy = ref(false)
 const photoError = ref('')
-const showCityEditor = ref(false)
 let unsubscribe: (() => void) | undefined
 let countdown: ReturnType<typeof setInterval> | undefined
 let accountRevision = 0
@@ -108,7 +100,7 @@ let cityPrefillAttempted = false
 let cityDetectionRevision = 0
 let authStateReady = false
 let pendingSocialError = ''
-const titles: Record<string, string> = { loading: '', request: 'Bienvenue', sent: 'Consulte ta boîte mail', confirm: 'Confirme ton e-mail', expired: 'Ce lien n’est plus valide', profile: 'Crée ton profil', preferences: 'À ton image', complete: 'Presque terminé !', 'account-error': 'Chargement interrompu' }
+const titles: Record<string, string> = { loading: '', request: 'Bienvenue', sent: 'Consulte ta boîte mail', confirm: 'Confirme ton e-mail', expired: 'Ce lien n’est plus valide', profile: 'Crée ton profil', preferences: 'Tes envies', complete: 'Presque terminé !', 'account-error': 'Chargement interrompu' }
 const title = computed(() => titles[screen.value] ?? '')
 function startCooldown() {
   clearInterval(countdown)
@@ -204,15 +196,15 @@ async function loadAccount(user: Account | null) {
     if (profile.photoUrl) rememberProfilePhoto(user.uid, profile.photoUrl)
     store.profile = { ...saved }
     if (profile.useCurrentLocation) void requestPosition()
-    // Le drapeau historique peut être périmé : les champs obligatoires restent la référence.
-    const requiredProfileReady = typeof profile.firstName === 'string'
-      && profile.firstName.trim().length > 0
-      && Array.isArray(profile.interests)
-      && profile.interests.length > 0
-    // Après authentification, les profils incomplets reprennent la bonne étape.
-    if (!saved.profileComplete || !requiredProfileReady) {
-      const step = requiredProfileReady ? Number(saved.onboardingStep) || 2 : 1
-      screen.value = step >= 3 ? 'complete' : step === 2 ? 'preferences' : 'profile'
+    // La première étape valide les informations personnelles ; les pratiques
+    // artistiques se choisissent ensuite dans les préférences.
+    const profileBasicsReady = typeof profile.firstName === 'string' && profile.firstName.trim().length > 0
+    const interestsReady = Array.isArray(profile.interests) && profile.interests.length > 0
+    if (!saved.profileComplete || !profileBasicsReady || !interestsReady) {
+      const savedStep = Number(saved.onboardingStep) || 1
+      if (!profileBasicsReady || savedStep <= 1) screen.value = 'profile'
+      else if (!interestsReady) screen.value = 'preferences'
+      else screen.value = savedStep >= 3 ? 'complete' : 'preferences'
       if (screen.value === 'profile' && !profile.address.trim()) {
         void nextTick().then(() => { if (screen.value === 'profile') startAutomaticCityDetection() })
       }
@@ -319,37 +311,23 @@ async function chooseProfilePhoto(event: Event) {
 async function submitProfile() {
   error.value = ''
   if (!profile.firstName.trim()) { error.value = 'Indique ton prénom ou ton pseudo.'; return }
-  if (!(profile.interests?.length)) { error.value = 'Choisis au moins un centre d’intérêt artistique.'; return }
   if (!account.value) return
   busy.value = true
   try {
-    const saved: Partial<Profile> = { firstName: profile.firstName.trim(), lastName: profile.lastName.trim(), bio: profile.bio?.trim() ?? '', userType: 'participant', address: profile.address.trim(), photoUrl: profile.photoUrl, addressLat: profile.addressLat, addressLng: profile.addressLng, interests: [...(profile.interests ?? [])] }
+    const saved: Partial<Profile> = { firstName: profile.firstName.trim(), lastName: profile.lastName.trim(), bio: profile.bio?.trim() ?? '', userType: 'participant', address: profile.address.trim(), photoUrl: profile.photoUrl, addressLat: profile.addressLat, addressLng: profile.addressLng }
     await saveOnboardingProgress(account.value.uid, saved, 2)
     Object.assign(profile, saved, { onboardingStep: 2 })
     screen.value = 'preferences'
   } catch { error.value = 'Ton profil n’a pas pu être enregistré. Réessaie.' }
   finally { busy.value = false }
 }
-async function toggleCurrentLocation() {
-  error.value = ''
-  if (profile.useCurrentLocation) {
-    profile.useCurrentLocation = false
-    store.gps = null
-    return
-  }
-  busy.value = true
-  try {
-    const enabled = await requestPosition()
-    if (!enabled) { error.value = 'La localisation n’est pas disponible. Tu peux continuer avec ta ville ou ton quartier.'; return }
-    profile.useCurrentLocation = true
-  } finally { busy.value = false }
-}
 async function savePreferences() {
   if (!account.value) return
   error.value = ''
+  if (!(profile.interests?.length)) { error.value = 'Choisis au moins un domaine artistique.'; return }
   busy.value = true
   try {
-    const saved: Partial<Profile> = { discoveryRadiusKm: profile.discoveryRadiusKm ?? 10, useCurrentLocation: !!profile.useCurrentLocation, onboardingGoals: [...(profile.onboardingGoals ?? [])] }
+    const saved: Partial<Profile> = { discoveryRadiusKm: profile.discoveryRadiusKm ?? 10, useCurrentLocation: !!profile.useCurrentLocation, interests: [...(profile.interests ?? [])], onboardingGoals: [...(profile.onboardingGoals ?? [])] }
     await saveOnboardingProgress(account.value.uid, saved, 3)
     Object.assign(profile, saved, { onboardingStep: 3 })
     screen.value = 'complete'
@@ -446,7 +424,7 @@ onBeforeUnmount(() => { unsubscribe?.(); clearInterval(countdown); accountRevisi
         <div class="onboarding-intro-copy">
           <h1>{{ title }}</h1>
           <p v-if="screen === 'profile'">Rejoins la communauté NOVART et découvre des activités artistiques près de chez toi.</p>
-          <p v-else-if="screen === 'preferences'">Choisis tes envies et ton rayon.</p>
+          <p v-else-if="screen === 'preferences'">Tes pratiques, tes envies.</p>
           <p v-else>Un dernier petit pas pour rejoindre NOVART.</p>
         </div>
         <img
@@ -464,7 +442,13 @@ onBeforeUnmount(() => { unsubscribe?.(); clearInterval(countdown); accountRevisi
         <div class="onboarding-photo-row">
           <button type="button" class="onboarding-photo-picker" :class="{ 'has-photo': !!profile.photoUrl }" :disabled="photoBusy"  :aria-label="profile.photoUrl ? 'Modifier la photo de profil' : 'Choisir une photo depuis la galerie ou les fichiers'" @click="photoInput?.click()">
             <img v-if="profile.photoUrl" :src="profile.photoUrl" alt="" />
-            <Cat v-else class="onboarding-avatar-placeholder" aria-hidden="true" />
+            <svg v-else class="onboarding-avatar-placeholder" viewBox="0 0 64 64" aria-hidden="true">
+              <path class="onboarding-avatar-shadow" transform="translate(1.4 2.2)" d="M13 30 10.5 12.3c-.2-1.6 1.5-2.4 2.8-1.6l12 7.9a23 23 0 0 1 13.4 0l12-7.9c1.3-.8 3 .1 2.8 1.6L51 30c4.2 5 5.2 10.7 3 16-3.1 7.4-11.2 11.8-22 11.8S13.1 53.4 10 46c-2.2-5.3-1.2-11 3-16Z" />
+              <path class="onboarding-avatar-cat" d="M13 30 10.5 12.3c-.2-1.6 1.5-2.4 2.8-1.6l12 7.9a23 23 0 0 1 13.4 0l12-7.9c1.3-.8 3 .1 2.8 1.6L51 30c4.2 5 5.2 10.7 3 16-3.1 7.4-11.2 11.8-22 11.8S13.1 53.4 10 46c-2.2-5.3-1.2-11 3-16Z" />
+              <path class="onboarding-avatar-face" d="M21.5 36c.8-1.8 2.1-2.7 3.8-2.7m13.4 0c1.7 0 3 .9 3.8 2.7M28.5 42c2.1 2.1 4.9 2.1 7 0m-3.5 0v2.8m0 0c-1.2 1.1-2.3 1.1-3.4.1m3.4-.1c1.1 1 2.2 1 3.4-.1" />
+              <circle class="onboarding-avatar-cheek" cx="20.5" cy="42" r="3.1" />
+              <circle class="onboarding-avatar-cheek" cx="43.5" cy="42" r="3.1" />
+            </svg>
             <span class="onboarding-photo-add" aria-hidden="true">+</span>
           </button>
           <input id="onboarding-photo" ref="photoInput" class="sr-only" type="file" accept="image/jpeg,image/png,image/webp,image/avif" @change="chooseProfilePhoto" />
@@ -482,35 +466,21 @@ onBeforeUnmount(() => { unsubscribe?.(); clearInterval(countdown); accountRevisi
             <Input id="onboarding-email" v-model="email" type="email" autocomplete="email" readonly aria-readonly="true" />
           </div>
           <div class="onboarding-field">
-            <Label for="onboarding-city">Ville ou quartier <span class="optional">(facultatif)</span></Label>
+            <div class="onboarding-location-label-row">
+              <Label for="onboarding-city">Ta zone <span class="optional">(facultatif)</span></Label>
+              <a class="onboarding-location-credit" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer" title="La détection utilise une position approximative avec ton autorisation." aria-label="© OpenStreetMap contributors">© OpenStreetMap contributors</a>
+            </div>
             <div class="onboarding-address-field">
               <MapPin class="onboarding-field-icon" aria-hidden="true" />
-              <AddressInput v-model="profile.address" input-id="onboarding-city" placeholder="Ex. : Lyon, Croix-Rousse" @select="handleAddressSelection" />
+              <AddressInput v-model="profile.address" input-id="onboarding-city" placeholder="Ex. : Belleville, Paris" :show-hint="false" @select="handleAddressSelection" />
             </div>
-            <p class="onboarding-location-privacy" :class="{ 'onboarding-location-privacy--found': cityDetectionStatus === 'found' }" aria-live="polite">
-              {{ cityDetectionMessage }}
-              <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">© OpenStreetMap</a>
-            </p>
-            <button v-if="cityDetectionStatus === 'unavailable'" type="button" class="onboarding-location-retry" @click="detectCityFromPosition">
-              <MapPin aria-hidden="true" />Réessayer la détection
-            </button>
+            <p class="sr-only" role="status" aria-live="polite">{{ cityDetectionMessage }}</p>
           </div>
           <div class="onboarding-field">
             <Label for="onboarding-bio">Quelques mots pour te présenter <span class="optional">(optionnel)</span></Label>
             <div class="counter-field"><textarea id="onboarding-bio" v-model="profile.bio" class="onboarding-bio-field" maxlength="160" rows="2" placeholder="Ce que tu aimes créer ou découvrir…"></textarea><span class="counter">{{ profile.bio?.length ?? 0 }}/160</span></div>
           </div>
         </div>
-
-        <fieldset class="onboarding-interest-section">
-          <legend>Tes centres d’intérêt artistiques</legend>
-          <p>Choisis au moins un domaine qui t’intéresse.</p>
-          <div class="onboarding-interest-grid">
-            <button v-for="discipline in signupDisciplines" :key="discipline.id" type="button" class="onboarding-interest-chip" :class="{ 'is-selected': profile.interests?.includes(discipline.id) }" :aria-pressed="profile.interests?.includes(discipline.id) ?? false" @click="toggleInterest(discipline.id)">
-              <DisciplineIcon :discipline="discipline.id" />
-              <span>{{ discipline.label }}</span>
-            </button>
-          </div>
-        </fieldset>
 
         <p v-if="error" class="onboarding-error" role="alert">{{ error }}</p>
         <button type="submit" class="onboarding-submit" :disabled="busy">
@@ -519,30 +489,16 @@ onBeforeUnmount(() => { unsubscribe?.(); clearInterval(countdown); accountRevisi
       </form>
 
       <form v-else-if="screen === 'preferences'" class="onboarding-form onboarding-form--preferences" novalidate @submit.prevent="savePreferences">
-        <section class="onboarding-preference-section">
-          <div class="onboarding-section-heading">
-            <div><h2>Ton rayon de découverte</h2></div>
+        <fieldset class="onboarding-interest-section">
+          <legend>Tes pratiques artistiques</legend>
+          <p>Choisis au moins un domaine qui t’intéresse.</p>
+          <div class="onboarding-interest-grid">
+            <button v-for="discipline in signupDisciplines" :key="discipline.id" type="button" class="onboarding-interest-chip" :class="{ 'is-selected': profile.interests?.includes(discipline.id) }" :aria-pressed="profile.interests?.includes(discipline.id) ?? false" @click="toggleInterest(discipline.id)">
+              <DisciplineIcon :discipline="discipline.id" />
+              <span>{{ discipline.label }}</span>
+            </button>
           </div>
-          <div class="onboarding-radius-options" role="group" aria-label="Rayon de découverte">
-            <button v-for="option in radiusOptions" :key="option.label" type="button" :class="{ 'is-selected': profile.discoveryRadiusKm === option.value }" :aria-pressed="profile.discoveryRadiusKm === option.value" @click="profile.discoveryRadiusKm = option.value">{{ option.label }}</button>
-          </div>
-          <button type="button" class="onboarding-location-toggle" role="switch" :aria-checked="!!profile.useCurrentLocation" :disabled="busy" @click="toggleCurrentLocation">
-            <span class="onboarding-location-copy"><strong>Utiliser ma localisation actuelle</strong><small>Uniquement si tu l’autorises, pour calculer les distances.</small></span>
-            <span class="onboarding-switch" aria-hidden="true"><span></span></span>
-          </button>
-          <button type="button" class="onboarding-city-toggle" :aria-expanded="showCityEditor" @click="showCityEditor = !showCityEditor">
-            <span><strong>Utiliser ma ville ou mon quartier</strong><small>{{ profile.address || 'Facultatif · visible par toi uniquement' }}</small></span>
-            <ChevronLeft aria-hidden="true" />
-          </button>
-          <div v-if="showCityEditor" class="onboarding-city-editor">
-            <Label for="onboarding-city-edit">Ville ou quartier <span class="optional">(facultatif)</span></Label>
-            <div class="onboarding-address-field">
-              <MapPin class="onboarding-field-icon" aria-hidden="true" />
-              <AddressInput v-model="profile.address" input-id="onboarding-city-edit" placeholder="Ex. : Lyon, Croix-Rousse" @select="handleAddressSelection" />
-            </div>
-            <p class="onboarding-location-privacy">Ta ville ou ta position restent privées et ne sont jamais affichées aux autres membres.</p>
-          </div>
-        </section>
+        </fieldset>
 
         <fieldset class="onboarding-preference-section onboarding-goal-section">
           <legend>Ce que tu recherches sur NOVART</legend>
@@ -564,10 +520,9 @@ onBeforeUnmount(() => { unsubscribe?.(); clearInterval(countdown); accountRevisi
 
       <section v-else class="onboarding-complete">
         <div class="onboarding-email-card">
-          <span class="onboarding-email-icon"><Mail aria-hidden="true" /><span><Check aria-hidden="true" /></span></span>
           <h2>{{ account?.emailVerified ? 'Ton adresse est confirmée' : 'Ta connexion est confirmée' }}</h2>
           <p>{{ account?.emailVerified ? 'Elle a été vérifiée lors de ta connexion sécurisée.' : 'Ton compte est prêt à rejoindre la communauté.' }}</p>
-          <span class="onboarding-email-address"><Mail aria-hidden="true" />{{ account?.email }}</span>
+          <span class="onboarding-email-address">{{ account?.email }}</span>
         </div>
         <ol class="onboarding-timeline">
           <li class="is-complete"><span class="onboarding-timeline-mark"><Check aria-hidden="true" /></span><div><strong>Compte créé</strong><p>Tes informations sont bien enregistrées.</p></div></li>

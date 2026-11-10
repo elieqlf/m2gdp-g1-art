@@ -77,7 +77,7 @@ async function locate() {
   locating.value = true; locateError.value = ''
   const ok = await requestPosition()
   locating.value = false
-  if (!ok) locateError.value = 'Position indisponible. Tu peux choisir une ville ou un quartier dans tes informations de profil.'
+  if (!ok) locateError.value = 'Position indisponible. Tu peux renseigner ta zone dans ton profil.'
   else { filters.sort = 'proximite'; filters.radiusKm = 5 }
 }
 </script>
