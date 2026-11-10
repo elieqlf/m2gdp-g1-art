@@ -15,7 +15,12 @@ import { navigate } from '@/lib/router'
 // des applications de transport) ; le panneau du bas reprend le flux de la maquette 05.
 const query = ref('')
 const discipline = ref('')
-const sheetOpen = ref(false)
+// Panneau du bas : replié (seulement la poignée et le titre), aperçu, ou ouvert en grand.
+type SheetState = 'closed' | 'peek' | 'open'
+const sheet = ref<SheetState>('peek')
+const sheetOpen = computed(() => sheet.value === 'open')
+const LEVELS: SheetState[] = ['closed', 'peek', 'open']
+const step = (direction: 1 | -1) => { sheet.value = LEVELS[Math.min(2, Math.max(0, LEVELS.indexOf(sheet.value) + direction))]! }
 const selectedId = ref('')
 const locating = ref(false)
 const map = ref<InstanceType<typeof ActivityMap> | null>(null)
@@ -70,7 +75,7 @@ function pick(s: Suggestion) {
 }
 async function select(id: string) {
   selectedId.value = id
-  sheetOpen.value = false
+  sheet.value = 'peek'
   await nextTick()
   document.querySelector('.discover-sheet__peek')?.scrollTo({ left: 0, behavior: 'smooth' })
 }
@@ -88,8 +93,8 @@ function dragEnd(event: PointerEvent) {
   if (startY === null) return
   const delta = event.clientY - startY
   startY = null
-  if (delta < -40) sheetOpen.value = true
-  else if (delta > 40) sheetOpen.value = false
+  if (delta < -40) step(1)
+  else if (delta > 40) step(-1)
 }
 </script>
 
@@ -112,19 +117,23 @@ function dragEnd(event: PointerEvent) {
 
     <button type="button" class="icon-button icon-button--round discover__locate" :disabled="locating" aria-label="Me localiser" @click="locate"><LocateFixed aria-hidden="true" /></button>
 
-    <section class="discover-sheet" :class="{ 'is-open': sheetOpen }" aria-labelledby="nearby-title">
+    <section class="discover-sheet" :class="{ 'is-open': sheet === 'open', 'is-closed': sheet === 'closed' }" aria-labelledby="nearby-title">
       <div class="discover-sheet__handle" @pointerdown="dragStart" @pointerup="dragEnd">
         <span class="sheet__grip" aria-hidden="true"></span>
         <div class="discover-sheet__header">
           <h2 id="nearby-title" class="section-title">Autour de toi</h2>
-          <button type="button" class="section-link discover-sheet__toggle" :aria-expanded="sheetOpen" aria-controls="discover-feed" @click="sheetOpen = !sheetOpen">
-            <template v-if="sheetOpen">Voir la carte<ChevronDown aria-hidden="true" /></template>
-            <template v-else>Tout voir<ChevronUp aria-hidden="true" /></template>
-          </button>
+          <div class="discover-sheet__actions">
+            <button v-if="sheet === 'peek'" type="button" class="icon-button icon-button--plain discover-sheet__hide" aria-label="Replier le panneau" aria-controls="discover-feed" @click="sheet = 'closed'"><ChevronDown aria-hidden="true" /></button>
+            <button type="button" class="section-link discover-sheet__toggle" :aria-expanded="sheet !== 'closed'" aria-controls="discover-feed" @click="sheet = sheet === 'open' ? 'peek' : sheet === 'closed' ? 'peek' : 'open'">
+              <template v-if="sheet === 'open'">Voir la carte<ChevronDown aria-hidden="true" /></template>
+              <template v-else-if="sheet === 'closed'">Afficher<ChevronUp aria-hidden="true" /></template>
+              <template v-else>Tout voir<ChevronUp aria-hidden="true" /></template>
+            </button>
+          </div>
         </div>
       </div>
 
-      <div id="discover-feed" class="discover-sheet__body">
+      <div v-show="sheet !== 'closed'" id="discover-feed" class="discover-sheet__body">
         <p v-if="store.activitiesStatus === 'loading' || store.activitiesStatus === 'idle'" class="loading-line" role="status"><span class="spinner" aria-hidden="true"></span>Chargement des activités…</p>
         <MascotState v-else-if="store.activitiesStatus === 'error'" title="Oups, pas de connexion" text="Impossible de charger les activités. Vérifie ta connexion puis réessaie.">
           <button type="button" class="btn btn--primary" @click="loadActivities(true)">Réessayer</button>

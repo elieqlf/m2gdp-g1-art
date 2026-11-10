@@ -66,4 +66,4 @@ export function goBack(fallback = 'decouvrir') {
   else navigate(fallback)
 }
 // Onglet actif de la barre de navigation pour chaque écran.
-export const tabOf = (name: RouteName) => ({ rechercher: 'rechercher', creer: 'mes-activites', modifier: 'mes-activites', conversations: 'conversations', conversation: 'conversations', message: 'conversations', notifications: 'profil', profil: 'profil', 'profil-modifier': 'profil', 'mes-activites': 'mes-activites', favoris: 'profil', communaute: 'profil' } as Record<string, string>)[name] ?? 'decouvrir'
+export const tabOf = (name: RouteName) => ({ rechercher: 'rechercher', creer: 'creer', conversations: 'conversations', conversation: 'conversations', message: 'conversations', profil: 'profil', 'profil-modifier': 'profil', 'mes-activites': 'profil', favoris: 'profil', communaute: 'profil' } as Record<string, string>)[name] ?? 'decouvrir'

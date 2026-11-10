@@ -94,20 +94,17 @@ test('Création : idées d’activités proposées par l’IA à partir de mots-
   await expect(page.getByRole('heading', { name: 'Ajouter des médias' })).toBeVisible()
 })
 
-test('Navigation : barre du bas rétractable et accès direct à « Mes activités »', async ({ page }) => {
+test('Accueil : le panneau « Autour de toi » se replie complètement', async ({ page }) => {
   await openApp(page, 'app', '#/decouvrir')
-  const nav = page.getByRole('navigation', { name: 'Navigation principale' })
-  await expect(nav.getByRole('link', { name: /Mes activités/ })).toBeVisible()
-  await expect(nav.getByRole('link', { name: 'Créer' })).toHaveCount(0)
-  await page.getByRole('button', { name: 'Masquer le menu' }).click()
-  await expect(nav).toBeHidden()
-  // Le choix est mémorisé sur l'appareil.
-  await page.reload()
-  await expect(page.getByRole('button', { name: 'Afficher le menu' })).toBeVisible()
-  await page.getByRole('button', { name: 'Afficher le menu' }).click()
-  await nav.getByRole('link', { name: /Mes activités/ }).click()
-  await expect(page.getByRole('heading', { name: 'Mes activités' })).toBeVisible()
-  await expect(page.getByRole('link', { name: 'Créer une activité' }).first()).toBeVisible()
+  const firstCard = page.locator('.discover-sheet__peek .activity-card').first()
+  await expect(firstCard).toBeVisible()
+  await page.getByRole('button', { name: 'Replier le panneau' }).click()
+  await expect(firstCard).toBeHidden()
+  await expect(page.getByRole('heading', { name: 'Autour de toi', exact: true })).toBeVisible()
+  await page.getByRole('button', { name: /Afficher/ }).click()
+  await expect(firstCard).toBeVisible()
+  // La barre de navigation d'origine est conservée.
+  await expect(page.getByRole('navigation', { name: 'Navigation principale' }).getByRole('link', { name: 'Créer' })).toBeVisible()
 })
 
 test('US-04/05/09/11/12 : rechercher, filtrer, s’inscrire et écrire au groupe', async ({ page }, testInfo) => {

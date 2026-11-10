@@ -1,4 +1,4 @@
-import { computed, reactive, ref } from 'vue'
+import { computed, reactive } from 'vue'
 import { listMembers, setFavorite, type Account, type Member, type Profile } from '@/services/firebase'
 import { getActivity, listActivities, watchMyActivities, watchMyOffers } from '@/services/activities'
 import { isUnread, otherMember, watchMyChats, type PrivateChat } from '@/services/messages'
@@ -27,13 +27,6 @@ export const store = reactive({
 })
 
 export const uid = computed(() => store.account?.uid ?? '')
-/** Barre du bas repliée (choix mémorisé sur cet appareil). */
-const NAV_KEY = 'novart_nav_collapsed'
-export const navCollapsed = ref((() => { try { return localStorage.getItem(NAV_KEY) === '1' } catch { return false } })())
-export function setNavCollapsed(value: boolean) {
-  navCollapsed.value = value
-  try { localStorage.setItem(NAV_KEY, value ? '1' : '0') } catch { /* stockage indisponible */ }
-}
 export const displayName = computed(() => [store.profile.firstName, store.profile.lastName].filter(Boolean).join(' ') || store.account?.email || 'Moi')
 export const me = computed(() => ({ uid: uid.value, name: store.profile.firstName || displayName.value, photo: store.profile.photoUrl || '' }))
 export const favorites = computed(() => store.profile.favoriteIds ?? [])

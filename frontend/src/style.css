@@ -56,7 +56,7 @@
 
 @theme inline {
     --font-sans: 'Poppins', Arial, sans-serif;
-    --font-heading: 'Fredoka', 'Poppins', Arial, sans-serif;
+    --font-heading: 'Caveat', cursive;
     --font-secondary: 'Montserrat', 'Poppins', Arial, sans-serif;
     --color-sidebar-ring: var(--sidebar-ring);
     --color-sidebar-border: var(--sidebar-border);
@@ -195,12 +195,8 @@
 .novart-app .form-title {
   color: var(--primary);
   font-family: var(--font-heading);
-  font-weight: 700;
+  font-weight: 400;
   line-height: 1.08;
-}
-
-.novart-app :is(h1, .form-title, .display-title, .section-title, .topbar__title) {
-  -webkit-text-stroke: .35px currentColor;
 }
 
 /* Functional messages remain in the interface typeface, even when Shadcn

@@ -15,7 +15,7 @@ import { disciplines } from '@/lib/activity'
 import { imageUploadError, prepareImageUpload } from '@/lib/image-upload'
 import { suggestCityOrNeighborhood } from '@/services/reverse-geocode'
 import { rememberProfilePhoto } from '@/lib/profile-photo-history'
-import { loadActivities, loadMembers, navCollapsed, notifyPositionFallback, requestPosition, resetStore, startWatchers, store } from '@/lib/store'
+import { loadActivities, loadMembers, notifyPositionFallback, requestPosition, resetStore, startWatchers, store } from '@/lib/store'
 import { tabOf, useRoute } from '@/lib/router'
 
 type Screen = 'loading' | 'request' | 'sent' | 'confirm' | 'expired' | 'profile' | 'preferences' | 'complete' | 'app' | 'account-error'
@@ -467,7 +467,7 @@ onBeforeUnmount(() => { unsubscribe?.(); clearInterval(countdown); accountRevisi
     <span class="novart-splash-spinner" aria-hidden="true"></span>
     <span class="sr-only">Préparation de l’application…</span>
   </main>
-  <div v-else-if="screen === 'app'" class="novart-app app-frame" :class="{ 'app-frame--nav-collapsed': showNav && navCollapsed }">
+  <div v-else-if="screen === 'app'" class="novart-app app-frame">
     <a href="#app-main" class="skip-link">Aller au contenu</a>
     <main id="app-main" class="app-main" :class="{ 'app-main--no-nav': !showNav }">
       <Transition name="view" mode="out-in" @after-enter="focusPageHeading">
