@@ -191,6 +191,10 @@
   line-height: 1.08;
 }
 
+.novart-app :is(h1, .form-title, .display-title, .section-title, .topbar__title) {
+  -webkit-text-stroke: .35px currentColor;
+}
+
 /* Functional messages remain in the interface typeface, even when Shadcn
    applies its generic heading class. */
 .novart-app [data-slot="alert-title"] {
@@ -312,7 +316,7 @@
 }
 
 .novart-app .form-title {
-  font-size: clamp(2.3rem, 10vw, 3rem);
+  font-size: clamp(2.45rem, 10.4vw, 3.2rem);
   margin-bottom: .6rem;
   overflow-wrap: anywhere;
 }
@@ -328,7 +332,7 @@
   margin: 0;
   color: var(--novart-red);
   font-family: 'Caveat', cursive;
-  font-size: clamp(2.65rem, 10vw, 3.2rem);
+  font-size: clamp(2.8rem, 10.4vw, 3.35rem);
   font-weight: 700;
   letter-spacing: 0;
   line-height: 1;

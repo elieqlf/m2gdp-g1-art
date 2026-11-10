@@ -10,6 +10,7 @@ import { fileURLToPath } from 'node:url'
 const here = dirname(fileURLToPath(import.meta.url))
 const root = resolve(here, '../..')
 export const catalog = JSON.parse(readFileSync(resolve(root, 'frontend/src/data/catalog.json'), 'utf8'))
+const demoProfilePhotos = JSON.parse(readFileSync(resolve(root, 'frontend/src/lib/demo-profile-photo-map.json'), 'utf8'))
 
 function prng(seed) {
   let s = seed >>> 0
@@ -164,7 +165,7 @@ export function buildUsers(rand) {
       address: d.label,
       addressLat: +(d.lat + (rand() - 0.5) * 0.006).toFixed(5),
       addressLng: +(d.lng + (rand() - 0.5) * 0.008).toFixed(5),
-      photoUrl: `/images/people/portrait-${String((i % 8) + 1).padStart(2, '0')}.webp`,
+      photoUrl: demoProfilePhotos[`demo-user-${String(i + 1).padStart(3, '0')}`],
       profileComplete: true,
       demo: true,
     })

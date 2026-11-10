@@ -26,8 +26,8 @@
 .page-header { margin: .25rem 0 1.25rem; }
 .page-header--row { display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
 .novart-app .display-title, .novart-app .section-title { font-family: var(--font-heading); font-weight: 700; color: var(--primary); line-height: 1.1; }
-.novart-app .display-title { font-size: clamp(2.2rem, 8vw, 2.9rem); overflow-wrap: anywhere; }
-.novart-app .section-title { font-size: clamp(1.6rem, 5.5vw, 2rem); }
+.novart-app .display-title { font-size: clamp(2.4rem, 8.4vw, 3.1rem); overflow-wrap: anywhere; }
+.novart-app .section-title { font-size: clamp(1.75rem, 5.8vw, 2.15rem); }
 .lead { margin-top: .4rem; font-size: 1.02rem; line-height: 1.45; color: var(--foreground); }
 .subheading { font-size: 1.2rem; font-weight: 600; color: var(--ink); margin-bottom: .75rem; }
 .muted { color: color-mix(in srgb, var(--foreground) 80%, transparent); font-size: .92rem; }
@@ -43,7 +43,7 @@
 .topbar { display: flex; align-items: center; justify-content: space-between; gap: .5rem; min-height: 3rem; margin-bottom: .5rem; }
 .topbar--end { justify-content: flex-end; }
 .topbar__actions { display: flex; gap: .4rem; align-items: center; }
-.novart-app .topbar__title { font-family: var(--font-heading); color: var(--primary); font-size: 1.5rem; font-weight: 700; text-align: center; }
+.novart-app .topbar__title { font-family: var(--font-heading); color: var(--primary); font-size: 1.6rem; font-weight: 700; text-align: center; }
 .topbar__spacer { width: 2.75rem; }
 
 /* Boutons */

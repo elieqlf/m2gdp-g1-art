@@ -21,7 +21,7 @@ Les photos d’activités et de profils sont des fichiers locaux WebP, pour que 
 
 ## Photos de profil
 
-Les portraits sont des exemples de profils pour les données de démonstration. Les vrais membres ne reçoivent pas de visage attribué automatiquement : ils gardent leurs initiales jusqu’à ce qu’ils choisissent une photo.
+Les 120 portraits locaux du dossier `frontend/public/images/people/demo/` sont réservés aux profils de démonstration. Ils viennent de [Random User Generator](https://randomuser.me/) et sont attribués une seule fois, avec une correspondance de genre cohérente avec les prénoms de démonstration. La liste des URLs sources est conservée dans `scripts/seed/demo-profile-photo-sources.json`. Les huit portraits proposés au choix dans le profil restent ceux du tableau ci-dessous. Les vrais membres ne reçoivent pas de visage attribué automatiquement : ils gardent leurs initiales jusqu’à ce qu’ils choisissent une photo.
 
 | Fichier | Photographe | Source |
 | --- | --- | --- |
