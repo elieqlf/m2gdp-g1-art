@@ -114,7 +114,9 @@ export async function getProfile(user: Account): Promise<Partial<Profile>> {
     const { email, ...profile } = (snapshot.data() ?? {}) as Partial<Profile> & { email?: string }
     // Profils créés avant ce changement : l'e-mail est retiré à la connexion suivante.
     if (email !== undefined) await updateDoc(ref, { email: deleteField() }).catch(() => undefined)
-    if (profile.profileComplete) await setDoc(doc(db, 'publicProfiles', user.uid), publicProfileFields(profile), { merge: true })
+    // Copie publique (communauté) remise à jour en arrière-plan : si elle est refusée
+    // (règles pas encore publiées, champ trop long), la connexion ne doit pas échouer.
+    if (profile.profileComplete) void setDoc(doc(db, 'publicProfiles', user.uid), publicProfileFields(profile), { merge: true }).catch(() => undefined)
     return profile
   }
   await setDoc(ref, { createdAt: serverTimestamp(), profileComplete: false })
