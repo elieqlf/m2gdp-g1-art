@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { demoProfilePhoto, isProfilePhotoPath } from '@/lib/member-photos'
+import { demoProfilePhoto, isValidProfilePhoto } from '@/lib/member-photos'
 const props = defineProps<{ name?: string; photo?: string; userId?: string; size?: 'xs' | 'sm' | 'md' | 'lg' }>()
 const initials = computed(() => (props.name || '?').split(/\s+/).filter(Boolean).slice(0, 2).map(p => p[0]?.toUpperCase()).join('') || '?')
 // Teinte stable par personne, choisie dans la palette de la charte.
@@ -8,7 +8,7 @@ const tone = computed(() => [...(props.name || '')].reduce((sum, c) => sum + c.c
 const resolvedPhoto = computed(() => {
   const demoPhoto = demoProfilePhoto(props.userId)
   if (demoPhoto) return demoPhoto
-  if (props.photo && (/^https?:\/\//i.test(props.photo) || isProfilePhotoPath(props.photo))) return props.photo
+  if (props.photo && isValidProfilePhoto(props.photo)) return props.photo
   return ''
 })
 </script>

@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test'
+import { readFileSync } from 'node:fs'
 import { ME, capture, demoData, openApp } from './fixtures'
 
 // Scénario de lancement (J5) : « Créer une activité » puis « Rechercher, s'inscrire et prendre contact ».
@@ -141,7 +142,17 @@ test('US-13/14 : profil, statistiques et modification des informations', async (
   await page.getByRole('link', { name: 'Mes informations' }).click()
   await page.getByLabel(/Quelques mots pour te présenter/).fill('Aquarelliste du dimanche.')
   await page.getByRole('button', { name: 'Théâtre' }).click()
+  await page.locator('input[type="file"][accept*="image/webp"]').setInputFiles({
+    name: 'portrait.webp',
+    mimeType: 'image/webp',
+    buffer: readFileSync('frontend/public/images/people/portrait-01.webp'),
+  })
+  await expect(page.locator('.profile-preview img.user-avatar')).toHaveAttribute('src', /^data:image\/webp;base64,/)
   await page.getByRole('button', { name: 'Enregistrer' }).click()
   await expect(page.getByText('Aquarelliste du dimanche.')).toBeVisible()
   await expect(page.getByText('Peinture · Dessin · Musique · Théâtre')).toBeVisible()
+  await expect(page.locator('.profile-head__avatar img.user-avatar')).toHaveAttribute('src', /^data:image\/webp;base64,/)
+  await page.getByRole('link', { name: 'Communauté' }).click()
+  await expect(page.getByText('Aquarelliste du dimanche.')).toBeVisible()
+  await expect(page.locator('.member-tile img.user-avatar[src^="data:image/webp;base64,"]')).toHaveCount(1)
 })

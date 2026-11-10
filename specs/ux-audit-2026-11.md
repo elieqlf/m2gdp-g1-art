@@ -19,7 +19,7 @@ et corrigés là où une incohérence empêchait d’avancer.
 | Création d’activité | Des photos d’exemple suggérées prenaient la place de l’image de l’organisateur; coller une URL ne fonctionnait pas. | Départ sans photo présélectionnée; choix depuis la galerie ou les fichiers, aperçu, remplacement et retrait. Le brouillon est conservé localement. |
 | Photos | L’ajout d’une image pouvait être confondu avec une validation de son contenu. | L’image est contrôlée pour le type, le poids et l’optimisation technique. **Aucune modération automatique n’est ajoutée.** |
 | Participation | Un clic pouvait échouer si la dernière place venait d’être prise, sans indiquer quoi faire ensuite. | Erreur spécifique quand l’activité est complète, confirmation d’inscription et accès direct au groupe, aux détails et au rappel. |
-| Profil et communauté | La liste de membres lisait les profils privés et pouvait afficher ville ou coordonnées. | Données privées limitées au propriétaire. La communauté lit une liste blanche de champs publics sans e-mail ni localisation; la carte des membres est supprimée. |
+| Profil et communauté | La liste de membres lisait les profils privés et pouvait afficher ville ou coordonnées. La photo importée n’était pas rendue dans l’avatar; la communauté pouvait garder l’ancienne bio en cache. | Données privées limitées au propriétaire. La communauté lit une liste blanche sans e-mail ni localisation; la carte des membres est supprimée. Les photos WebP importées s’affichent, profil privé et fiche publique sont enregistrés ensemble, et le cache public est actualisé dès la sauvegarde. |
 | Navigation mobile | Les vues lourdes, dont la carte, étaient téléchargées dès l’ouverture. | Les écrans sont chargés à la demande; un état de chargement et un message de reprise sont affichés pendant ou après le chargement d’une vue. |
 | Illustrations | Des mascottes de petite définition restaient dans les pages vitrine et les états vides. | Remplacées par les extraits HD déjà disponibles dans le dépôt (1 520–1 536 px de large); les anciennes versions floues sont retirées. |
 | Titres et couleurs | Le site vitrine utilisait encore Sigmar One, un rouge moins vif et un fond jaune. | Fredoka 600 pour les titres, Caveat conservée pour la tagline, rouge `#FF0000` et fond `#F5F5F5` harmonisés avec l’application. |
@@ -36,9 +36,11 @@ Les lieux publics d’une activité restent visibles sur sa fiche et sa carte.
 
 - Les tests unitaires vérifient les filtres sans zone, la saisie de ville et le
   nettoyage des coordonnées en cas de texte libre.
-- Les parcours Playwright mobile couvrent connexion, inscription, communauté,
-  filtres sans localisation, création, carte, inscription à une activité,
-  conversation, édition et suppression.
+- Les parcours Playwright couvrent sur trois tailles d’écran connexion,
+  inscription, communauté, filtres sans localisation, création, carte,
+  inscription à une activité, conversation, édition et suppression. Le scénario
+  de profil téléverse aussi une image de test, modifie la bio et vérifie son
+  affichage dans la communauté.
 - Les tests utilisent des services Firebase/Places simulés : ils ne créent pas
   de compte, n’envoient pas de vrai e-mail et n’écrivent pas dans Firestore.
 - Les règles Firestore doivent être déployées avant le front; les profils déjà

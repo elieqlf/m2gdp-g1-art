@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app'
 import { browserLocalPersistence, browserSessionPersistence, getAuth, getRedirectResult, GoogleAuthProvider, sendSignInLinkToEmail, isSignInWithEmailLink, OAuthProvider, onAuthStateChanged, setPersistence, signInWithEmailLink, signInWithPopup, signInWithRedirect, signOut, type User } from 'firebase/auth'
-import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, getDocs, serverTimestamp, arrayUnion, arrayRemove, deleteField } from 'firebase/firestore'
+import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, getDocs, serverTimestamp, arrayUnion, arrayRemove, deleteField, writeBatch } from 'firebase/firestore'
 import { firebaseConfig } from '../../../public/firebase-config.js'
 
 const app = initializeApp(firebaseConfig)
@@ -103,15 +103,17 @@ export async function getProfile(user: Account): Promise<Partial<Profile>> {
     const { email, ...profile } = (snapshot.data() ?? {}) as Partial<Profile> & { email?: string }
     // Profils créés avant ce changement : l'e-mail est retiré à la connexion suivante.
     if (email !== undefined) await updateDoc(ref, { email: deleteField() }).catch(() => undefined)
-    if (profile.profileComplete) await setDoc(doc(db, 'publicProfiles', user.uid), publicProfileFields(profile)).catch(() => undefined)
+    if (profile.profileComplete) await setDoc(doc(db, 'publicProfiles', user.uid), publicProfileFields(profile), { merge: true })
     return profile
   }
   await setDoc(ref, { createdAt: serverTimestamp(), profileComplete: false })
   return { profileComplete: false }
 }
 export async function saveProfile(uid: string, profile: Profile) {
-  await setDoc(doc(db, 'users', uid), { ...profile, profileComplete: true }, { merge: true })
-  await setDoc(doc(db, 'publicProfiles', uid), publicProfileFields(profile)).catch(() => undefined)
+  const batch = writeBatch(db)
+  batch.set(doc(db, 'users', uid), { ...profile, profileComplete: true }, { merge: true })
+  batch.set(doc(db, 'publicProfiles', uid), publicProfileFields(profile), { merge: true })
+  await batch.commit()
 }
 export async function saveOnboardingProgress(uid: string, profile: Partial<Profile>, onboardingStep: number) {
   await setDoc(doc(db, 'users', uid), { ...profile, profileComplete: false, onboardingStep }, { merge: true })
@@ -122,9 +124,11 @@ export async function listMembers(): Promise<Member[]> {
 }
 // US-14 : modification des informations de base (photo, nom, description, centres d'intérêt).
 export async function updateProfile(uid: string, changes: Partial<Profile>) {
-  await setDoc(doc(db, 'users', uid), changes, { merge: true })
+  const batch = writeBatch(db)
+  batch.set(doc(db, 'users', uid), changes, { merge: true })
   const publicChanges = changedPublicProfileFields(changes)
-  if (Object.keys(publicChanges).length) await setDoc(doc(db, 'publicProfiles', uid), publicChanges, { merge: true }).catch(() => undefined)
+  if (Object.keys(publicChanges).length) batch.set(doc(db, 'publicProfiles', uid), publicChanges, { merge: true })
+  await batch.commit()
 }
 // Favoris : liste d'identifiants d'activités conservée dans le profil.
 export async function setFavorite(uid: string, activityId: string, favorite: boolean) {

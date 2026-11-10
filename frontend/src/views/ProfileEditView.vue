@@ -65,6 +65,15 @@ async function save() {
     await updateProfile(uid.value, changes)
     if (form.photoUrl.trim()) rememberProfilePhoto(uid.value, form.photoUrl.trim(), form.photoHistory)
     Object.assign(store.profile, changes)
+    store.members[uid.value] = {
+      ...store.members[uid.value],
+      uid: uid.value,
+      firstName: changes.firstName,
+      lastName: changes.lastName,
+      photoUrl: changes.photoUrl,
+      bio: changes.bio,
+      interests: changes.interests,
+    }
     notify('Profil mis à jour.')
     navigate('profil')
   } catch { error.value = 'Enregistrement impossible. Tes modifications sont conservées, réessaie.' }
