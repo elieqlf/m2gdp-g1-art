@@ -48,7 +48,7 @@ const unreadActive = computed(() => groups.value.actives.filter(isGroupUnread).l
       <ul v-else class="conversation-list" aria-label="Conversations privées">
         <li v-for="c in privates" :key="c.id">
           <a :href="`#/messages/${encodeURIComponent(c.otherId)}`" class="conversation-item" :class="{ 'is-unread': c.unread }">
-            <UserAvatar :name="c.name" :photo="store.members[c.otherId]?.photoUrl" size="lg" />
+            <UserAvatar :name="c.name" :photo="store.members[c.otherId]?.photoUrl" :user-id="c.otherId" size="lg" />
             <span class="conversation-item__body">
               <span class="conversation-item__top"><strong>{{ c.name }}</strong><time v-if="c.lastMessage">{{ relativeTime(c.lastMessage.sentAtMs) }}</time></span>
               <span v-if="c.activityTitle" class="conversation-item__people">À propos de «&nbsp;{{ c.activityTitle }}&nbsp;»</span>
@@ -73,7 +73,7 @@ const unreadActive = computed(() => groups.value.actives.filter(isGroupUnread).l
             <span class="conversation-item__top"><strong>{{ a.title }}</strong><time>{{ relativeTime(a.lastMessage?.sentAtMs ?? a.createdAtMs) }}</time></span>
             <DisciplineBadge :discipline="a.discipline" />
             <span class="conversation-item__last">{{ a.lastMessage ? `${a.lastMessage.authorName} : ${a.lastMessage.text}` : 'Aucun message pour l’instant. Lance la discussion !' }}</span>
-            <span class="conversation-item__people"><span class="avatar-stack"><UserAvatar v-for="id in [a.organizerId, ...a.participantIds].slice(0, 3)" :key="id" :name="id === a.organizerId ? a.organizerName : memberName(id)" size="xs" /></span>{{ a.participantIds.length + 1 }} membres</span>
+            <span class="conversation-item__people"><span class="avatar-stack"><UserAvatar v-for="id in [a.organizerId, ...a.participantIds].slice(0, 3)" :key="id" :name="id === a.organizerId ? a.organizerName : memberName(id)" :photo="a.organizerId === id ? a.organizerPhoto || store.members[id]?.photoUrl : store.members[id]?.photoUrl" :user-id="id" size="xs" /></span>{{ a.participantIds.length + 1 }} membres</span>
           </span>
           <span v-if="isGroupUnread(a)" class="unread-dot"><span class="sr-only">Non lu</span></span>
           <ChevronRight v-else aria-hidden="true" class="conversation-item__chevron" />

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { canJoinDirectly, defaultFilters, distanceKm, filterActivities, formatDistance, hasOfferFor, isPast, offerDeadline, placesLeft, queueNeedsRefresh, validateDraft, waitlistPosition, type Activity, type ActivityDraft } from '../src/lib/activity'
+import { activityDistance, canJoinDirectly, defaultFilters, distanceKm, filterActivities, formatDistance, hasOfferFor, isPast, offerDeadline, placesLeft, queueNeedsRefresh, validateDraft, waitlistPosition, type Activity, type ActivityDraft } from '../src/lib/activity'
 import * as queue from '../src/lib/waitlist'
 import { parseRoute } from '../src/lib/router'
 
@@ -30,14 +30,14 @@ describe('recherche et filtres (US-04/US-05)', () => {
     make({ id: 'passee', date: '2026-11-01' }),
   ]
   it('ignore les activités passées et trie par proximité', () => {
-    expect(filterActivities(list, defaultFilters(), bellecour, now).map(a => a.id)).toEqual(['b', 'a', 'c'])
+    expect(filterActivities(list, { ...defaultFilters(), radiusKm: 50 }, bellecour, now).map(a => a.id)).toEqual(['b', 'a', 'c'])
   })
   it('cherche sans tenir compte des accents ni de la casse', () => {
     expect(filterActivities(list, { ...defaultFilters(), query: 'TÊTE d’or' }, bellecour, now).map(a => a.id)).toEqual(['a'])
     expect(filterActivities(list, { ...defaultFilters(), query: 'jam' }, bellecour, now).map(a => a.id)).toEqual(['b'])
   })
   it('combine discipline, date, rayon, places et niveau', () => {
-    expect(filterActivities(list, { ...defaultFilters(), disciplines: ['musique', 'danse'] }, bellecour, now).map(a => a.id)).toEqual(['b', 'c'])
+    expect(filterActivities(list, { ...defaultFilters(), radiusKm: 50, disciplines: ['musique', 'danse'] }, bellecour, now).map(a => a.id)).toEqual(['b', 'c'])
     expect(filterActivities(list, { ...defaultFilters(), datePreset: 'aujourdhui' }, bellecour, now).map(a => a.id)).toEqual(['b'])
     expect(filterActivities(list, { ...defaultFilters(), datePreset: 'weekend' }, bellecour, now).map(a => a.id)).toEqual(['a'])
     expect(filterActivities(list, { ...defaultFilters(), radiusKm: 5 }, bellecour, now).map(a => a.id)).toEqual(['b', 'a'])
@@ -45,8 +45,12 @@ describe('recherche et filtres (US-04/US-05)', () => {
     expect(filterActivities(list, { ...defaultFilters(), level: 'debutant' }, bellecour, now).map(a => a.id)).toEqual(['b', 'a'])
   })
   it('trie par date ou par popularité', () => {
-    expect(filterActivities(list, { ...defaultFilters(), sort: 'date' }, bellecour, now).map(a => a.id)).toEqual(['b', 'a', 'c'])
-    expect(filterActivities(list, { ...defaultFilters(), sort: 'popularite' }, bellecour, now)[2]!.id).toBe('b')
+    expect(filterActivities(list, { ...defaultFilters(), radiusKm: 50, sort: 'date' }, bellecour, now).map(a => a.id)).toEqual(['b', 'a', 'c'])
+    expect(filterActivities(list, { ...defaultFilters(), radiusKm: 50, sort: 'popularite' }, bellecour, now)[2]!.id).toBe('b')
+  })
+  it('ne devine pas la position et désactive de fait les distances sans zone choisie', () => {
+    expect(activityDistance(base, null)).toBeNull()
+    expect(filterActivities(list, defaultFilters(), null, now).map(a => a.id)).toEqual(['b', 'a', 'c'])
   })
   it('considère une activité terminée après son heure de fin', () => {
     expect(isPast(make({ date: '2026-11-10', endTime: '09:00' }), now)).toBe(true)

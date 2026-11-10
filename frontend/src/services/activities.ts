@@ -1,22 +1,28 @@
 import { addDoc, arrayRemove, arrayUnion, collection, deleteDoc, doc, getDoc, getDocs, onSnapshot, orderBy, query, runTransaction, serverTimestamp, updateDoc, where, type DocumentData } from 'firebase/firestore'
 import { db } from './firebase'
-import { canJoinDirectly, type Activity, type ActivityDraft, type Offer } from '@/lib/activity'
+import { canJoinDirectly, defaultCover, type Activity, type ActivityDraft, type Offer } from '@/lib/activity'
 import * as queue from '@/lib/waitlist'
 
 export interface Author { uid: string; name: string; photo?: string }
 export interface Message { id: string; authorId: string; authorName: string; authorPhoto?: string; text: string; sentAtMs: number }
 export class ActivityFullError extends Error { constructor() { super('Cette activité est complète.') } }
 
-const toActivity = (id: string, data: DocumentData): Activity => ({
-  ...data,
-  id,
-  participantIds: Array.isArray(data.participantIds) ? data.participantIds : [],
-  waitlistIds: Array.isArray(data.waitlistIds) ? data.waitlistIds : [],
-  offer: data.offer && typeof data.offer.uid === 'string' ? data.offer as Offer : null,
-  capacity: Number(data.capacity) || 0,
-  lat: typeof data.lat === 'number' ? data.lat : null,
-  lng: typeof data.lng === 'number' ? data.lng : null,
-} as Activity)
+const toActivity = (id: string, data: DocumentData): Activity => {
+  const discipline = typeof data.discipline === 'string' ? data.discipline : 'autre'
+  const savedCover = typeof data.coverUrl === 'string' ? data.coverUrl : ''
+  const coverUrl = !savedCover || /^\/images\/activities\/[^/]+-\d\.svg$/i.test(savedCover) ? defaultCover(discipline) : savedCover
+  return {
+    ...data,
+    id,
+    coverUrl,
+    participantIds: Array.isArray(data.participantIds) ? data.participantIds : [],
+    waitlistIds: Array.isArray(data.waitlistIds) ? data.waitlistIds : [],
+    offer: data.offer && typeof data.offer.uid === 'string' ? data.offer as Offer : null,
+    capacity: Number(data.capacity) || 0,
+    lat: typeof data.lat === 'number' ? data.lat : null,
+    lng: typeof data.lng === 'number' ? data.lng : null,
+  } as Activity
+}
 
 // US-03/US-04 : flux et recherche. Le volume (quelques centaines d'activités)
 // permet de filtrer côté navigateur, sans index composite.

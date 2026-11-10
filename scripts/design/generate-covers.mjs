@@ -18,7 +18,7 @@ function icon(name) {
   return Function(`return ${source.slice(objectStart, end + 2)}`)().node
 }
 
-const RED = '#C03C3A', DEEP = '#781C27', CREAM = '#FFFEF1', ROSE = '#FFFBFB', GREY = '#545454'
+const RED = '#FF0000', DEEP = '#781C27', CREAM = '#F5F5F5', ROSE = '#FFFBFB', GREY = '#545454'
 const motifs = {
   peinture: ['palette', 'paintbrush'], dessin: ['pencil', 'pen-tool'], musique: ['music', 'guitar'], chant: ['mic-vocal', 'music-2'],
   danse: ['person-standing', 'footprints'], theatre: ['drama', 'venetian-mask'], photo: ['camera', 'aperture'], 'street-art': ['spray-can', 'brick-wall'],

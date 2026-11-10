@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test'
 import { resolve } from 'node:path'
+import { readFileSync } from 'node:fs'
 import { ME, capture, demoData, openApp } from './fixtures'
 
 // Scénario de lancement (J5) : « Créer une activité » puis « Rechercher, s'inscrire et prendre contact ».
@@ -42,7 +43,9 @@ test('US-07 : créer une activité en quatre étapes puis la retrouver', async (
   await capture(page, testInfo, 'creation-etape-1')
   await page.getByRole('button', { name: 'Continuer' }).click()
   await expect(page.getByRole('heading', { name: 'Ajouter des médias' })).toBeVisible()
-  await expect(page.getByRole('radio', { name: /Illustration Peinture, variante 1/ })).toHaveAttribute('aria-checked', 'true')
+  await expect(page.getByText('Aucune photo ajoutée')).toBeVisible()
+  await page.locator('.cover-picker input[type="file"]').setInputFiles('frontend/public/images/people/portrait-01.webp')
+  await expect(page.getByAltText('Aperçu de la photo de l’activité')).toBeVisible()
   await page.getByRole('button', { name: 'Continuer' }).click()
   await expect(page.getByRole('heading', { name: 'Lieu, date et places' })).toBeVisible()
   await page.locator('.venue-option').first().click()
@@ -96,10 +99,13 @@ test('US-05 : aucun résultat, carte et réinitialisation', async ({ page }, tes
   await openApp(page, 'app', '#/rechercher?q=zzzz')
   await expect(page.getByRole('heading', { name: 'Aucune activité trouvée par ici' })).toBeVisible()
   await capture(page, testInfo, 'aucun-resultat', '.mascot-state__image')
-  await page.getByRole('button', { name: 'Voir toutes les activités' }).click()
-  await expect(page.getByRole('heading', { name: 'Activités autour de moi' })).toBeVisible()
   await page.getByRole('button', { name: 'Carte' }).click()
   await expect(page.getByRole('region', { name: 'Carte des activités' })).toBeVisible()
+  await expect(page.locator('.map-view__empty')).toContainText('Aucune activité trouvée par ici')
+  await expect(page.locator('.map-view__empty').getByRole('button', { name: 'Modifier mes filtres' })).toBeVisible()
+  await page.getByRole('button', { name: 'Voir toutes les activités' }).click()
+  await expect(page.getByRole('heading', { name: 'Toutes les activités' })).toBeVisible()
+  await page.getByRole('button', { name: 'Carte' }).click()
   await expect(page.locator('.map-view__sheet .activity-card')).toBeVisible()
 })
 
@@ -237,6 +243,8 @@ test('Recherche : autocomplétion des activités, disciplines et lieux', async (
   await expect(page).toHaveURL(/#\/rechercher\?discipline=danse/)
   // Lieu, depuis l'écran Rechercher : devient la recherche.
   await page.goto('/#/rechercher')
+  // Les écrans sont chargés à la demande : attendre celui de la recherche avant de taper.
+  await expect(page.getByRole('group', { name: 'Affichage des résultats' })).toBeVisible()
   await box.fill('croix-r')
   await list.getByRole('option', { name: /^Croix-Rousse.*Quartier/ }).click()
   await expect(box).toHaveValue('Croix-Rousse')
@@ -265,8 +273,11 @@ test('Groupes : un message reçu s’affiche en direct, avec non-lus et pastille
   await page.getByRole('button', { name: 'Retour' }).click()
   await expect(page.getByRole('tab', { name: 'Groupes', exact: true })).toBeVisible()
   await expect(item).not.toHaveClass(/is-unread/)
+  // Le premier message flottant a fini de s'afficher.
+  await expect(page.getByText(`Nouveau message dans « ${group.title} »`)).toBeHidden({ timeout: 8000 })
   // Dans le groupe ouvert, un nouveau message s'affiche sans message flottant.
   await item.click()
+  await expect(page.getByText('On se retrouve devant l’entrée ?')).toBeVisible()
   await page.evaluate(([id, uid, name]) => (window as unknown as { __novartTest: { receiveGroupMessage: (...a: string[]) => void } }).__novartTest.receiveGroupMessage(id!, uid!, name!, 'Je serai là à l’heure !'), [group.id, author.uid, author.firstName])
   await expect(page.getByText('Je serai là à l’heure !')).toBeVisible()
   await expect(page.getByText(`Nouveau message dans « ${group.title} »`)).toBeHidden()
@@ -282,8 +293,8 @@ test('US-08 : modifier son activité sans descendre sous le nombre d’inscrits,
   await capture(page, testInfo, 'modification', '.edit-cover img')
   // Photo de l'organisateur à la place de l'illustration (réduite puis envoyée à R2).
   await page.locator('.edit-cover__button').click()
-  await page.locator('#cover-file').setInputFiles(resolve(__dirname, '../../frontend/public/images/novart-onboarding-profile-hd.webp'))
-  await expect(page.getByRole('button', { name: 'Changer ma photo' })).toBeVisible()
+  await page.locator('.cover-picker input[type="file"]').setInputFiles(resolve(__dirname, '../../frontend/public/images/novart-onboarding-profile-hd.webp'))
+  await expect(page.getByRole('button', { name: 'Choisir une autre photo' })).toBeVisible()
   await expect(page.locator('.cover-picker__preview img')).toHaveAttribute('src', /api\.novart\.test\/files\/covers\//)
   await expect.poll(() => page.locator('.cover-picker__preview img').evaluate((img: HTMLImageElement) => [img.naturalWidth, img.naturalHeight])).toEqual([1536, 960])
   await capture(page, testInfo, 'modification-photo', '.cover-picker__preview img')
@@ -302,11 +313,21 @@ test('US-13/14 : profil, statistiques et modification des informations', async (
   await expect(page.getByText('Activités à venir')).toBeVisible()
   await capture(page, testInfo, 'profil-app')
   await page.getByRole('link', { name: 'Mes informations' }).click()
-  await page.getByLabel('Description').fill('Aquarelliste du dimanche.')
+  await page.getByLabel(/Quelques mots pour te présenter/).fill('Aquarelliste du dimanche.')
   await page.getByRole('button', { name: 'Théâtre' }).click()
+  await page.locator('input[type="file"][accept*="image/webp"]').setInputFiles({
+    name: 'portrait.webp',
+    mimeType: 'image/webp',
+    buffer: readFileSync('frontend/public/images/people/portrait-01.webp'),
+  })
+  await expect(page.locator('.profile-preview img.user-avatar')).toHaveAttribute('src', /^data:image\/webp;base64,/)
   await page.getByRole('button', { name: 'Enregistrer' }).click()
   await expect(page.getByText('Aquarelliste du dimanche.')).toBeVisible()
   await expect(page.getByText('Peinture · Dessin · Musique · Théâtre')).toBeVisible()
+  await expect(page.locator('.profile-head__avatar img.user-avatar')).toHaveAttribute('src', /^data:image\/webp;base64,/)
+  await page.getByRole('link', { name: 'Communauté' }).click()
+  await expect(page.getByText('Aquarelliste du dimanche.')).toBeVisible()
+  await expect(page.locator('.member-tile img.user-avatar[src^="data:image/webp;base64,"]')).toHaveCount(1)
 })
 
 test.describe('Position de l’appareil', () => {
@@ -323,9 +344,9 @@ test.describe('Position de l’appareil', () => {
 test('sans localisation, un message flottant prévient puis disparaît', async ({ page, context }) => {
   await context.clearPermissions()
   await openApp(page, 'app', '#/decouvrir')
-  const toast = page.getByRole('status').filter({ hasText: 'les distances partent de ton adresse' })
+  const toast = page.getByRole('status').filter({ hasText: 'les distances partent de ta ville ou ton quartier' })
   // Il passe après le message « place libérée », affiché en premier à l'ouverture.
   await expect(toast).toBeVisible({ timeout: 10000 })
-  await expect(page.getByText('Distances depuis ton adresse')).toBeVisible()
+  await expect(page.getByText('Distances depuis ta ville ou ton quartier')).toBeVisible()
   await expect(toast).toBeHidden({ timeout: 8000 })
 })

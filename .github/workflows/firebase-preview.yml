@@ -1,0 +1,56 @@
+name: Firebase preview — hadi-app-ux
+
+on:
+  push:
+    branches:
+      - hadi-app-ux
+    paths:
+      - 'frontend/**'
+      - 'firebase.json'
+      - '.firebaserc'
+      - '.github/workflows/firebase-preview.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy-preview:
+    name: Build and deploy app preview
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        run: npm ci --prefix frontend
+
+      - name: Type check and build
+        run: npm run build --prefix frontend
+
+      - name: Check Firebase deploy credential
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_NOVART_109BF }}
+        run: |
+          if [ -z "$FIREBASE_SERVICE_ACCOUNT" ]; then
+            echo "::error title=Firebase credential missing::Add the repository Actions secret FIREBASE_SERVICE_ACCOUNT_NOVART_109BF to deploy the preview."
+            exit 1
+          fi
+
+      - name: Deploy app preview
+        uses: FirebaseExtended/action-hosting-deploy@500ac625ca2dd40cbd15f7659af953801858032a # v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_NOVART_109BF }}
+          projectId: novart-109bf
+          target: app
+          channelId: hadi-app-ux
+          expires: 30d

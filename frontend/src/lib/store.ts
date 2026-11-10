@@ -2,7 +2,7 @@ import { computed, reactive } from 'vue'
 import { listMembers, setFavorite, type Account, type Member, type Profile } from '@/services/firebase'
 import { getActivity, listActivities, watchMyActivities, watchMyOffers } from '@/services/activities'
 import { isUnread, otherMember, watchMyChats, type PrivateChat } from '@/services/messages'
-import { LYON_CENTER, activeOffer, distanceKm, isMember, isPast, startsAt, waitlistOf, type Activity, type Point } from '@/lib/activity'
+import { activeOffer, distanceKm, isMember, isPast, startsAt, waitlistOf, type Activity, type Point } from '@/lib/activity'
 
 // État partagé entre les écrans de l'application connectée.
 export const store = reactive({
@@ -30,10 +30,10 @@ export const uid = computed(() => store.account?.uid ?? '')
 export const displayName = computed(() => [store.profile.firstName, store.profile.lastName].filter(Boolean).join(' ') || store.account?.email || 'Moi')
 export const me = computed(() => ({ uid: uid.value, name: store.profile.firstName || displayName.value, photo: store.profile.photoUrl || '' }))
 export const favorites = computed(() => store.profile.favoriteIds ?? [])
-/** Point de référence pour les distances : position demandée, sinon adresse du profil, sinon centre de Lyon. */
-export const origin = computed<Point>(() => store.gps
-  ?? (typeof store.profile.addressLat === 'number' && typeof store.profile.addressLng === 'number' ? { lat: store.profile.addressLat, lng: store.profile.addressLng } : LYON_CENTER))
-export const originLabel = computed(() => store.gps ? 'ta position' : typeof store.profile.addressLat === 'number' ? 'ton adresse' : 'le centre de Lyon')
+/** Zone privée choisie par la personne ou accordée au navigateur, sans centre géographique deviné. */
+export const origin = computed<Point | null>(() => store.gps
+  ?? (typeof store.profile.addressLat === 'number' && typeof store.profile.addressLng === 'number' ? { lat: store.profile.addressLat, lng: store.profile.addressLng } : null))
+export const originLabel = computed(() => store.gps ? 'ta position' : origin.value ? 'ta ville ou ton quartier' : 'aucune zone choisie')
 
 export function resetStore() {
   stopWatchers()
@@ -59,10 +59,12 @@ export function notify(text: string, duration = 3500, background = false) {
 }
 /** Message flottant quand la position de l'appareil n'a pas pu être obtenue. */
 export function notifyPositionFallback() {
-  const where = typeof store.profile.addressLat === 'number' ? 'ton adresse' : 'le centre de Lyon'
+  // Sans position ni ville choisie, aucun point de départ n'est deviné : les activités sont classées par date.
+  const where = origin.value ? 'ta ville ou ton quartier' : ''
+  const then = where ? `les distances partent de ${where}` : 'les activités sont classées par date'
   notify(store.gpsStatus === 'denied'
-    ? `Localisation désactivée : les distances partent de ${where}. Tu peux l’autoriser dans les réglages de ton navigateur.`
-    : `Position introuvable : les distances partent de ${where}.`, 6000, true)
+    ? `Localisation désactivée : ${then}. Tu peux l’autoriser dans les réglages de ton navigateur.`
+    : `Position introuvable : ${then}.`, 6000, true)
 }
 export async function loadActivities(force = false) {
   if (!force && (store.activitiesStatus === 'loading' || store.activitiesStatus === 'ready')) return
@@ -116,7 +118,7 @@ export async function toggleFavorite(activityId: string) {
 /**
  * Position de l'appareil : demandée à l'ouverture de l'application (le navigateur
  * demande l'autorisation la première fois). En cas de refus ou d'échec, les distances
- * se calculent depuis l'adresse du profil, sinon depuis le centre de Lyon.
+ * se calculent depuis la ville ou le quartier du profil ; sinon, aucun point n'est deviné.
  *
  * Deux temps, car un GPS haute précision met souvent plus de 10 s à répondre sur
  * téléphone (en intérieur surtout) : d'abord une position rapide (Wi-Fi, antennes),

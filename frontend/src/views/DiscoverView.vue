@@ -7,7 +7,7 @@ import DisciplineIcon from '@/components/DisciplineIcon.vue'
 import MascotState from '@/components/MascotState.vue'
 import SearchBox from '@/components/SearchBox.vue'
 import type { Suggestion } from '@/lib/suggest'
-import { activityDistance, disciplines, formatDistance, isFull, isPast, placesLeft, sortActivities, startsAt } from '@/lib/activity'
+import { disciplines, isFull, isPast, placesLeft, sortActivities, startsAt } from '@/lib/activity'
 import { loadActivities, notifyPositionFallback, origin, originLabel, requestPosition, store, unreadNotifications } from '@/lib/store'
 import { navigate } from '@/lib/router'
 
@@ -21,21 +21,42 @@ const locating = ref(false)
 const map = ref<InstanceType<typeof ActivityMap> | null>(null)
 const now = new Date()
 const upcoming = computed(() => store.activities.filter(a => !isPast(a, now) && (!discipline.value || a.discipline === discipline.value)))
+/** Une seule carte par photo : les photos par défaut sont communes à une discipline. */
+function uniqueCovers<T extends { coverUrl: string }>(activities: T[], limit: number): T[] {
+  const covers = new Set<string>()
+  return activities.filter(activity => {
+    if (covers.has(activity.coverUrl)) return false
+    covers.add(activity.coverUrl)
+    return true
+  }).slice(0, limit)
+}
 const byDistance = computed(() => sortActivities(upcoming.value, 'proximite', origin.value))
 const nearby = computed(() => byDistance.value.filter(a => !isFull(a)).slice(0, 10))
 const peek = computed(() => {
   const selected = upcoming.value.find(a => a.id === selectedId.value)
   return selected ? [selected, ...nearby.value.filter(a => a.id !== selected.id)] : nearby.value
 })
-const popular = computed(() => sortActivities(upcoming.value, 'popularite', origin.value).slice(0, 8))
-const interests = computed(() => store.profile.interests ?? [])
-const forYou = computed(() => discipline.value ? [] : sortActivities(upcoming.value.filter(a => interests.value.includes(a.discipline) && !isFull(a)), 'date', origin.value).slice(0, 8))
+// Les sections suivantes ne répètent ni les activités ni les photos déjà visibles plus haut.
+const shownNearby = computed(() => nearby.value.slice(0, 5))
+const forYou = computed(() => {
+  const interests = store.profile.interests ?? []
+  if (discipline.value || !interests.length) return []
+  const usedIds = new Set(shownNearby.value.map(a => a.id))
+  return uniqueCovers(sortActivities(upcoming.value.filter(a => interests.includes(a.discipline) && !isFull(a) && !usedIds.has(a.id)), 'popularite', origin.value), 6)
+})
+const popular = computed(() => {
+  const usedIds = new Set([...shownNearby.value, ...forYou.value].map(a => a.id))
+  const usedCovers = new Set(forYou.value.map(a => a.coverUrl))
+  return uniqueCovers(sortActivities(upcoming.value.filter(a => !isFull(a) && !usedIds.has(a.id) && !usedCovers.has(a.coverUrl)), 'popularite', origin.value), 6)
+})
 const highlight = computed(() => {
   const soon = upcoming.value.filter(a => startsAt(a).getTime() - now.getTime() < 10 * 86400000 && placesLeft(a) >= 3)
-  return [...soon].sort((a, b) => b.capacity - a.capacity)[0]
+  const usedIds = new Set([...shownNearby.value, ...forYou.value, ...popular.value].map(a => a.id))
+  const usedCovers = new Set([...forYou.value, ...popular.value].map(a => a.coverUrl))
+  return [...soon].filter(a => !usedIds.has(a.id) && !usedCovers.has(a.coverUrl)).sort((a, b) => b.capacity - a.capacity)[0]
 })
-// Étiquettes de distance sur les activités les plus proches et la sélection, pour garder la carte lisible.
-const points = computed(() => byDistance.value.slice(0, 200).map((a, index) => ({ id: a.id, lat: a.lat, lng: a.lng, title: a.title, label: index < 6 || a.id === selectedId.value ? formatDistance(activityDistance(a, origin.value)) : undefined })))
+// Repères par discipline, regroupés quand ils se chevauchent ; la distance est sur la carte de l'activité.
+const points = computed(() => byDistance.value.slice(0, 200).map(a => ({ id: a.id, lat: a.lat, lng: a.lng, title: a.title, discipline: a.discipline })))
 const chips = computed(() => disciplines.filter(d => d.id !== 'autre'))
 
 function search() { navigate('rechercher', { q: query.value.trim() }) }
@@ -55,7 +76,7 @@ async function locate() {
   locating.value = true
   const ok = await requestPosition()
   locating.value = false
-  map.value?.recenter(origin.value)
+  if (origin.value) map.value?.recenter(origin.value)
   if (!ok) notifyPositionFallback()
 }
 // Glisser le panneau vers le haut ou le bas (en plus du bouton).
@@ -111,20 +132,21 @@ function dragEnd(event: PointerEvent) {
         </MascotState>
         <template v-else>
           <p v-if="store.gpsStatus === 'pending'" class="results-count" role="status">Recherche de ta position…</p>
-          <p v-else class="results-count">Distances depuis {{ originLabel }}</p>
+          <p v-else-if="origin" class="results-count">Distances depuis {{ originLabel }}</p>
+          <p v-else class="results-count">Active ta position ou indique ta ville dans ton profil pour voir les activités les plus proches.</p>
           <div v-if="!sheetOpen" class="discover-sheet__peek">
             <ActivityCard v-for="a in peek" :key="a.id" :activity="a" variant="row" :class="{ 'is-highlighted': a.id === selectedId }" />
           </div>
           <template v-else>
             <div class="result-list"><ActivityCard v-for="a in nearby.slice(0, 5)" :key="a.id" :activity="a" variant="row" :class="{ 'is-highlighted': a.id === selectedId }" /></div>
             <a href="#/rechercher" class="section-link discover-sheet__more">Voir toutes les activités<ChevronRight aria-hidden="true" /></a>
-            <section v-if="forYou.length" class="feed-section" aria-labelledby="foryou-title">
-              <header class="section-header"><h2 id="foryou-title" class="section-title">Selon tes envies</h2><a href="#/rechercher" class="section-link">Voir tout<ChevronRight aria-hidden="true" /></a></header>
+            <section v-if="forYou.length" class="feed-section" aria-labelledby="for-you-title">
+              <header class="section-header"><h2 id="for-you-title" class="section-title">Selon tes envies</h2><a href="#/rechercher" class="section-link">Voir tout<ChevronRight aria-hidden="true" /></a></header>
               <div class="card-scroller card-scroller--compact"><ActivityCard v-for="a in forYou" :key="a.id" :activity="a" /></div>
             </section>
             <section class="feed-section" aria-labelledby="popular-title">
               <header class="section-header"><h2 id="popular-title" class="section-title">Activités populaires</h2><a href="#/rechercher?tri=popularite" class="section-link">Voir tout<ChevronRight aria-hidden="true" /></a></header>
-              <div class="card-scroller card-scroller--compact"><ActivityCard v-for="a in popular" :key="a.id" :activity="a" /></div>
+              <div class="card-scroller card-scroller--compact card-scroller--popular"><ActivityCard v-for="a in popular" :key="a.id" :activity="a" /></div>
             </section>
             <section v-if="highlight" class="feed-section" aria-labelledby="highlight-title">
               <header class="section-header"><h2 id="highlight-title" class="section-title">À ne pas manquer</h2><a href="#/rechercher?tri=date" class="section-link">Voir tout<ChevronRight aria-hidden="true" /></a></header>

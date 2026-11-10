@@ -7,7 +7,8 @@
     "generate": "node generate-data.mjs",
     "seed": "node seed-firestore.mjs",
     "reseed": "node seed-firestore.mjs --reset",
-    "purge-emails": "node purge-emails.mjs"
+    "purge-emails": "node purge-emails.mjs",
+    "migrate-public-profiles": "node migrate-public-profiles.mjs"
   },
   "dependencies": {
     "firebase-admin": "^13.0.0"

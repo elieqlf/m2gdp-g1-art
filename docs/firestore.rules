@@ -4,13 +4,28 @@ service cloud.firestore {
     function signedIn() { return request.auth != null; }
     function changed() { return request.resource.data.diff(resource.data).affectedKeys(); }
 
-    // US-01/02/13/14 : un membre connecté lit les profils (communauté, participants)
-    // et ne crée ou ne modifie que le sien (y compris ses favoris).
-    // RGPD : un profil étant lisible en entier, il ne doit jamais contenir l'e-mail
-    // (conservé uniquement dans Firebase Authentication).
+    // Profil privé : adresse et coordonnées sont accessibles uniquement à la personne.
     match /users/{userId} {
-      allow read: if signedIn();
+      allow read: if signedIn() && request.auth.uid == userId;
       allow create, update: if signedIn() && request.auth.uid == userId && !('email' in request.resource.data);
+    }
+
+    // Profil de communauté : liste blanche stricte, sans e-mail ni localisation.
+    match /publicProfiles/{userId} {
+      function isOwner() { return signedIn() && request.auth.uid == userId; }
+      function validPublicProfile() {
+        let data = request.resource.data;
+        return data.keys().hasOnly(['firstName', 'lastName', 'photoUrl', 'bio', 'interests'])
+          && data.keys().hasAll(['firstName', 'lastName', 'photoUrl', 'bio', 'interests'])
+          && data.firstName is string && data.firstName.size() > 0 && data.firstName.size() <= 60
+          && data.lastName is string && data.lastName.size() <= 80
+          && data.photoUrl is string && data.photoUrl.size() <= 750000
+          && data.bio is string && data.bio.size() <= 160
+          && data.interests is list && data.interests.size() <= 12;
+      }
+      allow read: if signedIn();
+      allow create, update: if isOwner() && validPublicProfile();
+      allow delete: if isOwner();
     }
 
     // US-03 à US-10 : activités.

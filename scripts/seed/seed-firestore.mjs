@@ -48,7 +48,10 @@ async function removeDemoData() {
     ops.push(b => b.delete(chat.ref))
   }
   const users = await db.collection('users').where('demo', '==', true).get()
-  users.docs.forEach(u => ops.push(b => b.delete(u.ref)))
+  users.docs.forEach(u => {
+    ops.push(b => b.delete(u.ref))
+    ops.push(b => b.delete(db.collection('publicProfiles').doc(u.id)))
+  })
   await commitInChunks(ops)
   console.log(`\nSupprimé : ${activities.size} activités, ${chats.size} conversations privées et ${users.size} membres de démonstration.`)
 }
@@ -57,7 +60,11 @@ async function main() {
   if (reset) await removeDemoData()
   const { users, activities, messages, privateChats } = buildDataset(baseDate)
   const ops = []
-  for (const { uid, ...profile } of users) ops.push(b => b.set(db.collection('users').doc(uid), profile))
+  for (const { uid, ...profile } of users) {
+    ops.push(b => b.set(db.collection('users').doc(uid), profile))
+    const { firstName, lastName, photoUrl, bio, interests } = profile
+    ops.push(b => b.set(db.collection('publicProfiles').doc(uid), { firstName, lastName, photoUrl, bio, interests }))
+  }
   for (const { id, ...activity } of activities) ops.push(b => b.set(db.collection('activities').doc(id), activity))
   for (const { activityId, ...message } of messages) ops.push(b => b.set(db.collection('activities').doc(activityId).collection('messages').doc(), message))
   for (const { id, messages: chatMessages, ...chat } of privateChats) {

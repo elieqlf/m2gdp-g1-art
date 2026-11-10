@@ -16,7 +16,7 @@ const typeLabel = (id: string) => venueTypes.find(t => t.id === id)?.label ?? ''
 const preferred = computed(() => templates.find(t => t.discipline === props.draft.discipline)?.venueTypes ?? [])
 const expanded = ref(false)
 const suggestions = computed(() => venues
-  .map(v => ({ ...v, km: distanceKm(origin.value, v), score: (preferred.value.includes(v.type) ? 0 : 3) + distanceKm(origin.value, v) }))
+  .map(v => ({ ...v, km: origin.value ? distanceKm(origin.value, v) : null, score: (preferred.value.includes(v.type) ? 0 : 3) + (origin.value ? distanceKm(origin.value, v) : 0) }))
   .sort((a, b) => a.score - b.score)
   .slice(0, expanded.value ? 12 : 4))
 function chooseVenue(v: (typeof venues)[number]) {
@@ -40,7 +40,7 @@ const point = computed(() => [{ id: 'lieu', lat: props.draft.lat, lng: props.dra
     <ul class="venue-list" aria-labelledby="venue-suggestions">
       <li v-for="v in suggestions" :key="v.id">
         <button type="button" class="venue-option" :class="{ 'is-selected': draft.placeName === v.name && draft.address === v.address }" :aria-pressed="draft.placeName === v.name && draft.address === v.address" @click="chooseVenue(v)">
-          <MapPin aria-hidden="true" /><span><strong>{{ v.name }}</strong><small>{{ typeLabel(v.type) }} · {{ v.district }} · {{ formatDistance(v.km) }}</small></span>
+          <MapPin aria-hidden="true" /><span><strong>{{ v.name }}</strong><small>{{ typeLabel(v.type) }} · {{ v.district }}<template v-if="v.km !== null"> · {{ formatDistance(v.km) }}</template></small></span>
         </button>
       </li>
     </ul>

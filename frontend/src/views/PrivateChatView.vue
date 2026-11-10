@@ -22,6 +22,8 @@ const chatId = computed(() => chatIdFor(uid.value, otherId.value))
 const chat = computed(() => store.chats.find(c => c.id === chatId.value))
 const other = computed(() => store.members[otherId.value])
 const name = computed(() => memberName(otherId.value))
+// Le profil public ne dit plus si la personne organise : on le déduit des activités publiées.
+const organizes = computed(() => store.activities.some(a => a.organizerId === otherId.value))
 // Contexte : activité depuis laquelle on écrit (lien « Contacter l'organisateur »), sinon celle de la conversation.
 const contextId = computed(() => route.value.query.activite || chat.value?.activityId || '')
 const contextTitle = computed(() => activityById(contextId.value)?.title || (chat.value?.activityId === contextId.value ? chat.value?.activityTitle : '') || '')
@@ -88,7 +90,7 @@ async function send() {
   <div class="page page--chat">
     <div class="topbar topbar--chat">
       <button type="button" class="icon-button icon-button--plain" aria-label="Retour" @click="goBack('conversations?onglet=privees')"><ChevronLeft aria-hidden="true" /></button>
-      <span class="chat-person"><UserAvatar :name="name" :photo="other?.photoUrl" size="md" /><span><h1>{{ name }}</h1><small v-if="other?.userType === 'organisateur'">Organise des activités</small></span></span>
+      <span class="chat-person"><UserAvatar :name="name" :photo="other?.photoUrl" :user-id="otherId" size="md" /><span><h1>{{ name }}</h1><small v-if="organizes">Organise des activités</small></span></span>
     </div>
     <MascotState v-if="self" title="C’est toi !" text="Tu ne peux pas t’écrire à toi-même."><a href="#/conversations" class="btn btn--primary">Mes conversations</a></MascotState>
     <template v-else>
@@ -99,7 +101,7 @@ async function send() {
         <template v-for="m in rows" :key="m.id">
           <li v-if="m.separator" class="messages__day"><span>{{ m.separator }}</span></li>
           <li class="message" :class="{ 'message--mine': m.mine }">
-            <UserAvatar v-if="!m.mine" :name="name" :photo="other?.photoUrl" size="md" />
+            <UserAvatar v-if="!m.mine" :name="name" :photo="other?.photoUrl" :user-id="otherId" size="md" />
             <div class="message__content">
               <p class="message__meta"><time>{{ hour(m.sentAtMs) }}</time></p>
               <p class="message__bubble">{{ m.text }}</p>

@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app'
 import { browserLocalPersistence, browserSessionPersistence, getAuth, getRedirectResult, GoogleAuthProvider, sendSignInLinkToEmail, isSignInWithEmailLink, OAuthProvider, onAuthStateChanged, setPersistence, signInWithEmailLink, signInWithPopup, signOut, type User } from 'firebase/auth'
-import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, getDocs, serverTimestamp, arrayUnion, arrayRemove, deleteField } from 'firebase/firestore'
+import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, getDocs, serverTimestamp, arrayUnion, arrayRemove, deleteField, writeBatch } from 'firebase/firestore'
 import { firebaseConfig } from '../../../public/firebase-config.js'
 import { sendLinkWithApi } from './emailLink'
 
@@ -22,13 +22,34 @@ export interface Profile {
   profileComplete?: boolean
   bio?: string
   interests?: string[]
+  practiceTags?: string[]
   favoriteIds?: string[]
   discoveryRadiusKm?: number | null
   useCurrentLocation?: boolean
   onboardingGoals?: string[]
   onboardingStep?: number
 }
-export type Member = Partial<Profile> & { uid: string }
+export interface PublicProfile {
+  firstName?: string
+  lastName?: string
+  photoUrl?: string
+  bio?: string
+  interests?: string[]
+}
+export type Member = PublicProfile & { uid: string }
+const publicKeys = ['firstName', 'lastName', 'photoUrl', 'bio', 'interests'] as const
+function publicProfileFields(profile: Partial<Profile> | Record<string, unknown>): PublicProfile {
+  return {
+    firstName: typeof profile.firstName === 'string' ? profile.firstName.trim() : '',
+    lastName: typeof profile.lastName === 'string' ? profile.lastName.trim() : '',
+    photoUrl: typeof profile.photoUrl === 'string' ? profile.photoUrl : '',
+    bio: typeof profile.bio === 'string' ? profile.bio.trim() : '',
+    interests: Array.isArray(profile.interests) ? profile.interests.filter((value): value is string => typeof value === 'string') : [],
+  }
+}
+function changedPublicProfileFields(changes: Partial<Profile>): Partial<PublicProfile> {
+  return Object.fromEntries(publicKeys.filter(key => key in changes).map(key => [key, changes[key]])) as Partial<PublicProfile>
+}
 export const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())
 export const hasSignInLink = () => isSignInWithEmailLink(auth, window.location.href)
 export const pendingEmail = () => localStorage.getItem(EMAIL_KEY) || ''
@@ -93,28 +114,32 @@ export async function getProfile(user: Account): Promise<Partial<Profile>> {
     const { email, ...profile } = (snapshot.data() ?? {}) as Partial<Profile> & { email?: string }
     // Profils créés avant ce changement : l'e-mail est retiré à la connexion suivante.
     if (email !== undefined) await updateDoc(ref, { email: deleteField() }).catch(() => undefined)
+    if (profile.profileComplete) await setDoc(doc(db, 'publicProfiles', user.uid), publicProfileFields(profile), { merge: true })
     return profile
   }
   await setDoc(ref, { createdAt: serverTimestamp(), profileComplete: false })
   return { profileComplete: false }
 }
 export async function saveProfile(uid: string, profile: Profile) {
-  await setDoc(doc(db, 'users', uid), { ...profile, profileComplete: true }, { merge: true })
+  const batch = writeBatch(db)
+  batch.set(doc(db, 'users', uid), { ...profile, profileComplete: true }, { merge: true })
+  batch.set(doc(db, 'publicProfiles', uid), publicProfileFields(profile), { merge: true })
+  await batch.commit()
 }
 export async function saveOnboardingProgress(uid: string, profile: Partial<Profile>, onboardingStep: number) {
   await setDoc(doc(db, 'users', uid), { ...profile, profileComplete: false, onboardingStep }, { merge: true })
 }
 export async function listMembers(): Promise<Member[]> {
-  const snapshot = await getDocs(collection(db, 'users'))
-  // Par précaution, un ancien e-mail encore présent n'est jamais transmis à l'interface.
-  return snapshot.docs.map(item => {
-    const { email: _email, ...profile } = item.data() as Partial<Profile> & { email?: string }
-    return { ...profile, uid: item.id }
-  })
+  const snapshot = await getDocs(collection(db, 'publicProfiles'))
+  return snapshot.docs.map(item => ({ ...publicProfileFields(item.data() as Record<string, unknown>), uid: item.id }))
 }
 // US-14 : modification des informations de base (photo, nom, description, centres d'intérêt).
 export async function updateProfile(uid: string, changes: Partial<Profile>) {
-  await setDoc(doc(db, 'users', uid), changes, { merge: true })
+  const batch = writeBatch(db)
+  batch.set(doc(db, 'users', uid), changes, { merge: true })
+  const publicChanges = changedPublicProfileFields(changes)
+  if (Object.keys(publicChanges).length) batch.set(doc(db, 'publicProfiles', uid), publicChanges, { merge: true })
+  await batch.commit()
 }
 // Favoris : liste d'identifiants d'activités conservée dans le profil.
 export async function setFavorite(uid: string, activityId: string, favorite: boolean) {

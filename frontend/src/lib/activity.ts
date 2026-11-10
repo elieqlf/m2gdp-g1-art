@@ -42,7 +42,7 @@ export const templates = catalog.templates
 export const venueTypes = catalog.venueTypes
 export const disciplineLabel = (id: string) => disciplines.find(d => d.id === id)?.label ?? 'Autre'
 export const levelLabel = (id: string) => levels.find(l => l.id === id)?.label ?? 'Tous niveaux'
-export const defaultCover = (discipline: string, variant = 1) => `/images/activities/${disciplines.some(d => d.id === discipline) ? discipline : 'autre'}-${variant}.svg`
+export const defaultCover = (discipline: string) => `/images/activities/photos/${disciplines.some(d => d.id === discipline) ? discipline : 'autre'}.webp`
 
 /** Centre de Lyon (place Bellecour), utilisé quand le profil n'a pas de coordonnées. */
 export const LYON_CENTER = { lat: 45.7578, lng: 4.832 }
@@ -55,8 +55,8 @@ export function distanceKm(a: Point, b: Point) {
   const h = Math.sin(dLat / 2) ** 2 + Math.cos(rad(a.lat)) * Math.cos(rad(b.lat)) * Math.sin(dLng / 2) ** 2
   return 6371 * 2 * Math.asin(Math.sqrt(h))
 }
-export const activityDistance = (activity: Activity, origin: Point) =>
-  typeof activity.lat === 'number' && typeof activity.lng === 'number' ? distanceKm(origin, { lat: activity.lat, lng: activity.lng }) : null
+export const activityDistance = (activity: Activity, origin: Point | null) =>
+  origin && typeof activity.lat === 'number' && typeof activity.lng === 'number' ? distanceKm(origin, { lat: activity.lat, lng: activity.lng }) : null
 export function formatDistance(km: number | null) {
   if (km === null) return ''
   if (km < 1) return `${Math.max(50, Math.round(km * 20) * 50)} m`
@@ -155,9 +155,9 @@ export interface Filters {
   level: LevelId
   sort: SortKey
 }
-export const defaultFilters = (): Filters => ({ query: '', disciplines: [], datePreset: 'toutes', day: '', radiusKm: 50, places: 'tous', level: 'tous', sort: 'proximite' })
+export const defaultFilters = (): Filters => ({ query: '', disciplines: [], datePreset: 'toutes', day: '', radiusKm: 5, places: 'tous', level: 'tous', sort: 'proximite' })
 export const activeFilterCount = (f: Filters) =>
-  f.disciplines.length + (f.datePreset !== 'toutes' || f.day ? 1 : 0) + (f.radiusKm < 50 ? 1 : 0) + (f.places !== 'tous' ? 1 : 0) + (f.level !== 'tous' ? 1 : 0)
+  f.disciplines.length + (f.datePreset !== 'toutes' || f.day ? 1 : 0) + (f.radiusKm !== 5 && f.radiusKm < 50 ? 1 : 0) + (f.places !== 'tous' ? 1 : 0) + (f.level !== 'tous' ? 1 : 0)
 
 const normalize = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
 function inDateWindow(a: Activity, f: Filters, now: Date) {
@@ -181,7 +181,7 @@ function matchesPlaces(a: Activity, preset: PlacesPreset) {
   return true
 }
 /** Recherche et filtres (US-04/US-05) : seules les activités à venir sont proposées. */
-export function filterActivities(list: Activity[], f: Filters, origin: Point, now = new Date()) {
+export function filterActivities(list: Activity[], f: Filters, origin: Point | null, now = new Date()) {
   const words = normalize(f.query.trim()).split(/\s+/).filter(Boolean)
   const results = list.filter(a => {
     if (isPast(a, now)) return false
@@ -189,7 +189,7 @@ export function filterActivities(list: Activity[], f: Filters, origin: Point, no
     if (!inDateWindow(a, f, now)) return false
     if (!matchesPlaces(a, f.places)) return false
     if (f.level !== 'tous' && a.level !== f.level && a.level !== 'tous') return false
-    if (f.radiusKm < 50) { const d = activityDistance(a, origin); if (d === null || d > f.radiusKm) return false }
+    if (f.radiusKm < 50 && origin) { const d = activityDistance(a, origin); if (d === null || d > f.radiusKm) return false }
     if (words.length) {
       const haystack = normalize([a.title, a.description, a.placeName, a.address, a.district, disciplineLabel(a.discipline), a.subDiscipline, a.organizerName].filter(Boolean).join(' '))
       if (!words.every(w => haystack.includes(w))) return false
@@ -198,8 +198,9 @@ export function filterActivities(list: Activity[], f: Filters, origin: Point, no
   })
   return sortActivities(results, f.sort, origin)
 }
-export function sortActivities(list: Activity[], sort: SortKey, origin: Point) {
+export function sortActivities(list: Activity[], sort: SortKey, origin: Point | null) {
   const byDate = (a: Activity, b: Activity) => startsAt(a).getTime() - startsAt(b).getTime()
+  if (sort === 'proximite' && !origin) return [...list].sort(byDate)
   return [...list].sort((a, b) => {
     if (sort === 'date') return byDate(a, b)
     if (sort === 'popularite') return b.participantIds.length - a.participantIds.length || byDate(a, b)
@@ -221,7 +222,8 @@ export function validateDraft(d: ActivityDraft, step: 1 | 2 | 3 | 'all', registe
   }
   if (step === 2 || step === 'all') {
     if (!d.coverUrl) e.coverUrl = 'Choisis une photo principale.'
-    else if (!d.coverUrl.startsWith('/images/') && !/^https:\/\/\S+$/i.test(d.coverUrl)) e.coverUrl = 'Le lien de la photo doit commencer par https://.'
+    else if (!d.coverUrl.startsWith('/images/') && !/^https:\/\/\S+$/i.test(d.coverUrl) && !/^data:image\/webp;base64,[\w+/]+=*$/i.test(d.coverUrl)) e.coverUrl = 'Choisis une image JPG, PNG, WebP ou AVIF depuis ton appareil.'
+    else if (d.coverUrl.length > 700_000) e.coverUrl = 'Cette photo est trop lourde. Choisis une image plus légère.'
   }
   if (step === 3 || step === 'all') {
     if (!d.placeName.trim() && !d.address.trim()) e.place = 'Indique le lieu de l’activité.'

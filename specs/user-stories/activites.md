@@ -43,7 +43,7 @@ Lien direct `#/activite/<id>` : l'activité est lue dans Firestore si la liste n
 | # | Critère d'acceptation | Test |
 |---|---|---|
 | CA1 | Étape 1 : titre (60 car.), discipline, sous-discipline facultative, description (500), niveau, matériel (300) ; modèles d'activités pour pré-remplir | `scenario.spec.ts` US-07 |
-| CA2 | Étape 2 : photo principale importée depuis l'appareil (recadrée 16:10, réduite, stockée dans Cloudflare R2), illustration NOVART (suit la discipline) ou lien https ; aussi dans « Modifier » | idem, `uploads.test.ts`, `workers/test/uploads.test.mjs` |
+| CA2 | Étape 2 : photo principale obligatoire choisie dans la galerie ou les fichiers, avec aperçu, remplacement et retrait ; recadrée 16:10, réduite et stockée dans Cloudflare R2 (enregistrée dans le document si l'API n'est pas configurée) ; aussi dans « Modifier » | idem, `uploads.test.ts`, `workers/test/uploads.test.mjs` |
 | CA3 | Étape 3 : lieux suggérés (127 lieux de la Métropole, selon la discipline et la distance) ou adresse Google Places ; date, heures, places (2 à 100) | idem |
 | CA4 | Étape 4 : aperçu, retour à une étape en touchant une ligne, « Publier l'activité » | idem |
 | CA5 | Erreurs affichées sous chaque champ ; on ne passe pas à l'étape suivante | idem, `activity.test.ts` |
@@ -76,6 +76,12 @@ flowchart LR
 - [x] Service Firestore : `listActivities`, `getActivity`, `createActivity`, `updateActivity`, `deleteActivity`
 - [x] Règles Firestore : création par l'organisateur, champs validés, capacité ≥ inscrits (`docs/firestore.rules`)
 - [x] Jeu de démonstration et chargement (`scripts/seed/`)
+
+## Gestion des photos
+
+Les photos sont choisies depuis la galerie ou les fichiers, puis optimisées en WebP dans
+le navigateur. Firebase Storage n'est pas utilisé : l'image est enregistrée dans les limites
+du schéma Firestore actuel. Aucun contrôle automatique du contenu n'est effectué.
 
 ## Exclusions (hors MVP)
 

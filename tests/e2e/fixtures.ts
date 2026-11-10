@@ -5,10 +5,10 @@ import { resolve } from 'node:path'
 // Les services Firebase, Places et météo sont remplacés uniquement dans le
 // navigateur de test : aucun e-mail réel, aucune écriture Firestore, aucun appel facturable.
 // Les données viennent du même générateur que le jeu de démonstration, recalculé à la date du jour.
-export type Mode = 'request' | 'profile' | 'app'
+export type Mode = 'request' | 'profile' | 'app' | 'app-no-location'
 export const ME = { uid: 'preview-user', email: 'preview@example.com' }
 
-interface DemoUser { uid: string; firstName: string; lastName: string }
+interface DemoUser { uid: string; firstName: string; lastName: string; photoUrl?: string; bio?: string; interests?: string[] }
 interface DemoActivity { id: string; participantIds: string[]; organizerId: string; date: string; title: string; capacity: number; waitlistIds?: string[]; offer?: { uid: string; expiresAtMs: number; offeredAtMs?: number } | null }
 interface DemoMessage { activityId: string }
 
@@ -35,27 +35,28 @@ export function demoData() {
     { other: first!.uid, activityTitle: upcoming[1]?.title, activityId: upcoming[1]?.id, read: false, messages: [{ from: ME.uid, text: 'Bonjour ! Faut-il apporter son matériel ?', at: now - 5 * 3600 * 1000 }, { from: first!.uid, text: 'Non, tout est fourni, viens comme tu es !', at: now - 40 * 60 * 1000 }] },
     { other: second!.uid, read: true, messages: [{ from: second!.uid, text: 'Merci pour l’atelier de samedi !', at: now - 2 * 86400 * 1000 }, { from: ME.uid, text: 'Avec plaisir, à bientôt !', at: now - 2 * 86400 * 1000 + 600000 }] },
   ]
-  return { users: data.users, activities, messages: data.messages.filter(m => ids.has(m.activityId)), chats }
+  const users = data.users.map(({ uid, firstName, lastName, photoUrl, bio, interests }) => ({ uid, firstName, lastName, photoUrl, bio, interests }))
+  return { users, activities, messages: data.messages.filter(m => ids.has(m.activityId)), chats }
 }
 
 const firebaseModule = (mode: Mode, users: DemoUser[]) => `
 const mode = ${JSON.stringify(mode)};
 const me = ${JSON.stringify(ME)};
 let observer;
-let profile = mode === 'app'
-  ? { firstName: 'Camille', lastName: 'Martin', userType: 'participant', address: 'Croix-Rousse, Lyon 4e', addressLat: 45.7768, addressLng: 4.8312, photoUrl: '', profileComplete: true, bio: 'J’aime créer à plusieurs, surtout en plein air.', interests: ['peinture', 'dessin', 'musique'], favoriteIds: [] }
+let profile = mode.startsWith('app')
+  ? { firstName: 'Camille', lastName: 'Martin', userType: 'participant', address: mode === 'app-no-location' ? '' : 'Croix-Rousse, Lyon 4e', addressLat: mode === 'app-no-location' ? null : 45.7768, addressLng: mode === 'app-no-location' ? null : 4.8312, photoUrl: '', profileComplete: true, bio: 'J’aime créer à plusieurs, surtout en plein air.', interests: ['peinture', 'dessin', 'musique'], favoriteIds: [] }
   : { profileComplete: false };
 const members = ${JSON.stringify(users)};
 export const db = null;
 export const isValidEmail = email => /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email.trim());
 export const hasSignInLink = () => false;
-export const pendingEmail = () => '';
-export const requestSignInLink = async () => {};
-export const completeSignIn = async () => {};
 export const pendingSocialProvider = () => null;
 export const clearPendingSocialProvider = () => {};
 export const rememberedSessionChoice = () => false;
 export const setAuthPersistence = async () => {};
+export const pendingEmail = () => '';
+export const requestSignInLink = async () => {};
+export const completeSignIn = async () => {};
 // Fenêtre Google simulée : la session s'ouvre avec le nom et la photo du compte Google.
 export const signInWithSocialProvider = async () => { const user = { ...me, displayName: 'Camille Martin', photoURL: 'https://lh3.googleusercontent.com/a/photo-camille', emailVerified: true }; observer?.(user); return { user }; };
 export const consumeSocialRedirect = async () => null;
@@ -65,7 +66,7 @@ export const saveProfile = async (uid, data) => { profile = { ...profile, ...dat
 export const saveOnboardingProgress = async (uid, data, step) => { profile = { ...profile, ...data, profileComplete: false, onboardingStep: step }; };
 export const updateProfile = async (uid, changes) => { profile = { ...profile, ...changes }; };
 export const setFavorite = async (uid, id, on) => { const list = profile.favoriteIds || []; profile.favoriteIds = on ? [...list, id] : list.filter(x => x !== id); };
-export const listMembers = async () => [...members, { uid: me.uid, ...profile }];
+export const listMembers = async () => [...members, { uid: me.uid, firstName: profile.firstName, lastName: profile.lastName, photoUrl: profile.photoUrl, bio: profile.bio, interests: profile.interests }];
 export const logout = async () => { observer?.(null); };
 export const idToken = async () => 'jeton-de-test';
 `
@@ -191,17 +192,18 @@ export const uploadCover = async (image, token) => {
 }
 
 /** Vérifie polices et visuels réellement chargés, l'absence de défilement horizontal, puis enregistre une capture. */
-/** `heading` : police de titre attendue (Caveat dans toute l'appli depuis la refonte de hadi-app-ux). */
-export async function capture(page: Page, testInfo: TestInfo, name: string, selector?: string, heading = 'Caveat') {
-  const assets = await page.evaluate(async ({ selector, heading }) => {
+export async function capture(page: Page, testInfo: TestInfo, name: string, selector?: string) {
+  const assets = await page.evaluate(async selector => {
+    await document.fonts.load('700 1rem Fredoka')
+    await document.fonts.load('700 1rem Caveat')
     await document.fonts.ready
     const images = selector ? Array.from(document.querySelectorAll<HTMLImageElement>(selector)) : []
     images.forEach(image => { image.loading = 'eager' })
     await Promise.all(images.map(image => image.decode().catch(() => undefined)))
     const loaded = (family: string) => Array.from(document.fonts).some(font => font.family.replaceAll('"', '') === family && font.status === 'loaded')
-    return { imagesLoaded: !selector || (images.length > 0 && images.every(image => image.naturalWidth > 0)), poppins: loaded('Poppins'), heading: loaded(heading) }
-  }, { selector, heading })
-  expect(assets).toEqual({ imagesLoaded: true, poppins: true, heading: true })
+    return { imagesLoaded: !selector || (images.length > 0 && images.every(image => image.naturalWidth > 0)), poppins: loaded('Poppins'), caveat: loaded('Caveat'), fredoka: loaded('Fredoka') }
+  }, selector)
+  expect(assets).toEqual({ imagesLoaded: true, poppins: true, caveat: true, fredoka: true })
   await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
   await page.screenshot({ path: testInfo.outputPath(name + '.png'), fullPage: true })
 }

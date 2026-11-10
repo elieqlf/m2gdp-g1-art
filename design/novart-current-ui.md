@@ -43,7 +43,8 @@ Les photos des maquettes sont des illustrations générées que nous n'avons pas
 24 couvertures originales par discipline sont produites par
 `scripts/design/generate-covers.mjs` (pictogrammes Lucide, licence ISC, et couleurs
 de la charte). Les avatars sans photo affichent les initiales sur une teinte de la charte.
-Les titres utilisent Sigmar One comme les écrans précédents, les textes Poppins.
+Les titres utilisent Fredoka, une sans-serif arrondie et lisible ; les textes
+et l'interface utilisent Poppins. La tagline garde Caveat.
 
 ## Références artistiques
 
@@ -53,8 +54,8 @@ font référence pour le numérique :
 
 | Rôle | Couleur |
 | --- | --- |
-| Actions principales, identité et repères interactifs | Rouge NOVART `#C03C3A` |
-| Fond principal | Crème `#FFFEF1` |
+| Actions principales, identité et repères interactifs | Rouge NOVART `#FF0000` |
+| Fond principal | Gris clair `#F5F5F5` |
 | Cartes, surfaces et fond secondaire | Blanc rosé `#FFFBFB` |
 | Sélections, états actifs et accents ponctuels | Rouge profond `#781C27` |
 | Texte et informations neutres | Gris foncé `#545454` |
@@ -71,7 +72,8 @@ Les fontes exactes fournies sont servies depuis `frontend/public/fonts/`, avec
 
 - Poppins Regular, Medium et SemiBold : interface, formulaires, boutons, petits titres
   et textes essentiels. Pas de graisses 800/900 synthétiques pour l'interface.
-- Sigmar One Regular : grands titres identitaires et accroches courtes uniquement.
+- Fredoka Medium à Bold : titres d'interface et grands titres. La graisse 600 évite l'effet très massif de Sigmar One tout en gardant une personnalité ronde.
+- Caveat : uniquement la tagline manuscrite « L’art se crée ensemble ».
 - Montserrat Extra Light : informations secondaires suffisamment grandes, pas les
   petits messages de formulaire ni les labels essentiels.
 

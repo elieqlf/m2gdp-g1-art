@@ -6,7 +6,7 @@ import DisciplineIcon from './DisciplineIcon.vue'
 import FavoriteButton from './FavoriteButton.vue'
 import UserAvatar from './UserAvatar.vue'
 import { activityDistance, clockRange, dateBlock, disciplineLabel, formatDistance, hasOfferFor, isFull, shortDay, timeRange, waitlistPosition, type Activity } from '@/lib/activity'
-import { memberName, origin, uid } from '@/lib/store'
+import { memberName, origin, store, uid } from '@/lib/store'
 
 // Variantes reprises des maquettes : tile (Découvrir), row (Rechercher),
 // feature (« À ne pas manquer ») et agenda (Mes activités).
@@ -43,7 +43,7 @@ const place = computed(() => [props.activity.placeName, props.activity.district?
         <li v-if="variant !== 'feature'"><MapPin aria-hidden="true" /><span class="truncate">{{ place }}</span></li>
         <li v-if="variant === 'agenda'" class="activity-card__people">
           <Users aria-hidden="true" />
-          <span class="avatar-stack"><UserAvatar v-for="id in activity.participantIds.slice(0, 3)" :key="id" :name="memberName(id)" size="xs" /></span>
+          <span class="avatar-stack"><UserAvatar v-for="id in activity.participantIds.slice(0, 3)" :key="id" :name="memberName(id)" :photo="store.members[id]?.photoUrl" :user-id="id" size="xs" /></span>
           {{ activity.participantIds.length }} participant{{ activity.participantIds.length > 1 ? 's' : '' }}<template v-if="showCapacity"> / {{ activity.capacity }} places</template>
         </li>
         <li v-else><Users aria-hidden="true" />{{ places }}</li>
