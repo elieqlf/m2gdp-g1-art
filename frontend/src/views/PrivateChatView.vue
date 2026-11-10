@@ -43,26 +43,42 @@ const rows = computed(() => messages.value.map((m, index) => {
 }))
 async function scrollDown() { await nextTick(); list.value?.lastElementChild?.scrollIntoView({ block: 'end' }) }
 
-// Une conversation n'est lisible qu'une fois créée (premier message) : on l'écoute dès qu'elle existe.
-watch(() => [chatId.value, !!chat.value] as const, ([id, exists]) => {
-  setOpenChat(id)
-  if (!exists || watching === id) return
+// Une conversation n'est lisible qu'une fois enregistrée par le serveur (premier message) :
+// avant, les règles refusent la lecture et Firestore arrête l'écoute. On attend donc la
+// confirmation du serveur, et on réessaie quelques fois si la lecture est refusée malgré tout.
+const RETRIES = [800, 2000, 5000]
+let attempt = 0
+let retryTimer: ReturnType<typeof setTimeout> | undefined
+function listen(id: string) {
   stop?.(); watching = id
-  stop = watchPrivateMessages(id, data => { messages.value = data; void scrollDown() }, () => { failure.value = 'Messages indisponibles pour le moment.' })
+  stop = watchPrivateMessages(id, data => { attempt = 0; failure.value = ''; messages.value = data; void scrollDown() }, () => {
+    stop = undefined; watching = ''
+    const delay = RETRIES[attempt++]
+    if (delay === undefined) { failure.value = 'Messages indisponibles pour le moment.'; return }
+    retryTimer = setTimeout(() => { if (chatId.value === id && !watching) listen(id) }, delay)
+  })
+}
+watch(() => [chatId.value, !!chat.value && !chat.value.pending] as const, ([id, ready]) => {
+  setOpenChat(id)
+  if (!ready || watching === id) return
+  attempt = 0
+  listen(id)
 }, { immediate: true })
 // Marquer comme lu à l'ouverture et à chaque message reçu pendant la lecture.
 watch(() => chat.value && isUnread(chat.value, uid.value), unread => { if (unread) void markChatRead(chatId.value, uid.value).catch(() => {}) }, { immediate: true })
-watch(otherId, () => { stop?.(); stop = undefined; watching = ''; messages.value = [] })
+watch(otherId, () => { clearTimeout(retryTimer); stop?.(); stop = undefined; watching = ''; messages.value = [] })
 void loadMembers()
-onBeforeUnmount(() => { stop?.(); setOpenChat('') })
+onBeforeUnmount(() => { clearTimeout(retryTimer); stop?.(); setOpenChat('') })
 
 async function send() {
   const content = text.value.trim()
   if (!content || self.value) return
   sending.value = true; failure.value = ''
   try {
-    await sendPrivateMessage(uid.value, otherId.value, content, contextId.value && contextTitle.value ? { activityId: contextId.value, activityTitle: contextTitle.value } : undefined)
+    const id = await sendPrivateMessage(uid.value, otherId.value, content, contextId.value && contextTitle.value ? { activityId: contextId.value, activityTitle: contextTitle.value } : undefined)
     text.value = ''
+    // Le message est enregistré : si l'écoute s'était arrêtée, on la relance.
+    if (!watching) { clearTimeout(retryTimer); attempt = 0; listen(id) }
   } catch { failure.value = 'Message non envoyé. Vérifie ta connexion et réessaie.' }
   finally { sending.value = false }
 }

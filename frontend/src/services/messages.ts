@@ -20,6 +20,8 @@ export interface PrivateChat {
   /** Dernière lecture de chaque membre (pour les non-lus). */
   readAtMs: Record<string, number>
   updatedAtMs: number
+  /** Créée sur cet appareil mais pas encore enregistrée par le serveur (ses messages ne sont pas encore lisibles). */
+  pending?: boolean
 }
 export interface ChatContext { activityId: string; activityTitle: string }
 
@@ -29,7 +31,7 @@ export const otherMember = (chat: Pick<PrivateChat, 'memberIds'>, uid: string) =
 export const isUnread = (chat: PrivateChat, uid: string) =>
   !!chat.lastMessage && chat.lastMessage.authorId !== uid && chat.lastMessage.sentAtMs > (chat.readAtMs?.[uid] ?? 0)
 
-const toChat = (id: string, data: DocumentData): PrivateChat => ({
+const toChat = (id: string, data: DocumentData, pending = false): PrivateChat => ({
   id,
   memberIds: data.memberIds,
   activityId: data.activityId || undefined,
@@ -37,12 +39,16 @@ const toChat = (id: string, data: DocumentData): PrivateChat => ({
   lastMessage: data.lastMessage ?? null,
   readAtMs: data.readAtMs ?? {},
   updatedAtMs: Number(data.updatedAtMs) || 0,
+  pending,
 })
 
 /** Mes conversations privées, en temps réel (la requête correspond à la règle de lecture). */
+// includeMetadataChanges : on est aussi prévenu quand le serveur confirme une conversation
+// créée sur cet appareil (hasPendingWrites passe à false), pour n'écouter ses messages qu'à ce moment.
+type ChatSnapshot = { docs: { id: string; data(): DocumentData; metadata: { hasPendingWrites: boolean } }[] }
 export function watchMyChats(uid: string, onChats: (chats: PrivateChat[]) => void, onError: (error: Error) => void) {
-  return onSnapshot(query(collection(db, 'privateChats'), where('memberIds', 'array-contains', uid)), (snapshot: { docs: { id: string; data(): DocumentData }[] }) => {
-    onChats(snapshot.docs.map(item => toChat(item.id, item.data())).sort((a, b) => b.updatedAtMs - a.updatedAtMs))
+  return onSnapshot(query(collection(db, 'privateChats'), where('memberIds', 'array-contains', uid)), { includeMetadataChanges: true }, (snapshot: ChatSnapshot) => {
+    onChats(snapshot.docs.map(item => toChat(item.id, item.data(), item.metadata.hasPendingWrites)).sort((a, b) => b.updatedAtMs - a.updatedAtMs))
   }, onError)
 }
 
