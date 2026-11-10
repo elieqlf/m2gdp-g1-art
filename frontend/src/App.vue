@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { computed, defineAsyncComponent, defineComponent, h, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
-import { ArrowRight, Check, ChevronLeft, GraduationCap, Heart, Lightbulb, Mail, MapPin, Sprout, Star, Upload, Users } from '@lucide/vue'
+import { computed, defineAsyncComponent, defineComponent, h, nextTick, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
+import { ArrowRight, Cat, Check, ChevronLeft, GraduationCap, Heart, Lightbulb, Mail, MapPin, Sprout, Star, Users } from '@lucide/vue'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -13,11 +13,13 @@ import { isValidEmail, hasSignInLink, pendingEmail, pendingSocialProvider, clear
 import type { AddressSelection } from '@/services/places'
 import { disciplines } from '@/lib/activity'
 import { imageUploadError, prepareImageUpload } from '@/lib/image-upload'
+import { suggestCityOrNeighborhood } from '@/services/reverse-geocode'
 import { rememberProfilePhoto } from '@/lib/profile-photo-history'
 import { loadActivities, loadMembers, requestPosition, resetStore, store } from '@/lib/store'
 import { tabOf, useRoute } from '@/lib/router'
 
 type Screen = 'loading' | 'request' | 'sent' | 'confirm' | 'expired' | 'profile' | 'preferences' | 'complete' | 'app' | 'account-error'
+type CityDetectionStatus = 'idle' | 'locating' | 'found' | 'denied' | 'unavailable' | 'unsupported'
 const screen = ref<Screen>('loading')
 const splashVisible = computed(() => import.meta.env.MODE !== 'test' && screen.value === 'loading')
 const email = ref('')
@@ -66,6 +68,15 @@ const currentView = computed(() => views[route.value.name])
 const viewKey = computed(() => `${route.value.name}:${route.value.id ?? ''}`)
 const showNav = computed(() => !['participation', 'conversation'].includes(route.value.name))
 const selection = ref<AddressSelection | null>(null)
+const cityDetectionStatus = ref<CityDetectionStatus>('idle')
+const cityDetectionMessage = computed(() => {
+  if (cityDetectionStatus.value === 'locating') return 'Recherche de ta ville en cours…'
+  if (cityDetectionStatus.value === 'found') return 'Ville ou quartier prérempli. Tu peux le modifier.'
+  if (cityDetectionStatus.value === 'denied') return 'Localisation non autorisée. Tu peux saisir ta ville directement.'
+  if (cityDetectionStatus.value === 'unsupported') return 'La détection n’est pas disponible ici. Tu peux saisir ta ville directement.'
+  if (cityDetectionStatus.value === 'unavailable') return 'La détection n’a pas abouti. Tu peux saisir ta ville ou réessayer.'
+  return 'Avec ton accord, une position arrondie à environ 1 km est transmise à OpenStreetMap pour suggérer un lieu. Aucune coordonnée n’est enregistrée.'
+})
 const blankProfile = (): Profile => ({ firstName: '', lastName: '', userType: 'participant', address: '', addressLat: null, addressLng: null, photoUrl: '', bio: '', interests: [], discoveryRadiusKm: 10, useCurrentLocation: false, onboardingGoals: [], onboardingStep: 1 })
 const profile = reactive<Profile>(blankProfile())
 const isOnboardingScreen = computed(() => ['profile', 'preferences', 'complete'].includes(screen.value))
@@ -93,9 +104,11 @@ const showCityEditor = ref(false)
 let unsubscribe: (() => void) | undefined
 let countdown: ReturnType<typeof setInterval> | undefined
 let accountRevision = 0
+let cityPrefillAttempted = false
+let cityDetectionRevision = 0
 let authStateReady = false
 let pendingSocialError = ''
-const titles: Record<string, string> = { loading: '', request: 'Bienvenue', sent: 'Consulte ta boîte mail', confirm: 'Confirme ton e-mail', expired: 'Ce lien n’est plus valide', profile: 'Crée ton profil', preferences: 'Personnalise ton expérience', complete: 'Presque terminé !', 'account-error': 'Chargement interrompu' }
+const titles: Record<string, string> = { loading: '', request: 'Bienvenue', sent: 'Consulte ta boîte mail', confirm: 'Confirme ton e-mail', expired: 'Ce lien n’est plus valide', profile: 'Crée ton profil', preferences: 'À ton image', complete: 'Presque terminé !', 'account-error': 'Chargement interrompu' }
 const title = computed(() => titles[screen.value] ?? '')
 function startCooldown() {
   clearInterval(countdown)
@@ -173,7 +186,7 @@ async function loadAccount(user: Account | null) {
   const revision = ++accountRevision
   account.value = user
   if (!user) {
-    resetStore(); Object.assign(profile, blankProfile()); selection.value = null; screen.value = 'request'
+    resetStore(); Object.assign(profile, blankProfile()); selection.value = null; cityDetectionRevision++; cityPrefillAttempted = false; cityDetectionStatus.value = 'idle'; screen.value = 'request'
     error.value = pendingSocialError
     pendingSocialError = ''
     return
@@ -200,6 +213,9 @@ async function loadAccount(user: Account | null) {
     if (!saved.profileComplete || !requiredProfileReady) {
       const step = requiredProfileReady ? Number(saved.onboardingStep) || 2 : 1
       screen.value = step >= 3 ? 'complete' : step === 2 ? 'preferences' : 'profile'
+      if (screen.value === 'profile' && !profile.address.trim()) {
+        void nextTick().then(() => { if (screen.value === 'profile') startAutomaticCityDetection() })
+      }
     } else enterApp()
   } catch {
     if (revision === accountRevision) { screen.value = 'account-error'; error.value = 'Impossible de charger ton profil. Vérifie ta connexion puis réessaie.' }
@@ -238,7 +254,45 @@ function toggleGoal(id: string) {
   const selected = profile.onboardingGoals ?? []
   profile.onboardingGoals = selected.includes(id) ? selected.filter(item => item !== id) : [...selected, id]
 }
+function startAutomaticCityDetection() {
+  if (cityPrefillAttempted || profile.address.trim()) return
+  cityPrefillAttempted = true
+  void detectCityFromPosition()
+}
+async function detectCityFromPosition() {
+  if (cityDetectionStatus.value === 'locating' || profile.address.trim()) return
+  const revision = ++cityDetectionRevision
+  if (!('geolocation' in navigator)) {
+    cityDetectionStatus.value = 'unsupported'
+    return
+  }
+  cityDetectionStatus.value = 'locating'
+  try {
+    const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+      navigator.geolocation.getCurrentPosition(resolve, reject, { enableHighAccuracy: false, timeout: 8000, maximumAge: 600000 })
+    })
+    if (revision !== cityDetectionRevision || profile.address.trim()) return
+    const suggestion = await suggestCityOrNeighborhood(position.coords.latitude, position.coords.longitude)
+    if (revision !== cityDetectionRevision || profile.address.trim()) return
+    if (!suggestion) {
+      cityDetectionStatus.value = 'unavailable'
+      return
+    }
+    profile.address = suggestion
+    profile.addressLat = null
+    profile.addressLng = null
+    selection.value = null
+    cityDetectionStatus.value = 'found'
+  } catch (cause) {
+    if (revision !== cityDetectionRevision) return
+    cityDetectionStatus.value = (cause as GeolocationPositionError)?.code === 1 ? 'denied' : 'unavailable'
+  }
+}
 function handleAddressSelection(value: AddressSelection | null) {
+  if (!value && profile.address.trim()) {
+    if (cityDetectionStatus.value === 'locating') cityDetectionRevision++
+    if (cityDetectionStatus.value === 'locating' || cityDetectionStatus.value === 'found') cityDetectionStatus.value = 'idle'
+  }
   selection.value = value
   if (value) {
     profile.addressLat = value.lat
@@ -324,6 +378,7 @@ async function goBackOnboarding() {
   if (screen.value === 'preferences') {
     screen.value = 'profile'
     profile.onboardingStep = 1
+    if (!profile.address.trim()) void nextTick().then(() => { if (screen.value === 'profile') startAutomaticCityDetection() })
     if (account.value) await saveOnboardingProgress(account.value.uid, {}, 1).catch(() => { error.value = 'La progression n’a pas pu être enregistrée.' })
     return
   }
@@ -391,7 +446,7 @@ onBeforeUnmount(() => { unsubscribe?.(); clearInterval(countdown); accountRevisi
         <div class="onboarding-intro-copy">
           <h1>{{ title }}</h1>
           <p v-if="screen === 'profile'">Rejoins la communauté NOVART et découvre des activités artistiques près de chez toi.</p>
-          <p v-else-if="screen === 'preferences'">Quelques choix pour te proposer des activités qui te correspondent.</p>
+          <p v-else-if="screen === 'preferences'">Choisis tes envies et ton rayon.</p>
           <p v-else>Un dernier petit pas pour rejoindre NOVART.</p>
         </div>
         <img
@@ -409,7 +464,7 @@ onBeforeUnmount(() => { unsubscribe?.(); clearInterval(countdown); accountRevisi
         <div class="onboarding-photo-row">
           <button type="button" class="onboarding-photo-picker" :class="{ 'has-photo': !!profile.photoUrl }" :disabled="photoBusy"  :aria-label="profile.photoUrl ? 'Modifier la photo de profil' : 'Choisir une photo depuis la galerie ou les fichiers'" @click="photoInput?.click()">
             <img v-if="profile.photoUrl" :src="profile.photoUrl" alt="" />
-            <Upload v-else aria-hidden="true" />
+            <Cat v-else class="onboarding-avatar-placeholder" aria-hidden="true" />
             <span class="onboarding-photo-add" aria-hidden="true">+</span>
           </button>
           <input id="onboarding-photo" ref="photoInput" class="sr-only" type="file" accept="image/jpeg,image/png,image/webp,image/avif" @change="chooseProfilePhoto" />
@@ -432,7 +487,13 @@ onBeforeUnmount(() => { unsubscribe?.(); clearInterval(countdown); accountRevisi
               <MapPin class="onboarding-field-icon" aria-hidden="true" />
               <AddressInput v-model="profile.address" input-id="onboarding-city" placeholder="Ex. : Lyon, Croix-Rousse" @select="handleAddressSelection" />
             </div>
-            <p class="onboarding-location-privacy">Cette zone sert uniquement à adapter tes recommandations. Elle n’apparaît jamais sur ton profil.</p>
+            <p class="onboarding-location-privacy" :class="{ 'onboarding-location-privacy--found': cityDetectionStatus === 'found' }" aria-live="polite">
+              {{ cityDetectionMessage }}
+              <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">© OpenStreetMap</a>
+            </p>
+            <button v-if="cityDetectionStatus === 'unavailable'" type="button" class="onboarding-location-retry" @click="detectCityFromPosition">
+              <MapPin aria-hidden="true" />Réessayer la détection
+            </button>
           </div>
           <div class="onboarding-field">
             <Label for="onboarding-bio">Quelques mots pour te présenter <span class="optional">(optionnel)</span></Label>
@@ -447,7 +508,6 @@ onBeforeUnmount(() => { unsubscribe?.(); clearInterval(countdown); accountRevisi
             <button v-for="discipline in signupDisciplines" :key="discipline.id" type="button" class="onboarding-interest-chip" :class="{ 'is-selected': profile.interests?.includes(discipline.id) }" :aria-pressed="profile.interests?.includes(discipline.id) ?? false" @click="toggleInterest(discipline.id)">
               <DisciplineIcon :discipline="discipline.id" />
               <span>{{ discipline.label }}</span>
-              <span v-if="profile.interests?.includes(discipline.id)" class="onboarding-chip-check"><Check aria-hidden="true" /></span>
             </button>
           </div>
         </fieldset>
@@ -461,19 +521,16 @@ onBeforeUnmount(() => { unsubscribe?.(); clearInterval(countdown); accountRevisi
       <form v-else-if="screen === 'preferences'" class="onboarding-form onboarding-form--preferences" novalidate @submit.prevent="savePreferences">
         <section class="onboarding-preference-section">
           <div class="onboarding-section-heading">
-            <MapPin aria-hidden="true" />
-            <div><h2>Jusqu’où veux-tu découvrir des activités ?</h2><p>Choisis un rayon autour de ta zone. Tu peux aussi passer cette étape.</p></div>
+            <div><h2>Ton rayon de découverte</h2></div>
           </div>
           <div class="onboarding-radius-options" role="group" aria-label="Rayon de découverte">
             <button v-for="option in radiusOptions" :key="option.label" type="button" :class="{ 'is-selected': profile.discoveryRadiusKm === option.value }" :aria-pressed="profile.discoveryRadiusKm === option.value" @click="profile.discoveryRadiusKm = option.value">{{ option.label }}</button>
           </div>
           <button type="button" class="onboarding-location-toggle" role="switch" :aria-checked="!!profile.useCurrentLocation" :disabled="busy" @click="toggleCurrentLocation">
-            <span class="onboarding-location-icon" aria-hidden="true"><MapPin /></span>
             <span class="onboarding-location-copy"><strong>Utiliser ma localisation actuelle</strong><small>Uniquement si tu l’autorises, pour calculer les distances.</small></span>
             <span class="onboarding-switch" aria-hidden="true"><span></span></span>
           </button>
           <button type="button" class="onboarding-city-toggle" :aria-expanded="showCityEditor" @click="showCityEditor = !showCityEditor">
-            <MapPin aria-hidden="true" />
             <span><strong>Utiliser ma ville ou mon quartier</strong><small>{{ profile.address || 'Facultatif · visible par toi uniquement' }}</small></span>
             <ChevronLeft aria-hidden="true" />
           </button>
@@ -488,7 +545,7 @@ onBeforeUnmount(() => { unsubscribe?.(); clearInterval(countdown); accountRevisi
         </section>
 
         <fieldset class="onboarding-preference-section onboarding-goal-section">
-          <legend><Heart aria-hidden="true" />Ce que tu recherches sur NOVART</legend>
+          <legend>Ce que tu recherches sur NOVART</legend>
           <p>Tu peux choisir plusieurs options.</p>
           <div class="onboarding-goal-grid">
             <button v-for="goal in goalOptions" :key="goal.id" type="button" class="onboarding-goal-card" :class="{ 'is-selected': profile.onboardingGoals?.includes(goal.id) }" :aria-pressed="profile.onboardingGoals?.includes(goal.id) ?? false" @click="toggleGoal(goal.id)">
