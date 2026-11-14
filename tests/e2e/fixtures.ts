@@ -183,6 +183,15 @@ export const uploadCover = async (image, token) => {
     if (route.request().method() === 'POST') { uploaded = route.request().postDataBuffer() ?? undefined; return route.fulfill({ status: 201, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: JSON.stringify({ url: 'https://api.novart.test/files/covers/preview-user/1-0123456789ab.webp' }) }) }
     return route.fulfill({ status: uploaded ? 200 : 404, contentType: 'image/webp', body: uploaded ?? '' })
   })
+  // Suppression de compte simulée (le vrai service appelle le Worker, qui efface tout dans Firestore).
+  await page.route('**/src/services/account.ts*', route => route.fulfill({ contentType: 'application/javascript', body: `
+export class AccountDeletionError extends Error { constructor(code) { super(code); this.code = code; } }
+export const deleteAccount = async token => {
+  if (token !== 'jeton-de-test') throw new AccountDeletionError('unauthenticated');
+  await new Promise(resolve => setTimeout(resolve, 300));
+};
+export const deletionErrorMessage = () => 'La suppression n’a pas pu aller au bout.';
+export const forgetLocalData = uid => { for (const key of Object.keys(localStorage)) if (key.includes(uid)) localStorage.removeItem(key); };` }))
   // Idées par IA simulées (le vrai service appelle Mistral via le Worker).
   await page.route('**/src/services/ai.ts*', route => route.fulfill({ contentType: 'application/javascript', body: `
 export class AiError extends Error { constructor(code, retryAfter = 0) { super(code); this.code = code; this.retryAfter = retryAfter; } }

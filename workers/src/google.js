@@ -1,8 +1,9 @@
-// Lien de connexion Firebase généré côté serveur avec le compte de service du projet
-// (équivalent de generateSignInWithEmailLink du SDK Admin, sans dépendance : WebCrypto + fetch).
+// Accès Google avec le compte de service du projet (équivalent du SDK Admin, sans dépendance :
+// WebCrypto + fetch) : lien de connexion Firebase et suppression de compte (account.js).
 
 const TOKEN_URL = 'https://oauth2.googleapis.com/token'
-const SCOPE = 'https://www.googleapis.com/auth/identitytoolkit'
+// Identity Toolkit (liens de connexion, suppression de compte) et Firestore (suppression des données).
+const SCOPE = 'https://www.googleapis.com/auth/identitytoolkit https://www.googleapis.com/auth/datastore'
 let cached = { token: '', expiresAt: 0 }
 
 const base64url = bytes => btoa(String.fromCharCode(...new Uint8Array(bytes))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')

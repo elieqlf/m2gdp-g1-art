@@ -5,6 +5,7 @@ import AddressInput from '../src/components/AddressInput.vue'
 import * as api from '../src/services/firebase'
 import { navigate } from '../src/lib/router'
 import { TooManyRequestsError } from '../src/services/emailLink'
+import { AccountDeletionError, deleteAccount } from '../src/services/account'
 
 vi.mock('../src/services/firebase', () => ({
   isValidEmail: (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim()),
@@ -19,6 +20,7 @@ vi.mock('../src/services/messages', () => ({
   watchMyChats: vi.fn(() => () => {}), watchPrivateMessages: vi.fn(() => () => {}), sendPrivateMessage: vi.fn(), markChatRead: vi.fn(async () => {}),
   chatIdFor: (a: string, b: string) => [a, b].sort().join('__'), otherMember: () => '', isUnread: () => false,
 }))
+vi.mock('../src/services/account', async original => ({ ...await original<typeof import('../src/services/account')>(), deleteAccount: vi.fn() }))
 vi.mock('../src/services/places', () => ({ suggestAddresses: vi.fn(async () => []), resolveAddress: vi.fn() }))
 let wrapper: VueWrapper
 let observer: (user: api.Account | null) => void
@@ -186,5 +188,31 @@ describe('Parcours inscription Shadcn-Vue', () => {
     await button.trigger('click'); await flushPromises()
     expect(wrapper.find('#email').exists()).toBe(true)
     expect(wrapper.text()).not.toContain('Alex Durand')
+  })
+  it('supprime le compte après confirmation, puis revient à l’accueil (US-23)', async () => {
+    vi.mocked(api.getProfile).mockResolvedValue({ profileComplete: true, firstName: 'Camille', address: 'Lyon', interests: ['peinture'] })
+    vi.mocked(api.logout).mockImplementation(async () => { observer(null) })
+    vi.mocked(deleteAccount).mockRejectedValueOnce(new AccountDeletionError('network')).mockResolvedValueOnce(undefined)
+    localStorage.setItem('novart.notifications.test-user', '[]')
+    await render(); observer(user); await flushPromises()
+    navigate('profil'); await flushPromises()
+    await waitForText('Supprimer mon compte')
+    await wrapper.findAll('button').find(b => b.text() === 'Supprimer mon compte')!.trigger('click'); await flushPromises()
+    const dialog = wrapper.get('[role="alertdialog"]')
+    expect(dialog.text()).toContain('définitive')
+    const confirm = () => dialog.findAll('button').find(b => b.text().includes('Supprimer définitivement'))!
+    // Il faut d'abord cocher « J'ai compris ».
+    expect(confirm().attributes('disabled')).toBeDefined()
+    await dialog.get('input[type="checkbox"]').setValue(true)
+    expect(confirm().attributes('disabled')).toBeUndefined()
+    // Échec réseau : rien n'est supprimé, on peut réessayer.
+    await confirm().trigger('click'); await flushPromises()
+    expect(dialog.text()).toContain('n’a pas été supprimé')
+    expect(api.logout).not.toHaveBeenCalled()
+    await confirm().trigger('click'); await flushPromises()
+    expect(deleteAccount).toHaveBeenLastCalledWith('jeton')
+    expect(api.logout).toHaveBeenCalled()
+    await waitForText('Ton compte NOVART et tes données ont bien été supprimés')
+    expect(localStorage.getItem('novart.notifications.test-user')).toBeNull()
   })
 })

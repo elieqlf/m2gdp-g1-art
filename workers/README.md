@@ -7,8 +7,11 @@
 | `POST /uploads/cover` (corps : l'image, `Authorization: Bearer <jeton Firebase>`) | Photo de couverture d'une activité, stockée dans R2 ; renvoie `{ url }` |
 | `GET /files/covers/…` | Lecture publique d'une photo (cache navigateur d'un an) |
 | `POST /ai/activity-ideas` `{ keywords, discipline?, practices? }` (`Authorization: Bearer <jeton Firebase>`) | Trois idées d'activités culturelles proposées par Mistral Small (Workers AI) ; renvoie `{ ideas }` |
+| `POST /account/delete` `{ confirm: 'delete-account' }` (`Authorization: Bearer <jeton Firebase>`) | US-23 : efface toutes les données du membre (activités organisées, participations, messages, conversations, profils, photos R2) puis son compte Firebase ; renvoie `{ deleted: true, … }` |
 
 **Photos (R2)** : seuls les membres connectés peuvent envoyer (jeton Firebase vérifié avec les clés publiques de Google : signature, projet, expiration) ; l'appli recadre et réduit l'image (16:10, 1600 × 1000 px, WebP) ; le Worker revérifie le type réel du fichier (JPEG, PNG ou WebP), la taille (2 Mo max) et limite à 30 envois par heure et par membre (D1, empreinte de l'uid). Les photos remplacées ne sont pas encore supprimées de R2.
+
+**Suppression de compte** : le compte de service demande aussi l'accès à Firestore (portée `datastore`, déjà incluse dans les droits du compte Firebase Admin). Index requis pour retrouver les messages d'un membre dans tous les groupes : `docs/firestore.indexes.json` (`npx firebase deploy --only firestore:indexes`) ; sans lui, le Worker parcourt les groupes où la personne est encore inscrite. Détail : `specs/user-stories/profil-preferences.md`.
 
 **Idées par IA (Mistral Small)** : réservé aux membres connectés (jeton Firebase vérifié), 20 demandes par heure et par membre (D1, empreinte de l'uid). Modèle hébergé par Cloudflare Workers AI (gratuit, sans clé) ; une clé `MISTRAL_API_KEY` facultative, en secret Cloudflare, bascule vers l'API Mistral. Le Worker borne la réponse du modèle (disciplines et niveaux connus, longueurs du formulaire) ; les mots-clés ne sont ni stockés ni journalisés.
 

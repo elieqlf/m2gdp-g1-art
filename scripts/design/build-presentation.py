@@ -275,7 +275,7 @@ EPICS = [
     ('E7', 'Conversations', 'MVP + cible', 'Persona Léa : « J’ai peur d’arriver seule et de ne connaître personne. »', 'Échanger avant la rencontre crée le lien (enseignement clé n° 3 de l’UJM).',
      ['Groupe de discussion par activité, en temps réel, avec non-lus', 'Organisateur nommé dans l’en-tête et dans le fil', 'Message privé à un membre ou à l’organisateur, avant même de s’inscrire'], 'Livré'),
     ('E8', 'Profil &amp; préférences', 'MVP + cible', 'Se présenter, retrouver ses activités et garder la main sur ses données.', 'Un profil public minimal rassure les autres membres sans exposer l’adresse.',
-     ['Profil public séparé : prénom, photo, bio, centres d’intérêt', 'Mes activités, favoris, notifications, communauté', 'Adresse et position jamais visibles des autres membres'], 'Livré (sauf suppression de compte)'),
+     ['Profil public séparé : prénom, photo, bio, centres d’intérêt', 'Mes activités, favoris, notifications, communauté', 'Suppression du compte : toutes les données effacées par notre API'], 'Livré'),
     ('E9', 'Assistance IA', 'Ajout J5', 'Retour du professeur : aider l’organisateur à trouver une idée d’activité culturelle.', 'Trois idées à partir de quelques mots-clés débloquent la création.',
      ['« Trouver une idée avec l’IA » sous le choix de la discipline', 'Mistral Small, appelé par notre API (gratuit, sans clé dans l’appli)', 'L’idée choisie remplit titre, description, pratique, niveau et matériel'], 'Livré'),
 ]
@@ -301,9 +301,9 @@ US = [('US-01', 'Inscription &amp; connexion', 'Créer un compte pour rejoindre 
       ('US-20', 'Profil &amp; préférences', 'Modifier ses informations de profil', 'Mes informations'),
       ('US-21', 'Profil &amp; préférences', 'Gérer ses préférences artistiques et sa localisation', 'Inscription, profil'),
       ('US-22', 'Profil &amp; préférences', 'Consulter ses activités organisées ou rejointes', 'Mes activités'),
-      ('US-23', 'Profil &amp; préférences', 'Supprimer son compte', '—'),
+      ('US-23', 'Profil &amp; préférences', 'Supprimer son compte', 'Profil'),
       ('US-24', 'Aide', 'Accéder à l’aide / FAQ', 'FAQ du site vitrine')]
-NOT_DONE = {'US-23'}
+NOT_DONE = set()
 EXTRA = [('SHOULD', 'Participation', 'Rejoindre la liste d’attente et confirmer la place libérée (sujet ART)', 'Livré'),
          ('SHOULD', 'Conversations', 'Écrire en privé à l’organisateur ou à un membre', 'Livré'),
          ('SHOULD', 'Carte', 'Voir les activités sur une carte et la distance depuis sa position', 'Livré'),
@@ -331,7 +331,7 @@ def status(s):
 po = f'''
 <section class="section section--rose" id="po" aria-labelledby="po-title">
  <div class="wrap">
-  {head('06', 'Product Owner', '<span id="po-title">Roadmap et backlog</span>', 'Du MVP (MUST) à la version cible (SHOULD + COULD), en 4 sprints de J1 à J5. Les 24 user stories du scénario minimal sont livrées, sauf la suppression de compte.')}
+  {head('06', 'Product Owner', '<span id="po-title">Roadmap et backlog</span>', 'Du MVP (MUST) à la version cible (SHOULD + COULD), en 4 sprints de J1 à J5. Les 24 user stories du scénario minimal sont livrées.')}
   <ol class="milestones">{''.join(f'<li><span class="ms__j">{j}</span><span class="ms__d">{d}</span><strong>{t}</strong><span class="muted">{x}</span></li>' for j, d, t, x in MILESTONES)}</ol>
   {sub('roadmap', 'Roadmap : besoins, hypothèses et approches retenues', 'Une carte par EPIC : la vision produit (besoin et hypothèse), puis l’approche retenue et ce qui est en ligne.')}
   <div class="epics">{''.join(f'<article class="card epic reveal"><header><span class="epic__id">{k}</span><h4>{t}</h4><span class="tag">{sc}</span></header><p class="label">Vision produit</p><p><strong>Besoin :</strong> {b}</p><p><strong>Hypothèse :</strong> {h}</p><p class="label">Approche retenue</p>{ul(a)}<p class="epic__status">{status(st)}</p></article>' for k, t, sc, b, h, a, st in EPICS)}</div>
@@ -363,7 +363,8 @@ ROUTES = [('GET', '/health', 'Vérifier que l’API répond', 'Public'),
           ('POST', '/auth/email-link', 'Envoyer l’e-mail de connexion NOVART (lien Firebase, Brevo)', 'Origine autorisée, 3 demandes / 10 min par adresse'),
           ('POST', '/uploads/cover', 'Stocker la photo d’une activité dans R2', 'Membre connecté (jeton Firebase), 30 / h'),
           ('GET', '/files/covers/…', 'Lire une photo (cache d’un an)', 'Public'),
-          ('POST', '/ai/activity-ideas', 'Trois idées d’activités par Mistral Small', 'Membre connecté, 20 / h')]
+          ('POST', '/ai/activity-ideas', 'Trois idées d’activités par Mistral Small', 'Membre connecté, 20 / h'),
+          ('POST', '/account/delete', 'Supprimer son compte : activités organisées, participations, messages, conversations, profils, photos, puis le compte', 'Membre connecté, confirmation explicite')]
 COLLECTIONS = [('users/{uid}', 'Profil privé : nom, ville, coordonnées, préférences, favoris', 'La personne seule'),
                ('publicProfiles/{uid}', 'Profil public : prénom, nom, photo, bio, centres d’intérêt', 'Membres connectés'),
                ('activities/{id}', 'Activité : discipline, description, lieu, date, places, participants, liste d’attente, place proposée', 'Membres connectés ; écriture contrôlée'),
@@ -411,9 +412,9 @@ dev = f'''
    <tbody>{''.join(f'<tr><td><span class="method method--{m.lower()}">{m}</span></td><td><code>{r}</code></td><td>{d}</td><td>{a}</td></tr>' for m, r, d, a in ROUTES)}</tbody></table></div>
   <p class="muted small">Spécification OpenAPI du scénario minimal (V1) : <a href="docs/NOVART-openapi-V1.json" download>NOVART-openapi-V1.json</a>.</p>
   {sub('qualite', 'Qualité, sécurité et accessibilité')}
-  <ul class="stats-grid stats-grid--3"><li><strong>58</strong><span>tests unitaires (Vitest)</span></li><li><strong>90+</strong><span>scénarios de bout en bout (Playwright), sur ordinateur, téléphone et petit écran (320 px)</span></li><li><strong>26</strong><span>tests de l’API (node:test)</span></li></ul>
+  <ul class="stats-grid stats-grid--3"><li><strong>62</strong><span>tests unitaires (Vitest)</span></li><li><strong>100</strong><span>scénarios de bout en bout (Playwright), sur ordinateur, téléphone et petit écran (320 px)</span></li><li><strong>35</strong><span>tests de l’API (node:test)</span></li></ul>
   <div class="grid two">
-   <article class="card"><h3>Sécurité et RGPD</h3>{ul(['Aucun secret dans l’application ni dans le dépôt : clés en secrets Cloudflare.', 'Règles Firestore : profil privé lisible par la personne seule, messages réservés aux membres du groupe ou de la conversation.', 'API limitée à l’origine de l’application, jetons Firebase vérifiés, quotas par membre.', 'Pas d’e-mail ni d’adresse IP stockés : seulement des empreintes salées, effacées.'])}</article>
+   <article class="card"><h3>Sécurité et RGPD</h3>{ul(['Aucun secret dans l’application ni dans le dépôt : clés en secrets Cloudflare.', 'Règles Firestore : profil privé lisible par la personne seule, messages réservés aux membres du groupe ou de la conversation.', 'API limitée à l’origine de l’application, jetons Firebase vérifiés, quotas par membre.', 'Pas d’e-mail ni d’adresse IP stockés : seulement des empreintes salées, effacées.', 'Droit à l’effacement : chacun peut supprimer son compte et toutes ses données depuis son profil.'])}</article>
    <article class="card"><h3>Accessibilité et mobile</h3>{ul(['Conçu d’abord pour le téléphone, vérifié jusqu’à 320 px de large.', 'Contrastes conformes WCAG AA, navigation au clavier, lecteurs d’écran (combobox, onglets, dialogues).', 'Gestes au doigt sur l’accueil, boutons Retour toujours visibles.', 'Mouvements réduits respectés.'])}</article>
   </div>
   {sub('changements', 'Ce qui a changé en route')}
@@ -439,10 +440,10 @@ hero = f'''
   <div class="p-hero__visual"><img src="img/logo-secondaire.webp" alt="" width="700" height="671" fetchpriority="high" /></div>
  </div>
  <div class="wrap"><ul class="key-figures" aria-label="Chiffres clés">
-  <li><strong>23/24</strong><span>user stories du scénario minimal livrées</span></li>
+  <li><strong>24/24</strong><span>user stories du scénario minimal livrées</span></li>
   <li><strong>9</strong><span>EPICs, dont l’assistance IA ajoutée à J5</span></li>
   <li><strong>26</strong><span>maquettes du parcours</span></li>
-  <li><strong>170+</strong><span>tests automatisés</span></li>
+  <li><strong>190+</strong><span>tests automatisés</span></li>
  </ul></div>
 </section>'''
 

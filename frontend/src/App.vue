@@ -11,6 +11,7 @@ import BottomNav from '@/components/BottomNav.vue'
 import { isValidEmail, hasSignInLink, pendingEmail, pendingSocialProvider, clearPendingSocialProvider, rememberedSessionChoice, setAuthPersistence, requestSignInLink, completeSignIn, signInWithSocialProvider, consumeSocialRedirect, observeAccount, getProfile, saveOnboardingProgress, saveProfile, logout, type Account, type Profile } from '@/services/firebase'
 import type { AddressSelection } from '@/services/places'
 import { InvalidEmailError, TooManyRequestsError } from '@/services/emailLink'
+import { forgetLocalData } from '@/services/account'
 import { disciplines } from '@/lib/activity'
 import { imageUploadError, prepareImageUpload } from '@/lib/image-upload'
 import { suggestCityOrNeighborhood } from '@/services/reverse-geocode'
@@ -139,6 +140,7 @@ function startCooldown() {
   countdown = setInterval(() => { cooldown.value--; if (cooldown.value <= 0) clearInterval(countdown) }, 1000)
 }
 async function sendLink() {
+  farewell.value = false
   error.value = ''
   email.value = email.value.trim()
   if (!isValidEmail(email.value)) { error.value = 'Saisis une adresse e-mail valide.'; return }
@@ -174,6 +176,7 @@ function socialErrorMessage(cause: unknown, provider?: 'Apple' | 'Google') {
   return `Connexion ${provider ?? 'sociale'} impossible${code ? ` (${code})` : ''}. Vérifie le fournisseur dans Firebase.`
 }
 async function startSocialSignIn(provider: 'apple' | 'google') {
+  farewell.value = false
   error.value = ''
   busy.value = true
   try {
@@ -435,6 +438,13 @@ async function goBackOnboarding() {
   }
   await disconnect()
 }
+// US-23 : compte supprimé par l'API. On oublie aussi ce qui reste sur cet appareil.
+const farewell = ref(false)
+async function accountDeleted() {
+  forgetLocalData(account.value?.uid ?? '')
+  farewell.value = true
+  try { await logout() } catch { /* le compte n'existe plus : la session locale se ferme quand même */ }
+}
 async function disconnect() {
   busy.value = true
   error.value = ''
@@ -471,7 +481,7 @@ onBeforeUnmount(() => { unsubscribe?.(); clearInterval(countdown); accountRevisi
     <a href="#app-main" class="skip-link">Aller au contenu</a>
     <main id="app-main" class="app-main" :class="{ 'app-main--no-nav': !showNav }">
       <Transition name="view" mode="out-in" @after-enter="focusPageHeading">
-        <component :is="currentView" :id="route.id" :key="viewKey" @logout="disconnect" />
+        <component :is="currentView" :id="route.id" :key="viewKey" @logout="disconnect" @account-deleted="accountDeleted" />
       </Transition>
     </main>
     <BottomNav v-if="showNav" :active="tabOf(route.name)" />
@@ -661,6 +671,7 @@ onBeforeUnmount(() => { unsubscribe?.(); clearInterval(countdown); accountRevisi
         </CardHeader>
         <CardContent :class="screen === 'request' ? 'auth-panel-content--home' : screen === 'confirm' ? 'auth-panel-content--confirm' : 'space-y-5'">
           <form v-if="screen === 'request'" class="auth-home-form" novalidate @submit.prevent="sendLink">
+            <p v-if="farewell" class="auth-farewell" role="status">Ton compte NOVART et tes données ont bien été supprimés. Merci d’être passé·e par là.</p>
             <div class="auth-social-buttons">
               <button type="button" class="auth-social-button" :disabled="busy" @click="startSocialSignIn('google')">
                 <svg class="auth-social-icon auth-social-icon--google" viewBox="0 0 48 48" aria-hidden="true"><path fill="#4285F4" d="M43.6 24.5c0-1.4-.1-2.8-.4-4.1H24v7.8h11c-.5 2.5-1.9 4.6-4 6l6.5 5c3.8-3.5 6.1-8.6 6.1-14.7Z"/><path fill="#34A853" d="M24 44c5.5 0 10.1-1.8 13.5-4.8l-6.5-5c-1.8 1.2-4.1 2-7 2-5.4 0-10-3.7-11.7-8.7l-6.7 5.1C9 39.3 15.9 44 24 44Z"/><path fill="#FBBC05" d="M12.3 27.5a12 12 0 0 1 0-7l-6.7-5.1a20 20 0 0 0 0 17.2l6.7-5.1Z"/><path fill="#EA4335" d="M24 11.8c3 0 5.7 1 7.8 3.1l5.8-5.8C34.1 5.6 29.5 4 24 4 15.9 4 9 8.7 5.6 15.4l6.7 5.1c1.7-5 6.3-8.7 11.7-8.7Z"/></svg>

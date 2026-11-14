@@ -1150,6 +1150,7 @@
 .onboarding-timeline p { margin: .15rem 0 0; color: #7b8187; font-size: .84rem; line-height: 1.38; }
 
 .onboarding-error { margin: 0; padding: .55rem .7rem; border-radius: .7rem; background: #fff0ed; color: #a32330; font-size: .82rem; line-height: 1.35; }
+.auth-farewell { margin: 0 0 1rem; padding: .7rem .85rem; border-radius: .8rem; background: #eaf6ee; color: #1b5e33; font-size: .9rem; line-height: 1.4; }
 .onboarding-submit { position: relative; width: 100%; min-height: 3.45rem; padding: .6rem 3rem; display: flex; align-items: center; justify-content: center; border: 0; border-radius: .95rem; background: var(--novart-red); color: white; font: inherit; font-size: 1rem; font-weight: 700; box-shadow: 0 8px 18px rgb(255 0 0 / .14); cursor: pointer; transition: transform 160ms ease, box-shadow 160ms ease; }
 .onboarding-submit:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 10px 22px rgb(255 0 0 / .2); }
 .onboarding-submit:active:not(:disabled) { transform: scale(.985); }

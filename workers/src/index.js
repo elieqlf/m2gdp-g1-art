@@ -10,6 +10,9 @@
 // GET /files/covers/…  Lecture publique des photos.
 // POST /ai/activity-ideas  { keywords, discipline?, practices? } (en-tête Authorization: Bearer <jeton Firebase>)
 //   Trois idées d'activités culturelles proposées par Mistral Small (Cloudflare Workers AI). Renvoie { ideas }.
+// POST /account/delete  { confirm: 'delete-account' } (en-tête Authorization: Bearer <jeton Firebase>)
+//   US-23 : efface toutes les données du membre (activités, messages, conversations, profils, photos)
+//   puis son compte de connexion. Renvoie { deleted: true, ... }.
 // GET /health
 //
 // Secrets (jamais dans le dépôt) : FIREBASE_SERVICE_ACCOUNT (fichier JSON entier),
@@ -21,6 +24,7 @@ import { signInEmail } from './email-template.js'
 import { checkAndRecord } from './limits.js'
 import { AuthError, verifyIdToken } from './auth.js'
 import { coverKey, isAllowedType, matchesType, MAX_BYTES, memberQuota, serveFile, uploadQuota } from './files.js'
+import { deleteAccount } from './account.js'
 import { activityIdeas, AI_LIMIT, aiConfigured, AiConfigError, AiQuotaError, AiUpstreamError, readRequest } from './ai.js'
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -120,6 +124,35 @@ async function aiIdeas(request, env, headers) {
   }
 }
 
+async function removeAccount(request, env, headers) {
+  const origin = request.headers.get('origin') || ''
+  if (!origins(env).includes(origin)) return json({ error: 'origin-not-allowed' }, 403)
+  const projectId = env.FIREBASE_PROJECT_ID
+  if (!projectId) return json({ error: 'not-configured' }, 503, headers)
+  let uid
+  try { uid = await verifyIdToken((request.headers.get('authorization') || '').replace(/^Bearer\s+/i, ''), projectId) }
+  catch (error) {
+    if (error instanceof AuthError) return json({ error: 'unauthenticated' }, 401, headers)
+    throw error
+  }
+  // Confirmation explicite : un simple jeton ne suffit pas à supprimer un compte.
+  let body
+  try { body = await request.json() } catch { return json({ error: 'invalid-body' }, 400, headers) }
+  if (body?.confirm !== 'delete-account') return json({ error: 'confirmation-required' }, 400, headers)
+  try {
+    const account = readServiceAccount(env)
+    if (account.project_id !== projectId) throw new ConfigError('compte de service d’un autre projet')
+    const done = await deleteAccount(env, account, uid)
+    return json({ deleted: true, ...done }, 200, headers)
+  } catch (error) {
+    // Jamais d'uid ni de contenu dans les journaux.
+    console.error('Suppression de compte impossible :', error.message)
+    if (error instanceof ConfigError) return json({ error: 'not-configured' }, 503, headers)
+    if (error instanceof UpstreamError) return json({ error: 'delete-failed' }, 502, headers)
+    return json({ error: 'internal' }, 500, headers)
+  }
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url)
@@ -137,6 +170,11 @@ export default {
       if (request.method !== 'POST') return json({ error: 'method-not-allowed' }, 405, headers)
       try { return await aiIdeas(request, env, headers) }
       catch (error) { console.error('Idées IA impossibles :', error.message); return json({ error: 'internal' }, 500, headers) }
+    }
+    if (url.pathname === '/account/delete') {
+      if (request.method === 'OPTIONS') return new Response(null, { status: Object.keys(headers).length ? 204 : 403, headers })
+      if (request.method !== 'POST') return json({ error: 'method-not-allowed' }, 405, headers)
+      return removeAccount(request, env, headers)
     }
     if (url.pathname === '/auth/email-link') {
       if (request.method === 'OPTIONS') return new Response(null, { status: Object.keys(headers).length ? 204 : 403, headers })

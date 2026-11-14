@@ -76,3 +76,24 @@ test('proximité : sans localisation, expliquer les options et ouvrir les inform
   await page.getByRole('link', { name: 'Choisir ma ville' }).click()
   await expect(page.getByRole('heading', { name: 'Mes informations' })).toBeVisible()
 })
+
+test('profil : supprimer son compte, après confirmation (US-23)', async ({ page }, testInfo) => {
+  await openApp(page, 'app', '#/profil')
+  await page.getByRole('button', { name: 'Supprimer mon compte' }).click()
+  const dialog = page.getByRole('alertdialog', { name: 'Supprimer ton compte ?' })
+  await expect(dialog).toBeVisible()
+  await expect(dialog.getByRole('button', { name: 'Annuler' })).toBeFocused()
+  const confirm = dialog.getByRole('button', { name: 'Supprimer définitivement' })
+  await expect(confirm).toBeDisabled()
+  // Au clavier : la case « J'ai compris » est atteignable avant les boutons.
+  await page.keyboard.press('Shift+Tab')
+  await expect(dialog.getByRole('checkbox')).toBeFocused()
+  await page.keyboard.press('Space')
+  await expect(confirm).toBeEnabled()
+  await capture(page, testInfo, 'suppression-compte')
+  await confirm.click()
+  await expect(dialog.getByRole('button', { name: 'Un instant…' })).toBeDisabled()
+  await expect(page.getByRole('status').filter({ hasText: 'Ton compte NOVART et tes données ont bien été supprimés' })).toBeVisible()
+  await expect(page.getByLabel('Adresse e-mail', { exact: true })).toBeVisible()
+})
+

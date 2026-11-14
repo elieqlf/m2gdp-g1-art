@@ -447,7 +447,10 @@
 .filter-location-help svg { width: 1rem; height: 1rem; }
 .dialog { width: min(100%, 26rem); padding: 1.4rem; border-radius: 1.3rem; background: var(--background); box-shadow: var(--shadow); }
 .dialog h2 { font-family: var(--font-heading); color: var(--primary); font-size: 1.4rem; margin-bottom: .5rem; }
-.dialog__actions { display: grid; grid-template-columns: 1fr 1fr; gap: .7rem; margin-top: 1.2rem; }
+.dialog__actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr)); gap: .7rem; margin-top: 1.2rem; }
+.dialog__check { display: flex; align-items: flex-start; gap: .6rem; margin-top: 1rem; font-size: .92rem; line-height: 1.4; cursor: pointer; }
+.dialog__check input { flex: none; width: 1.25rem; height: 1.25rem; margin-top: .1rem; accent-color: var(--primary); }
+.dialog__error { margin-top: .8rem; padding: .55rem .7rem; border-radius: .7rem; background: #fff0ed; color: #a32330; font-size: .88rem; }
 
 /* Champs de formulaire */
 .field-label { display: flex; align-items: center; gap: .35rem; flex-wrap: wrap; margin: 1.1rem 0 .45rem; font-weight: 600; color: var(--ink); }
@@ -684,6 +687,9 @@
 .menu-row span { flex: 1; }
 .logout-row { display: flex; align-items: center; gap: 1rem; width: 100%; padding: 1rem; margin-bottom: 1rem; border: 0; border-radius: 1rem; background: var(--tint); color: var(--primary); font-size: 1.02rem; font-weight: 500; cursor: pointer; }
 .logout-row svg { width: 1.5rem; height: 1.5rem; }
+.delete-account-row { display: flex; align-items: center; justify-content: center; gap: .5rem; width: 100%; min-height: 2.75rem; padding: .6rem 1rem; margin: -.25rem 0 1.25rem; border: 0; background: none; color: var(--foreground); font-size: .92rem; text-decoration: underline; text-underline-offset: .2em; cursor: pointer; }
+.delete-account-row svg { width: 1.1rem; height: 1.1rem; }
+.delete-account-row:disabled { opacity: .55; cursor: wait; }
 .profile-preview { display: flex; align-items: center; gap: 1rem; padding: 1rem; border-radius: 1.1rem; background: var(--tint); }
 .member-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(17rem, 100%), 1fr)); gap: .8rem; }
 .member-tile { display: flex; gap: .9rem; padding: 1rem; border-radius: 1.1rem; background: var(--card); box-shadow: var(--shadow); }
@@ -696,6 +702,8 @@
 /* Message éphémère */
 .toast { position: fixed; z-index: 70; left: 50%; bottom: calc(var(--nav-height) + 1rem + env(safe-area-inset-bottom)); transform: translateX(-50%); width: max-content; max-width: calc(100% - 2rem); padding: .75rem 1.2rem; border-radius: 1rem; background: var(--ink); color: var(--card); font-weight: 500; box-shadow: var(--shadow); pointer-events: none; }
 .toast--error { background: var(--accent); }
+/* Pendant une confirmation, les messages passent en haut pour ne pas cacher ses boutons. */
+body:has(.sheet-backdrop--center) .toast { top: calc(1rem + env(safe-area-inset-top)); bottom: auto; }
 /* Sur l'accueil-carte, le message flotte sur la carte pour ne pas cacher le panneau. */
 .app-frame:has(.discover) .toast { bottom: auto; top: 8.4rem; font-size: .92rem; }
 

@@ -75,7 +75,7 @@ test('envoie l’e-mail NOVART avec le lien Firebase généré par le compte de 
   const [header, payload, signature] = assertion.split('.')
   const claims = JSON.parse(Buffer.from(payload, 'base64url'))
   assert.equal(claims.iss, 'firebase-adminsdk@novart-109bf.iam.gserviceaccount.com')
-  assert.equal(claims.scope, 'https://www.googleapis.com/auth/identitytoolkit')
+  assert.equal(claims.scope, 'https://www.googleapis.com/auth/identitytoolkit https://www.googleapis.com/auth/datastore')
   assert.ok(await crypto.subtle.verify('RSASSA-PKCS1-v1_5', publicKey, Buffer.from(signature, 'base64url'), new TextEncoder().encode(`${header}.${payload}`)))
 
   // 2. Lien de connexion demandé sans envoi par Firebase, vers l'appli.

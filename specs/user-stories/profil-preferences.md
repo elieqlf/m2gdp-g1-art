@@ -34,3 +34,25 @@ Firestore ne masque pas un champ isolé (un profil lisible l'est en entier), don
 La ville/quartier est facultative, sert uniquement aux recommandations de la personne, et
 peut être supprimée depuis ses informations. Le GPS n'est demandé qu'après une action
 explicite de la personne. La communauté ne place plus les membres sur une carte.
+
+## US-23 — Supprimer son compte
+
+**En tant que** membre, **je veux** supprimer mon compte **afin que** mes données soient effacées (droit à l'effacement, RGPD).
+
+- Profil → « Supprimer mon compte » (sous « Se déconnecter »), puis une confirmation : ce qui sera effacé,
+  le nombre d'activités à venir que la personne organise et qui seront annulées, case « J'ai compris » obligatoire.
+- L'appli appelle `POST /account/delete` sur l'API NOVART (jeton Firebase + `{ confirm: 'delete-account' }`).
+  Les règles Firestore n'autorisent pas un membre à effacer ses messages ni ses conversations : le Worker le fait
+  avec le compte de service, dans cet ordre (chaque étape peut être rejouée) :
+  1. activités organisées et leurs messages ;
+  2. activités rejointes : retrait des participants, de la liste d'attente, de l'offre de place ;
+     la place libérée est proposée au suivant (24 h, au plus tard le début) ; dernier message retiré de l'aperçu ;
+  3. messages écrits dans les autres groupes (index de groupe de collections `messages.authorId`) ;
+  4. conversations privées et leurs messages, pour les deux membres ;
+  5. `publicProfiles/{uid}`, `users/{uid}`, photos `covers/{uid}/…` dans R2 ;
+  6. en dernier, le compte Firebase Authentication. Si une étape échoue, rien n'est supprimé du compte de connexion :
+     la personne reste connectée et peut réessayer.
+- Ensuite l'appli oublie les préférences gardées sur l'appareil pour ce compte, déconnecte la personne et affiche
+  « Ton compte NOVART et tes données ont bien été supprimés ».
+- Tests : `workers/test/account.test.mjs`, `frontend/tests/account.test.ts`, `App.test.ts`, e2e `current-ui.spec.ts`.
+

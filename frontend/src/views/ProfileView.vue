@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { Bell, CalendarDays, ChevronRight, CirclePlus, FileText, Heart, LogOut, MessageCircleMore, Pencil, Settings, Shield, Sparkles, User, Users } from '@lucide/vue'
+import { Bell, CalendarDays, ChevronRight, CirclePlus, FileText, Heart, LogOut, MessageCircleMore, Pencil, Settings, Shield, Sparkles, Trash2, User, Users } from '@lucide/vue'
+import ConfirmDialog from '@/components/ConfirmDialog.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import { disciplineLabel, isPast } from '@/lib/activity'
 import { displayName, loadActivities, store, uid, unreadNotifications } from '@/lib/store'
+import { idToken } from '@/services/firebase'
+import { AccountDeletionError, deleteAccount, deletionErrorMessage } from '@/services/account'
 
 // US-13 : consulter son profil (maquette 24).
-const emit = defineEmits<{ logout: [] }>()
+const emit = defineEmits<{ logout: []; 'account-deleted': [] }>()
 const busy = ref(false)
 const mine = computed(() => store.activities.filter(a => a.organizerId === uid.value || a.participantIds.includes(uid.value)))
 const stats = computed(() => {
@@ -22,6 +25,26 @@ const groups = [
   [{ label: 'Confidentialité', href: `${LANDING}/legal.html#confidentialite`, icon: Shield, external: true }, { label: 'Conditions d’utilisation', href: `${LANDING}/legal.html#cgu`, icon: FileText, external: true }],
 ]
 function logout() { busy.value = true; emit('logout') }
+
+// US-23 : supprimer son compte (définitif, après confirmation).
+const confirmDelete = ref(false)
+const understood = ref(false)
+const deleting = ref(false)
+const deleteError = ref('')
+const organized = computed(() => store.activities.filter(a => a.organizerId === uid.value && !isPast(a)).length)
+const deleteText = computed(() => `Ton profil, tes messages, tes conversations privées et tes inscriptions seront effacés${organized.value ? `, et ${organized.value === 1 ? 'l’activité à venir que tu organises sera annulée' : `les ${organized.value} activités à venir que tu organises seront annulées`}` : ''}. Cette action est définitive.`)
+function openDelete() { understood.value = false; deleteError.value = ''; confirmDelete.value = true }
+async function removeAccount() {
+  deleting.value = true
+  deleteError.value = ''
+  try {
+    await deleteAccount(await idToken())
+    emit('account-deleted')
+  } catch (error) {
+    deleteError.value = deletionErrorMessage(error instanceof AccountDeletionError ? error.code : 'internal')
+    deleting.value = false
+  }
+}
 </script>
 
 <template>
@@ -46,5 +69,10 @@ function logout() { busy.value = true; emit('logout') }
       <a v-for="item in group" :key="item.label" :href="item.href" class="menu-row" :target="'external' in item ? '_blank' : undefined" :rel="'external' in item ? 'noopener' : undefined"><component :is="item.icon" aria-hidden="true" /><span>{{ item.label }}</span><span v-if="'badge' in item && unreadNotifications" class="count-badge count-badge--inline">{{ unreadNotifications }}<span class="sr-only"> nouvelles</span></span><ChevronRight aria-hidden="true" /></a>
     </nav>
     <button type="button" class="logout-row" :disabled="busy" @click="logout"><LogOut aria-hidden="true" />Se déconnecter</button>
+    <button type="button" class="delete-account-row" :disabled="busy || deleting" @click="openDelete"><Trash2 aria-hidden="true" />Supprimer mon compte</button>
+    <ConfirmDialog v-if="confirmDelete" title="Supprimer ton compte ?" :text="deleteText" confirm-label="Supprimer définitivement" :busy="deleting" :confirm-disabled="!understood" @confirm="removeAccount" @cancel="confirmDelete = false">
+      <label class="dialog__check"><input v-model="understood" type="checkbox" :disabled="deleting" /><span>J’ai compris : mon compte et mes données ne pourront pas être récupérés.</span></label>
+      <p v-if="deleteError" class="dialog__error" role="alert">{{ deleteError }}</p>
+    </ConfirmDialog>
   </div>
 </template>
