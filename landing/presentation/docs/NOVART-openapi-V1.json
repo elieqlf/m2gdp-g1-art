@@ -1,0 +1,112 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Novart - Création d'une annonce",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/annonces": {
+      "post": {
+        "summary": "Créer une annonce de pratique artistique",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "title",
+                  "description",
+                  "discipline",
+                  "address",
+                  "startDate",
+                  "durationMinutes",
+                  "capacity"
+                ],
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "minLength": 3,
+                    "maxLength": 120,
+                    "description": "📝 Titre de l'annonce, par exemple : Atelier de danse."
+                  },
+                  "description": {
+                    "type": "string",
+                    "minLength": 10,
+                    "maxLength": 3000,
+                    "description": "📖 Présentation de l'activité, de son contenu et du matériel nécessaire."
+                  },
+                  "discipline": {
+                    "type": "string",
+                    "enum": [
+                      "music",
+                      "dance",
+                      "theater",
+                      "visualArts",
+                      "other"
+                    ],
+                    "description": "🎨 Discipline : music = musique ; dance = danse ; theater = théâtre ; visualArts = arts visuels ; other = autre."
+                  },
+                  "address": {
+                    "type": "string",
+                    "minLength": 5,
+                    "maxLength": 300,
+                    "description": "📍 Adresse du lieu où se déroule l'activité."
+                  },
+                  "startDate": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2026-11-14T14:00:00+01:00",
+                    "description": "📅 Date et heure de début avec fuseau horaire. Doit être dans le futur à la création."
+                  },
+                  "durationMinutes": {
+                    "type": "integer",
+                    "minimum": 15,
+                    "maximum": 480,
+                    "description": "⏱️ Durée de l'activité en minutes, entre 15 minutes et 8 heures."
+                  },
+                  "capacity": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 100,
+                    "description": "👥 Nombre maximum de participants."
+                  },
+                  "price": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 500,
+                    "default": 0,
+                    "description": "💶 Prix par participant en euros. La valeur 0 signifie que l'activité est gratuite."
+                  },
+                  "beginnerFriendly": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "🌱 true = accessible aux débutants ; false = expérience préalable nécessaire."
+                  },
+                  "placeId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 300,
+                    "description": "🔗 Identifiant facultatif du lieu fourni par Google Places lors de la sélection d'une adresse."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Annonce créée."
+          },
+          "400": {
+            "description": "Informations manquantes ou invalides."
+          },
+          "401": {
+            "description": "Utilisateur non connecté."
+          }
+        }
+      }
+    }
+  }
+}

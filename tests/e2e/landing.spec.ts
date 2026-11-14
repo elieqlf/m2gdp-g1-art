@@ -1,10 +1,11 @@
 import { expect, test } from '@playwright/test'
 import { pathToFileURL } from 'node:url'
 import { resolve } from 'node:path'
+import { existsSync } from 'node:fs'
 
 // Site vitrine statique (landing/) : ouvert directement depuis les fichiers.
 const url = (page: string) => pathToFileURL(resolve(__dirname, '../../landing', page)).href
-const pages = ['index.html', 'fonctionnement.html', 'faq.html', 'contact.html', 'legal.html']
+const pages = ['index.html', 'fonctionnement.html', 'faq.html', 'contact.html', 'legal.html', 'presentation/index.html']
 
 for (const name of pages) {
   test(`site vitrine : ${name} sans débordement, visuels et polices chargés`, async ({ page }, testInfo) => {
@@ -25,7 +26,7 @@ for (const name of pages) {
       }
     })
     expect(check).toEqual({ broken: [], caveat: true, blurry: [], overflow: false })
-    await page.screenshot({ path: testInfo.outputPath(name.replace('.html', '.png')), fullPage: true })
+    await page.screenshot({ path: testInfo.outputPath(name.replace('/', '-').replace('.html', '.png')), fullPage: true })
   })
 }
 
@@ -56,4 +57,26 @@ test('site vitrine : le formulaire de contact vérifie la saisie', async ({ page
   await page.getByRole('button', { name: 'Envoyer' }).click()
   await expect(page.getByRole('status').getByText('Merci Camille')).toBeVisible()
   await expect(page.getByText('n’envoie pas encore de message')).toBeVisible()
+})
+
+test('présentation du projet : sommaire, liens de rendu et documents', async ({ page }) => {
+  await page.goto(url('presentation/index.html'))
+  const toggle = page.getByRole('button', { name: 'Ouvrir le menu' })
+  if (await toggle.isVisible()) await toggle.click()
+  const nav = page.getByRole('navigation', { name: 'Sections de la présentation' })
+  for (const [label, id] of [['Projet', 'projet'], ['Canvas', 'canvas'], ['Parcours', 'parcours'], ['Charte', 'charte'], ['Maquettes', 'maquettes'], ['PO', 'po'], ['DEV', 'dev']]) {
+    await expect(nav.getByRole('link', { name: label, exact: true })).toHaveAttribute('href', `#${id}`)
+    await expect(page.locator(`#${id}`)).toBeAttached()
+  }
+  const hero = page.locator('.p-hero')
+  await expect(hero.getByRole('link', { name: 'Ouvrir l’application' })).toHaveAttribute('href', 'https://novart-app.web.app')
+  await expect(hero.getByRole('link', { name: 'Site vitrine' })).toHaveAttribute('href', 'https://novart-109bf.web.app')
+  await expect(hero.getByRole('link', { name: 'GitHub' })).toHaveAttribute('href', 'https://github.com/elieqlf/m2gdp-g1-art')
+  // Les documents liés existent bien à côté de la page.
+  const linked = await page.evaluate(() => Array.from(document.querySelectorAll('a[href^="docs/"], a[href^="img/"], img[src], source[src]'))
+    .map(el => el.getAttribute('href') ?? el.getAttribute('src') ?? ''))
+  const missing = [...new Set(linked)].filter(f => !existsSync(resolve(__dirname, '../../landing/presentation', f)))
+  expect(missing).toEqual([])
+  await expect(page.locator('.table--backlog tbody tr')).toHaveCount(38)
+  await expect(page.locator('.mockups li')).toHaveCount(26)
 })

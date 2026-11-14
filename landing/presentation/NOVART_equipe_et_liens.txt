@@ -1,0 +1,14 @@
+NOVART — L'art se crée ensemble.
+Projet 1 — ART · Groupe 1 · Master 2 CIM 2026/2027
+
+ÉQUIPE
+- Hadi : Product Owner
+- Palina : UX Designer
+- Elie : Développeur
+- Lucas : Développeur
+
+LIENS
+- Application NOVART : https://novart-app.web.app/
+- Site vitrine : https://novart-109bf.web.app/
+- Site de présentation du projet : https://novart-109bf.web.app/presentation/
+- Dépôt GitHub : https://github.com/elieqlf/m2gdp-g1-art
